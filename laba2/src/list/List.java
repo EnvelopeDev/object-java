@@ -195,4 +195,15 @@ public class List<T> implements interfaceList<T>
 		System.out.print('\n');
 	}
 
+	@Override
+	public void replace(T value, int index) {
+		checkIndex(index);
+		Node<T> curr = head;
+		for(int i=0;i<index;i++) 
+		{
+			curr = curr.next;
+		}
+		curr.val = value;
+	}
+
 }

@@ -6,6 +6,7 @@ public interface interfaceList<T>
 	void push_front(T value);
 	void insert(T value, int index);
 	int getSize();
+	void replace(T value, int index);
 	T at(int index);
 	void remove(int index);
 	boolean isEmpty();
