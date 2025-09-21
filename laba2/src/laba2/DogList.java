@@ -1,7 +1,12 @@
 package laba2;
 
+import fileManager.interfaceFM;
+import fileManager.FileManager;
+
 import list.interfaceList;
 import list.List;
+
+import object.dog.*;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -11,8 +16,14 @@ import javax.swing.*;
 
 public class DogList 
 {
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
+		FileManager fm = new FileManager();
+		List<Dog> dogs = new List<>();
+		dogs = fm.inputFromCSV("src/data/dogs.csv");
+		dogs.print();
+		fm.outputToCSV("src/data/dogs.csv", dogs);
+		
 		JFrame frame = new JFrame("Dog List");
 		
 		ImageIcon icon = new ImageIcon("src/laba2/dogIcon.png");

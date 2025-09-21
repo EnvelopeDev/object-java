@@ -159,7 +159,8 @@ public class List<T> implements interfaceList<T>
 	}
 
 	@Override
-	public boolean contains(T value) {
+	public boolean contains(T value) 
+	{
 		Node<T> curr = head;
 		while(curr!=null)
 		{
@@ -173,7 +174,8 @@ public class List<T> implements interfaceList<T>
 	}
 
 	@Override
-	public void clear() {
+	public void clear()
+	{
 		sz=0;
 		head=null;
 		end=null;
@@ -188,7 +190,7 @@ public class List<T> implements interfaceList<T>
 			System.out.print(curr.val);
 			if(curr.next!=null) 
 			{
-				System.out.print(", ");
+				System.out.print("\n");
 			}
 			curr=curr.next;
 		}
@@ -196,7 +198,8 @@ public class List<T> implements interfaceList<T>
 	}
 
 	@Override
-	public void replace(T value, int index) {
+	public void replace(T value, int index) 
+	{
 		checkIndex(index);
 		Node<T> curr = head;
 		for(int i=0;i<index;i++) 
@@ -205,5 +208,21 @@ public class List<T> implements interfaceList<T>
 		}
 		curr.val = value;
 	}
-
+	
+	@Override
+	public String[] convToStr()
+	{
+		if(sz==0) 
+		{
+			return null;
+		}
+		String[] res = new String[sz];
+		Node<T> curr = head;
+		for(int i=0;i<sz;i++) 
+		{
+			res[i] = curr.val.toString();
+			curr = curr.next;
+		}
+		return res;
+	}
 }

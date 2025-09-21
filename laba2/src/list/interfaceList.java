@@ -13,4 +13,5 @@ public interface interfaceList<T>
 	boolean contains(T value);
 	void clear();
 	void print();
+	String[] convToStr();
 }
