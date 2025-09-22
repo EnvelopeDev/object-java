@@ -21,9 +21,9 @@ public class DogList
         FileManager fm = new FileManager();
         List<Dog> dogs = new List<>();
         
+        
         dogs = fm.inputFromCSV("src/data/dogs.csv");
         dogs.print();
-        fm.outputToCSV("src/data/dogs.csv", dogs);
          
         JFrame frame = new JFrame("Dog Festival - Администратор");
         ImageIcon icon = new ImageIcon("src/laba2/dogIcon.png");
@@ -38,17 +38,25 @@ public class DogList
         textField.setFont(new Font("Arial", Font.PLAIN, 16));
         
         String[] columnNames = {
-            "Кличка", "Порода", "Владелец", "Судья", "Награда", "Породы судьи"
+            "Кличка", "Порода", "Есть ли награда"
         };
         
-        Object[][] data = {
-            {"Барсик", "Такса", "Иванов И.И.", "Петров П.П.", "1 место", "Такса, Пудель"},
-            {"Шарик", "Лабрадор", "Сидоров С.С.", "Козлов К.К.", "2 место", "Лабрадор, Овчарка"},
-            {"Рекс", "Овчарка", "Петров П.П.", "Иванов И.И.", "3 место", "Овчарка, Такса"},
-            {"Мухтар", "Пудель", "Козлов К.К.", "Сидоров С.С.", "Лучший в породе", "Пудель, Лабрадор"},
-            {"Джек", "Такса", "Смирнов А.А.", "Петров П.П.", "Участвовал", "Такса, Пудель"},
-            {"Лорд", "Лабрадор", "Кузнецов В.В.", "Козлов К.К.", "Приз зрителей", "Лабрадор, Овчарка"}
-        };
+        String[][] data = new String[dogs.getSize()][];
+        String[] strListDogs = dogs.convToStr();
+        
+        for(int i=0;i<dogs.getSize();i++) 
+        {
+        	data[i] = strListDogs[i].split(";");
+        	System.out.println(data[i][2]);
+        	if(Integer.parseInt(data[i][2]) == 1) 
+        	{
+        		data[i][2] = "Есть";
+        	}
+        	else 
+        	{
+        		data[i][2] = "Нет";
+        	}
+        }
         
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
         JTable dogsTable = new JTable(tableModel);
@@ -110,5 +118,6 @@ public class DogList
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(900, 600);
         frame.setVisible(true);
+        fm.outputToCSV("src/data/dogs.csv", dogs);
     }
 }
