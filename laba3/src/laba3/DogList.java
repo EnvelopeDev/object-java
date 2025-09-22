@@ -1,4 +1,4 @@
-package laba2;
+package laba3;
 
 import fileManager.interfaceFM;
 import fileManager.FileManager;
