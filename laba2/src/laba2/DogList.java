@@ -26,11 +26,11 @@ public class DogList
         dogs.print();
          
         JFrame frame = new JFrame("Dog Festival - Администратор");
-        ImageIcon icon = new ImageIcon("src/laba2/dogIcon.png");
+        ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
         frame.setIconImage(icon.getImage());
 
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new GridLayout(1, 7, 10, 10));
+        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));
         
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         
@@ -68,14 +68,15 @@ public class DogList
         JScrollPane tableScrollPane = new JScrollPane(dogsTable);
         
         String[] imagePaths = {
-            "src/laba2/save.png",
-            "src/laba2/folder_documents.png",
-            "src/laba2/cloud.png",
-            "src/laba2/plus.png", 
-            "src/laba2/minus.png",
-            "src/laba2/edit.png",
-            "src/laba2/print.png",
-            "src/laba2/search.png" 
+            "src/picts/save.png",
+            "src/picts/folder_documents.png",
+            "src/picts/cloud.png",
+            "src/picts/plus.png", 
+            "src/picts/minus.png",
+            "src/picts/edit.png",
+            "src/picts/print.png",
+            "src/picts/exit.png",
+            "src/picts/search.png"
         };
 
         String[] tooltips = {
@@ -86,12 +87,13 @@ public class DogList
             "Remove",
             "Edit",
             "Print",
+            "Отчисление",
             "Search"
         };
 
-        JButton[] buttons = new JButton[8];
+        JButton[] buttons = new JButton[9];
 
-        for(int i = 0; i < 8; i++) {		    
+        for(int i = 0; i < 9; i++) {		    
             ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
             Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
@@ -102,7 +104,7 @@ public class DogList
             buttons[i].setContentAreaFilled(false);
             buttons[i].setFocusPainted(false);
             
-            if(i == 7) {
+            if(i == 8) {
                 inputPanel.add(buttons[i]); 
             } else {
                 buttonsPanel.add(buttons[i]);
