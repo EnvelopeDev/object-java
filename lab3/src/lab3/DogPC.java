@@ -1,10 +1,10 @@
-package laba3;
+package lab3;
 
-import fileManager.interfaceFM;
+import fileManager.InterfaceFM;
 import fileManager.FileManager;
-import list.interfaceList;
+import list.InterfaceList;
 import list.List;
-import object.dog.*;
+import object.Dog;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -14,8 +14,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Image;
 
-public class DogList 
+public class DogPC
 {
+
     public static void main(String[] args) throws IOException
     {
         FileManager fm = new FileManager();
