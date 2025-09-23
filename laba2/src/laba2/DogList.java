@@ -23,9 +23,8 @@ public class DogList
         
         
         dogs = fm.inputFromCSV("src/data/dogs.csv");
-        dogs.print();
          
-        JFrame frame = new JFrame("Dog Festival - Администратор");
+        JFrame frame = new JFrame("Dog Festival");
         ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
         frame.setIconImage(icon.getImage());
 
@@ -34,11 +33,8 @@ public class DogList
         
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         
-        JTextField textField = new JTextField(12); 
-        textField.setFont(new Font("Arial", Font.PLAIN, 16));
-        
         String[] columnNames = {
-            "Кличка", "Порода", "Есть ли награда"
+            "Кличка", "Порода", "Наличие наград"
         };
         
         String[][] data = new String[dogs.getSize()][];
@@ -47,10 +43,9 @@ public class DogList
         for(int i=0;i<dogs.getSize();i++) 
         {
         	data[i] = strListDogs[i].split(";");
-        	System.out.println(data[i][2]);
         	if(Integer.parseInt(data[i][2]) == 1) 
         	{
-        		data[i][2] = "Есть";
+        		data[i][2] = "Да";
         	}
         	else 
         	{
@@ -66,6 +61,11 @@ public class DogList
         dogsTable.setRowHeight(25);
         
         JScrollPane tableScrollPane = new JScrollPane(dogsTable);
+        
+
+        JTextField textField = new JTextField(12); 
+        textField.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputPanel.add(textField);
         
         String[] imagePaths = {
             "src/picts/save.png",
@@ -87,7 +87,7 @@ public class DogList
             "Remove",
             "Edit",
             "Print",
-            "Отчисление",
+            "dropout",
             "Search"
         };
 
@@ -111,14 +111,14 @@ public class DogList
             }
         }
         
-        inputPanel.add(textField);
         
         frame.add(buttonsPanel, BorderLayout.NORTH);          
         frame.add(tableScrollPane, BorderLayout.CENTER);   
         frame.add(inputPanel, BorderLayout.SOUTH);            
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 600);
+        frame.setSize(900, 500);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         fm.outputToCSV("src/data/dogs.csv", dogs);
     }

@@ -182,22 +182,6 @@ public class List<T> implements interfaceList<T>
 	}
 
 	@Override
-	public void print() 
-	{
-		Node<T> curr = head;
-		while(curr!=null) 
-		{
-			System.out.print(curr.val);
-			if(curr.next!=null) 
-			{
-				System.out.print("\n");
-			}
-			curr=curr.next;
-		}
-		System.out.print('\n');
-	}
-
-	@Override
 	public void replace(T value, int index) 
 	{
 		checkIndex(index);
