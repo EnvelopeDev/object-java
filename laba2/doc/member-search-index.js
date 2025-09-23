@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"fileManager","c":"FileManager","l":"FileManager()","u":"%3Cinit%3E()"},{"p":"fileManager","c":"FileManager","l":"inputFromCSV(String)","u":"inputFromCSV(java.lang.String)"},{"p":"fileManager","c":"FileManager","l":"outputToCSV(String, List<Dog>)","u":"outputToCSV(java.lang.String,list.List)"}];updateSearchResults();
