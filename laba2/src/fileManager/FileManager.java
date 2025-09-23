@@ -8,15 +8,15 @@ import java.nio.file.*;
 import java.util.Arrays;
 
 /**
- * Класс для управления файловыми операциями с данными о собаках
- * Реализует чтение и запись данных в CSV формате
+ * Class for managing file operations with dog data
+ * Implements reading and writing data in CSV format
  * @author Vadim Ustinov
  * @version 1.0
  */
 public class FileManager implements interfaceFM
 {
     /**
-     * Конструктор по умолчанию
+     * Default Constructor
      */
     public FileManager() {
     }

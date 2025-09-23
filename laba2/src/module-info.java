@@ -1,6 +1,5 @@
 /**
- * Модуль для приложения "Dog Festival"
- * Управляет данными о собаках с графическим интерфейсом
+ * The module for the "Dog Festival" application
  * @author Vadim Ustinov
  * @version 1.0
  */

@@ -1,8 +1,8 @@
 package object.dog;
 
 /**
- * Класс, представляющий собаку
- * Содержит информацию о кличке, породе и наличии наград
+ * A class representing a dog
+ * It contains information about the nickname, breed, and awards.
  * @author Vadim Ustinov
  * @version 1.0
  */
@@ -13,10 +13,10 @@ public class Dog
     private boolean hasAward;
     
     /**
-     * Конструктор для создания объекта Dog
-     * @param inpName кличка собаки
-     * @param inpBreed порода собаки
-     * @param inpHasAward наличие наград
+     * Constructor for creating a Dog object
+     * @param inpName is the dog's nickname
+     * @param inpBreed dog breed
+     * @param inpHasAward availability of awards
      */
     public Dog(String inpName, String inpBreed, boolean inpHasAward)
     {
@@ -26,38 +26,38 @@ public class Dog
     }
     
     /**
-     * Возвращает кличку собаки
-     * @return кличка собаки
+     * Function returns the dog's name
+     * @return dog's name
      */
     public String getName(){return name;}
     
     /**
-     * Возвращает породу собаки
-     * @return порода собаки
+     * Function returns the dog's breed
+     * @return dog's breed
      */
     public String getBreed(){return poroda;}
     
     /**
-     * Проверяет наличие наград у собаки
-     * @return true если есть награды, иначе false
+     * Function checks for the dog's awards
+     * @return true if there are rewards, otherwise false
      */
     public boolean hasAward(){return hasAward;}
     
     /**
-     * Устанавливает новую кличку собаки
-     * @param newName новая кличка
+     * Function sets a new dog name
+     * @param newName new nickname
      */
     public void setName(String newName){name = newName;}
     
     /**
-     * Устанавливает новую породу собаки
-     * @param newPoroda новая порода
+     * Function sets a new breed of dog
+     * @param newPoroda new breed
      */
     public void setBreed(String newPoroda){poroda = newPoroda;}
     
     /**
-     * Устанавливает наличие наград у собаки
-     * @param newHasAward наличие наград
+     * Function sets the dog's awards
+     * @param newHasAward availability of awards
      */
     public void setAwards(boolean newHasAward){hasAward = newHasAward;}
     

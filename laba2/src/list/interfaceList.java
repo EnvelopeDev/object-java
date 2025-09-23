@@ -1,85 +1,79 @@
 package list;
 
 /**
- * Интерфейс для работы со списком элементов
- * Определяет основные операции для работы с коллекцией данных
- * @param <T> тип элементов списка
+ * Package for working with a list of items
+ * @param <T> type of list items
  * @author Vadim Ustinov
  * @version 1.0
  */
 public interface interfaceList<T> 
 {
     /**
-     * Добавляет элемент в конец списка
-     * @param value значение для добавления
+     * Function adds an item to the end of the list
+     * @param value the value to add
      */
     void push_back(T value);
     
     /**
-     * Добавляет элемент в начало списка
-     * @param value значение для добавления
+     * Function adds an item to the top of the list
+     * @param value the value to add
      */
     void push_front(T value);
     
     /**
-     * Вставляет элемент на указанную позицию
-     * @param value значение для вставки
-     * @param index позиция для вставки
+     * Function inserts the element at the specified position
+     * @param value the value to add
+     * @param index position to insert
      */
     void insert(T value, int index);
     
     /**
-     * Возвращает размер списка
-     * @return количество элементов в списке
+     * Function returns the size of the list
+     * @return number of items in the list
      */
     int getSize();
     
     /**
-     * Заменяет элемент на указанной позиции
-     * @param value новое значение
-     * @param index позиция для замены
+     * Function replaces the element at the specified position
+     * @param value new value
+     * @param index position to replace
      */
     void replace(T value, int index);
     
     /**
-     * Возвращает элемент по указанному индексу
-     * @param index позиция элемента
-     * @return элемент на указанной позиции
+     * Function returns an element at the specified index
+     * @param index position of the element
+     * @return element at the specified position
      */
     T at(int index);
     
     /**
-     * Удаляет элемент по указанному индексу
-     * @param index позиция элемента для удаления
+     * Function deletes an element by the specified index
+     * @param index position of the item to delete
      */
     void remove(int index);
     
     /**
-     * Проверяет, пуст ли список
-     * @return true если список пуст, иначе false
+     * Function checks if the list is empty
+     * @return true if the list is empty, otherwise false
      */
     boolean isEmpty();
     
     /**
-     * Проверяет, содержит ли список указанный элемент
-     * @param value значение для поиска
-     * @return true если элемент найден, иначе false
+     * Function checks whether the list contains the specified element.
+     * @param the value for the search
+     * @return true if the element is found, otherwise false
      */
     boolean contains(T value);
     
     /**
-     * Очищает список
+     * Function clears the list
      */
     void clear();
     
     /**
-     * Выводит список в консоль (для отладки)
-     */
-    void print();
-    
-    /**
-     * Преобразует список в массив строк
-     * @return массив строковых представлений элементов
+     * Function converts a list into an array of strings
+     * @return array of string representations of elements
      */
     String[] convToStr();
 }
