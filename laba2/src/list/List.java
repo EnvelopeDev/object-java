@@ -1,5 +1,11 @@
 package list;
 
+/**
+ * Class for working with a list of items
+ * @param <T> type of list items
+ * @author Vadim Ustinov
+ * @version 1.0
+ */
 public class List<T> implements interfaceList<T>
 {
 	private static class Node<T>

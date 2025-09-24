@@ -6,7 +6,7 @@ import list.List;
 import object.dog.*;
 
 /**
- * Interface for managing file operations with dog data
+ * Package for managing file operations with dog data
  * Defines methods for reading and writing data in CSV format
  * @author Vadim Ustinov
  * @version 1.0

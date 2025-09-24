@@ -16,6 +16,8 @@ import java.awt.FlowLayout;
 /**
  * Main window class for the Dog Festival application
  * Handles GUI creation and user interface components
+ * @author Vadim Ustinov
+ * @version 1.0
  */
 public class Window
 {
