@@ -61,7 +61,7 @@ public interface interfaceList<T>
     
     /**
      * Function checks whether the list contains the specified element.
-     * @param the value for the search
+     * @param value for the search
      * @return true if the element is found, otherwise false
      */
     boolean contains(T value);

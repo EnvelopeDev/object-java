@@ -20,8 +20,6 @@ public class DogList
     {
         FileManager fm = new FileManager();
         List<Dog> dogs = new List<>();
-        
-        
         dogs = fm.inputFromCSV("src/data/dogs.csv");
          
         JFrame frame = new JFrame("Dog Festival");
@@ -93,7 +91,8 @@ public class DogList
 
         JButton[] buttons = new JButton[9];
 
-        for(int i = 0; i < 9; i++) {		    
+        for(int i = 0; i < 9; i++) 
+        {		    
             ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
             Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
@@ -104,13 +103,15 @@ public class DogList
             buttons[i].setContentAreaFilled(false);
             buttons[i].setFocusPainted(false);
             
-            if(i == 8) {
+            if(i == 8) 
+            {
                 inputPanel.add(buttons[i]); 
-            } else {
+            } 
+            else 
+            {
                 buttonsPanel.add(buttons[i]);
             }
         }
-        
         
         frame.add(buttonsPanel, BorderLayout.NORTH);          
         frame.add(tableScrollPane, BorderLayout.CENTER);   
