@@ -10,4 +10,5 @@ module laba2 {
     exports list;
     exports object.dog;
     exports laba2;
+    exports ScreenForm;
 }
