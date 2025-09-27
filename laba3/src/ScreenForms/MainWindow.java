@@ -43,11 +43,11 @@ public class MainWindow
         // Initialize file manager and load dog data from CSV
         FileManager fm = new FileManager();
         List<Dog> dogs = new List<>();
-        dogs = fm.inputFromCSV("data/dogs3.csv");
+        dogs = fm.inputFromCSV("src/data/dogs3.csv");
          
         // Create main application frame
         mainFrame = new JFrame("Dog Festival");
-        ImageIcon icon = new ImageIcon("picts/dogIcon.png");
+        ImageIcon icon = new ImageIcon("src/src/picts/dogIcon.png");
         mainFrame.setIconImage(icon.getImage());
 
         // Create panels for buttons and input
@@ -114,15 +114,15 @@ public class MainWindow
         
         // Define button images and tooltips
         String[] imagePaths = {
-            "picts/save.png",
-            "picts/folder_documents.png",
-            "picts/cloud.png",
-            "picts/plus.png", 
-            "picts/minus.png",
-            "picts/edit.png",
-            "picts/print.png",
-            "picts/exit.png",
-            "picts/search.png"
+            "src/picts/save.png",
+            "src/picts/folder_documents.png",
+            "src/picts/cloud.png",
+            "src/picts/plus.png", 
+            "src/picts/minus.png",
+            "src/picts/edit.png",
+            "src/picts/print.png",
+            "src/picts/exit.png",
+            "src/picts/search.png"
         };
 
         buttons = new JButton[9];
@@ -164,7 +164,7 @@ public class MainWindow
         mainFrame.setVisible(true);
         
         // Save data back to CSV file
-        fm.outputToCSV("data/dogs3.csv", dogs);
+        fm.outputToCSV("src/data/dogs3.csv", dogs);
     }
     
     private static void handleButtonClick(int buttonIndex)
@@ -194,7 +194,7 @@ public class MainWindow
     {
         JPanel exitPanel = new JPanel(new BorderLayout());
         
-        ImageIcon exitIcon = new ImageIcon("picts/exit.jpg");
+        ImageIcon exitIcon = new ImageIcon("src/picts/exit.jpg");
         Image scaledImage = exitIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -225,7 +225,7 @@ public class MainWindow
     {
     	JPanel printPanel = new JPanel(new BorderLayout());
         
-        ImageIcon exitIcon = new ImageIcon("picts/printer.png");
+        ImageIcon exitIcon = new ImageIcon("src/picts/printer.png");
         Image scaledImage = exitIcon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);

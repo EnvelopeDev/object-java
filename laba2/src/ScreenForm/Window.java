@@ -16,7 +16,7 @@ import java.awt.FlowLayout;
 /**
  * Main window class for the Dog Festival application
  * Handles GUI creation and user interface components
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
 public class Window
@@ -65,14 +65,14 @@ public class Window
         for(int i=0;i<dogs.getSize();i++) 
         {
         	data[i] = strListDogs[i].split(";");
-        	// Convert award indicator to readable format
+        	// Convert award indicator to string
         	if(Integer.parseInt(data[i][2]) == 1) 
         	{
-        		data[i][2] = "Yes";
+        		data[i][2] = "Есть";
         	}
         	else 
         	{
-        		data[i][2] = "No";
+        		data[i][2] = "Нет";
         	}
         }
         

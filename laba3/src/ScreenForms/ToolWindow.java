@@ -14,7 +14,7 @@ public class ToolWindow
     public ToolWindow(String contextType, String data)
     {
         toolFrame = new JFrame(contextType);
-        ImageIcon icon = new ImageIcon("picts/dogIcon.png");
+        ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
         toolFrame.setIconImage(icon.getImage());
         
         toolFrame.setSize(300, 200);

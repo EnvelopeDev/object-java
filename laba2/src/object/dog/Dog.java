@@ -3,7 +3,7 @@ package object.dog;
 /**
  * A class representing a dog
  * It contains information about the nickname, breed, and awards.
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
 public class Dog 

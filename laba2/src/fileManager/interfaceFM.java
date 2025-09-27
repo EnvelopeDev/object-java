@@ -8,7 +8,7 @@ import object.dog.*;
 /**
  * Package for managing file operations with dog data
  * Defines methods for reading and writing data in CSV format
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
 public interface interfaceFM 

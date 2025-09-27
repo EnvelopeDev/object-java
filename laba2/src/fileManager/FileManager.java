@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * Class for managing file operations with dog data
  * Implements reading and writing data in CSV format
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
 public class FileManager implements interfaceFM
