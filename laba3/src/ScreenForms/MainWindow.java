@@ -174,6 +174,9 @@ public class MainWindow
             String buttonName = tooltips[buttonIndex];
             
             switch(buttonIndex) {
+            	case 6:
+            		printer();
+            		break;
                 case 7: 
                     exitApplication();
                     break;
@@ -187,8 +190,9 @@ public class MainWindow
         }
     }
     
-    private static void exitApplication() {
-        JPanel panel = new JPanel(new BorderLayout());
+    private static void exitApplication() 
+    {
+        JPanel exitPanel = new JPanel(new BorderLayout());
         
         ImageIcon exitIcon = new ImageIcon("picts/exit.jpg");
         Image scaledImage = exitIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
@@ -196,23 +200,52 @@ public class MainWindow
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  
         JLabel textLabel = new JLabel("Are you sure you want to exit?", JLabel.CENTER);
-        textLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        textLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         
-        panel.add(imageLabel, BorderLayout.CENTER);
-        panel.add(textLabel, BorderLayout.SOUTH);
+        exitPanel.add(imageLabel, BorderLayout.CENTER);
+        exitPanel.add(textLabel, BorderLayout.SOUTH);
         
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 16));
+        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 16));
 
         int result = JOptionPane.showConfirmDialog(
             mainFrame, //parent window
-            panel,  //message
+            exitPanel,  //message
             "Confirm Exit", //window title
             JOptionPane.YES_NO_OPTION, //type of buttons
             JOptionPane.PLAIN_MESSAGE //type of message
         );
-        
-        if (result == JOptionPane.YES_OPTION) {
+
+        if (result == JOptionPane.YES_OPTION)
+        {
             System.exit(0);
         }
+    }
+    
+    private static void printer() 
+    {
+    	JPanel printPanel = new JPanel(new BorderLayout());
+        
+        ImageIcon exitIcon = new ImageIcon("picts/printer.png");
+        Image scaledImage = exitIcon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+ 
+        JLabel textLabel = new JLabel("The system cannot see the printer. Check the connection and try again...", JLabel.CENTER);
+        textLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        
+        printPanel.add(imageLabel, BorderLayout.CENTER);
+        printPanel.add(textLabel, BorderLayout.SOUTH);
+        
+        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 16));
+
+        int result = JOptionPane.showConfirmDialog(
+            mainFrame, //parent window
+            printPanel,  //message
+            "Printing error", //window title
+            JOptionPane.DEFAULT_OPTION, //type of buttons
+            JOptionPane.PLAIN_MESSAGE //type of message
+        );
+        
+    	
     }
 }
