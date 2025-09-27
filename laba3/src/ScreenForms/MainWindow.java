@@ -172,7 +172,47 @@ public class MainWindow
         if (buttonIndex < tooltips.length) 
         {
             String buttonName = tooltips[buttonIndex];
-            new ToolWindow(buttonName, null);
+            
+            switch(buttonIndex) {
+                case 7: 
+                    exitApplication();
+                    break;
+                case 3: // Add button
+                case 4: // Remove button  
+                case 5: // Edit button
+                case 8: // Search button
+                default:
+                	new ToolWindow(buttonName, null);
+            }
+        }
+    }
+    
+    private static void exitApplication() {
+        JPanel panel = new JPanel(new BorderLayout());
+        
+        ImageIcon exitIcon = new ImageIcon("picts/exit.jpg");
+        Image scaledImage = exitIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+ 
+        JLabel textLabel = new JLabel("Are you sure you want to exit?", JLabel.CENTER);
+        textLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        panel.add(imageLabel, BorderLayout.CENTER);
+        panel.add(textLabel, BorderLayout.SOUTH);
+        
+        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.BOLD, 16));
+
+        int result = JOptionPane.showConfirmDialog(
+            mainFrame, //parent window
+            panel,  //message
+            "Confirm Exit", //window title
+            JOptionPane.YES_NO_OPTION, //type of buttons
+            JOptionPane.PLAIN_MESSAGE //type of message
+        );
+        
+        if (result == JOptionPane.YES_OPTION) {
+            System.exit(0);
         }
     }
 }
