@@ -1,6 +1,6 @@
 package laba3;
 
-import ScreenForm.Window;
+import ScreenForms.MainWindow;
 import java.io.IOException;
 
 /**
@@ -12,6 +12,6 @@ public class DogList
 {
 	public static void main(String[] args) throws IOException {
     
-        Window.show();
+        MainWindow.show();
     }
 }

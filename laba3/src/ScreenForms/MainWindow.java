@@ -1,4 +1,4 @@
-package ScreenForm;
+package ScreenForms;
 
 import fileManager.FileManager;
 import java.io.IOException;
@@ -23,38 +23,38 @@ import java.awt.Color;
  * @author Vadim Ustinov
  * @version 1.0
  */
-public class Window
+public class MainWindow
 {
-	private JFrame dogFestival;
-    private DefaultTableModel model;
-    private JScrollPane scroll;
-    private JTable dogsTable;
-    private JPanel buttonsPanel;
-    private JPanel inputPanel;
-    private JTextField textField;
-    private JButton[] buttons;
+    private static JFrame mainFrame;
+    private static JTable dogsTable;
+    private static JPanel buttonsPanel;
+    private static JPanel inputPanel;
+    private static JTextField textField;
+    private static JButton[] buttons;
+    private static JScrollPane tableScrollPane;
+    private static String[] tooltips = {"Save", "Open", "Backup", "Add", "Remove", "Edit", "Print", "Dropout", "Search"};
     
     /**
      * Displays the main application window with dog data
      * @throws IOException if there's an error reading/writing files
      */
-	public static void show() throws IOException
-	{
-		// Initialize file manager and load dog data from CSV
-		FileManager fm = new FileManager();
+    public static void show() throws IOException
+    {
+        // Initialize file manager and load dog data from CSV
+        FileManager fm = new FileManager();
         List<Dog> dogs = new List<>();
         dogs = fm.inputFromCSV("data/dogs3.csv");
          
         // Create main application frame
-        JFrame frame = new JFrame("Dog Festival");
+        mainFrame = new JFrame("Dog Festival");
         ImageIcon icon = new ImageIcon("picts/dogIcon.png");
-        frame.setIconImage(icon.getImage());
+        mainFrame.setIconImage(icon.getImage());
 
         // Create panels for buttons and input
-        JPanel buttonsPanel = new JPanel();
+        buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));
         
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         
         // Define table column names with row numbers column
         String[] columnNamesWithNumbers = {
@@ -86,7 +86,7 @@ public class Window
         
         // Create table model
         DefaultTableModel tableModel = new DefaultTableModel(dataWithNumbers, columnNamesWithNumbers);
-        JTable dogsTable = new JTable(tableModel);
+        dogsTable = new JTable(tableModel);
         dogsTable.setDefaultEditor(Object.class, null);
         
         // Configure first column
@@ -105,10 +105,10 @@ public class Window
         dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
         dogsTable.setRowHeight(25);
         
-        JScrollPane tableScrollPane = new JScrollPane(dogsTable);
+        tableScrollPane = new JScrollPane(dogsTable);
         
         // Create search text field
-        JTextField textField = new JTextField(12); 
+        textField = new JTextField(12); 
         textField.setFont(new Font("Arial", Font.PLAIN, 14));
         inputPanel.add(textField);
         
@@ -125,19 +125,7 @@ public class Window
             "picts/search.png"
         };
 
-        String[] tooltips = {
-            "Save",
-            "Open",
-            "Backup",
-            "Add",
-            "Remove",
-            "Edit",
-            "Print",
-            "Dropout",
-            "Search"
-        };
-
-        JButton[] buttons = new JButton[9];
+        buttons = new JButton[9];
 
         // Create and configure buttons
         for(int i = 0; i < 9; i++) 
@@ -145,12 +133,14 @@ public class Window
             ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
             Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            final int buttonIndex = i; // need final for lambda
             
             buttons[i] = new JButton(scaledIcon);
             buttons[i].setToolTipText(tooltips[i]); 
             buttons[i].setBorderPainted(false);
             buttons[i].setContentAreaFilled(false);
             buttons[i].setFocusPainted(false);
+            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));
             
             if(i == 8) 
             {
@@ -163,17 +153,26 @@ public class Window
         }
         
         // Add components to frame
-        frame.add(buttonsPanel, BorderLayout.NORTH);          
-        frame.add(tableScrollPane, BorderLayout.CENTER);   
-        frame.add(inputPanel, BorderLayout.SOUTH);            
+        mainFrame.add(buttonsPanel, BorderLayout.NORTH);          
+        mainFrame.add(tableScrollPane, BorderLayout.CENTER);   
+        mainFrame.add(inputPanel, BorderLayout.SOUTH);            
         
         // Configure frame properties
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 500);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(900, 500);
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.setVisible(true);
         
         // Save data back to CSV file
         fm.outputToCSV("data/dogs3.csv", dogs);
-	}
+    }
+    
+    private static void handleButtonClick(int buttonIndex)
+    {
+        if (buttonIndex < tooltips.length) 
+        {
+            String buttonName = tooltips[buttonIndex];
+            new ToolWindow(buttonName, null);
+        }
+    }
 }
