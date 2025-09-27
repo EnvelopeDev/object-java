@@ -1,6 +1,12 @@
 package list;
 
-public class List<T> implements InterfaceList<T>
+/**
+ * Class for working with a list of items
+ * @param <T> type of list items
+ * @author Vadim Ustinov
+ * @version 1.0
+ */
+public class List<T> implements interfaceList<T>
 {
 	private static class Node<T>
 	{
@@ -24,6 +30,11 @@ public class List<T> implements InterfaceList<T>
 	    sz=0;
 	}
 	
+	/**
+     * Checks if the index is valid for access operations
+     * @param index index to check
+     * @throws IndexOutOfBoundsException if index is out of range
+     */
 	private void checkIndex(int index) 
 	{
         if(index<0 || index>=sz)
@@ -32,6 +43,11 @@ public class List<T> implements InterfaceList<T>
         }
     }
 	
+	/**
+     * Checks if the index is valid for insert operations
+     * @param index index to check
+     * @throws IndexOutOfBoundsException if index is out of range
+     */
 	private void checkIndexForInsert(int index) 
 	{
         if(index<0 || index>sz)
@@ -40,6 +56,10 @@ public class List<T> implements InterfaceList<T>
         }
     }
 	
+	/**
+     * Adds an element to the end of the list
+     * @param value value to add
+     */
 	@Override
 	public void push_back(T value)
 	{
@@ -59,6 +79,10 @@ public class List<T> implements InterfaceList<T>
 		sz++;
 	}
 
+	/**
+     * Adds an element to the beginning of the list
+     * @param value value to add
+     */
 	@Override
 	public void push_front(T value) 
 	{
@@ -79,6 +103,11 @@ public class List<T> implements InterfaceList<T>
 		sz++;
 	}
 
+	/**
+     * Inserts an element at the specified position
+     * @param value value to insert
+     * @param index insertion position
+     */
 	@Override
 	public void insert(T value, int index) 
 	{
@@ -104,9 +133,18 @@ public class List<T> implements InterfaceList<T>
 		sz++;
 	}
 
+	/**
+     * Returns the number of elements in the list
+     * @return size of the list
+     */
 	@Override
 	public int getSize() {return sz;}
 
+	/**
+     * Returns the element at the specified position
+     * @param index position of the element
+     * @return element at the specified position
+     */
 	@Override
 	public T at(int index) 
 	{
@@ -119,6 +157,10 @@ public class List<T> implements InterfaceList<T>
 		return curr.val;
 	}
 
+	/**
+     * Removes the element at the specified position
+     * @param index position of the element to remove
+     */
 	@Override
 	public void remove(int index)
 	{
@@ -148,6 +190,10 @@ public class List<T> implements InterfaceList<T>
 		sz--;
 	}
 
+	/**
+     * Checks if the list is empty
+     * @return true if the list is empty, false otherwise
+     */
 	@Override
 	public boolean isEmpty() 
 	{
@@ -158,6 +204,11 @@ public class List<T> implements InterfaceList<T>
 		return true;
 	}
 
+	/**
+     * Checks if the list contains the specified value
+     * @param value value to search for
+     * @return true if the value is found, false otherwise
+     */
 	@Override
 	public boolean contains(T value) 
 	{
@@ -173,6 +224,9 @@ public class List<T> implements InterfaceList<T>
 		return false;
 	}
 
+	/**
+     * Removes all elements from the list
+     */
 	@Override
 	public void clear()
 	{
@@ -181,22 +235,11 @@ public class List<T> implements InterfaceList<T>
 		end=null;
 	}
 
-	@Override
-	public void print() 
-	{
-		Node<T> curr = head;
-		while(curr!=null) 
-		{
-			System.out.print(curr.val);
-			if(curr.next!=null) 
-			{
-				System.out.print("\n");
-			}
-			curr=curr.next;
-		}
-		System.out.print('\n');
-	}
-
+	/**
+     * Replaces the element at the specified position with a new value
+     * @param value new value
+     * @param index position of the element to replace
+     */
 	@Override
 	public void replace(T value, int index) 
 	{
@@ -209,6 +252,10 @@ public class List<T> implements InterfaceList<T>
 		curr.val = value;
 	}
 	
+	/**
+     * Converts the list to an array of strings
+     * @return array of string representations of elements, or null if list is empty
+     */
 	@Override
 	public String[] convToStr()
 	{
