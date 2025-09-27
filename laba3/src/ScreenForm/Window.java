@@ -7,11 +7,15 @@ import object.dog.Dog;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Image;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
+import java.awt.Color;
 
 /**
  * Main window class for the Dog Festival application
@@ -42,7 +46,6 @@ public class Window
         dogs = fm.inputFromCSV("data/dogs3.csv");
          
         // Create main application frame
-        
         JFrame frame = new JFrame("Dog Festival");
         ImageIcon icon = new ImageIcon("picts/dogIcon.png");
         frame.setIconImage(icon.getImage());
@@ -53,37 +56,53 @@ public class Window
         
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         
-        // Define table column names
-        String[] columnNames = {
-            "Кличка", "Порода", "Наличие наград"
+        // Define table column names with row numbers column
+        String[] columnNamesWithNumbers = {
+            "№", "Name", "Breed", "Awards"
         };
         
-        // Convert dog data to table format
-        String[][] data = new String[dogs.getSize()][];
+        // Convert dog data to table format with row numbers
+        String[][] dataWithNumbers = new String[dogs.getSize()][4];
         String[] strListDogs = dogs.convToStr();
         
-        // Process each dog's data for display
-        for(int i=0;i<dogs.getSize();i++) 
+        // Process each dog's data for display with row numbers
+        for(int i = 0; i < dogs.getSize(); i++) 
         {
-        	data[i] = strListDogs[i].split(";");
-        	// Convert award indicator to readable format
-        	if(Integer.parseInt(data[i][2]) == 1) 
-        	{
-        		data[i][2] = "Yes";
-        	}
-        	else 
-        	{
-        		data[i][2] = "No";
-        	}
+            dataWithNumbers[i][0] = String.valueOf(i + 1); // Row number
+            String[] dogData = strListDogs[i].split(";");
+            dataWithNumbers[i][1] = dogData[0]; // Dog name
+            dataWithNumbers[i][2] = dogData[1]; // Dog breed
+            
+            // Convert award indicator to readable format
+            if(Integer.parseInt(dogData[2]) == 1) 
+            {
+                dataWithNumbers[i][3] = "Yes";
+            }
+            else 
+            {
+                dataWithNumbers[i][3] = "No";
+            }
         }
         
-        // Create table model and table
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+        // Create table model
+        DefaultTableModel tableModel = new DefaultTableModel(dataWithNumbers, columnNamesWithNumbers);
         JTable dogsTable = new JTable(tableModel);
+        dogsTable.setDefaultEditor(Object.class, null);
+        
+        // Configure first column
+        TableColumnModel columnModel = dogsTable.getColumnModel();
+        TableColumn numberColumn = columnModel.getColumn(0);
+        numberColumn.setMaxWidth(35); 
+        
+        // Center align row numbers
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer(); //creating a render for column
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER); //Adjusting the text alignment of the render
+        numberColumn.setCellRenderer(centerRenderer); //Applying a renderer to a column
         
         // Configure table appearance
         dogsTable.setFont(new Font("Arial", Font.PLAIN, 14));
         dogsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
         dogsTable.setRowHeight(25);
         
         JScrollPane tableScrollPane = new JScrollPane(dogsTable);
@@ -114,7 +133,7 @@ public class Window
             "Remove",
             "Edit",
             "Print",
-            "Exit",
+            "Dropout",
             "Search"
         };
 
@@ -133,7 +152,6 @@ public class Window
             buttons[i].setContentAreaFilled(false);
             buttons[i].setFocusPainted(false);
             
-            // Add search button to input panel, others to buttons panel
             if(i == 8) 
             {
                 inputPanel.add(buttons[i]); 
