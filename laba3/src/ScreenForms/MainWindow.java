@@ -1,6 +1,7 @@
 package ScreenForms;
 
 import fileManager.FileManager;
+import ScreenForms.PrinterW;
 import java.io.IOException;
 import list.List;
 import object.dog.Dog;
@@ -47,7 +48,7 @@ public class MainWindow
          
         // Create main application frame
         mainFrame = new JFrame("Dog Festival");
-        ImageIcon icon = new ImageIcon("src/src/picts/dogIcon.png");
+        ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
         mainFrame.setIconImage(icon.getImage());
 
         // Create panels for buttons and input
@@ -174,9 +175,12 @@ public class MainWindow
             String buttonName = tooltips[buttonIndex];
             
             switch(buttonIndex) {
-            	case 6:
-            		printer();
-            		break;
+                case 6:
+                    try {/**/
+                        PrinterW.show();
+                    } catch (IOException e) {
+                    }
+                    break;
                 case 7: 
                     exitApplication();
                     break;
@@ -185,7 +189,7 @@ public class MainWindow
                 case 5: // Edit button
                 case 8: // Search button
                 default:
-                	new ToolWindow(buttonName, null);
+                    new ToolWindow(buttonName, null);
             }
         }
     }
@@ -219,33 +223,5 @@ public class MainWindow
         {
             System.exit(0);
         }
-    }
-    
-    private static void printer() 
-    {
-    	JPanel printPanel = new JPanel(new BorderLayout());
-        
-        ImageIcon exitIcon = new ImageIcon("src/picts/printer.png");
-        Image scaledImage = exitIcon.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
-        imageLabel.setHorizontalAlignment(JLabel.CENTER);
- 
-        JLabel textLabel = new JLabel("The system cannot see the printer. Check the connection and try again...", JLabel.CENTER);
-        textLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        
-        printPanel.add(imageLabel, BorderLayout.CENTER);
-        printPanel.add(textLabel, BorderLayout.SOUTH);
-        
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 16));
-
-        int result = JOptionPane.showConfirmDialog(
-            mainFrame, //parent window
-            printPanel,  //message
-            "Printing error", //window title
-            JOptionPane.DEFAULT_OPTION, //type of buttons
-            JOptionPane.PLAIN_MESSAGE //type of message
-        );
-        
-    	
     }
 }
