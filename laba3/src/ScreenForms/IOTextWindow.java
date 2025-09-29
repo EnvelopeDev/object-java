@@ -12,7 +12,7 @@ public class IOTextWindow
     private JOptionPane optionPane;
     private int numFields;
     private String title;
-    private JDialog dialog;
+    private JDialog inputDialog;
     private JLabel textLabel;
     private JPanel fieldsPanel;
     
@@ -23,7 +23,7 @@ public class IOTextWindow
         title = title_window;
         results = new String[numFields];
         textFields = new JTextField[numFields];
-        icon = new ImageIcon("picts/dogIcon.png"); 
+        icon = new ImageIcon("src/picts/dogIcon.png"); 
         
         IOPanel = new JPanel(new BorderLayout());
         IOPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
@@ -50,8 +50,8 @@ public class IOTextWindow
         
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 14));
         
-        dialog = optionPane.createDialog(title);
-        
+        inputDialog = optionPane.createDialog(title);
+        inputDialog.setIconImage(icon.getImage());
     }
     
     public String[] getData()
@@ -69,6 +69,6 @@ public class IOTextWindow
     
     public void show()
     {	
-        dialog.setVisible(true);
+    	inputDialog.setVisible(true);
     }
 }

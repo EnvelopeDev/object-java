@@ -2,7 +2,7 @@ package ScreenForms;
 
 import fileManager.FileManager;
 import ScreenForms.PrinterWindow;
-import ScreenForms.DeleteWindow;
+import ScreenForms.DeleteRowWindow;
 import java.io.IOException;
 import list.List;
 import object.dog.Dog;
@@ -35,7 +35,7 @@ public class MainWindow
     private static JButton[] buttons;
     private static JScrollPane tableScrollPane;
     private static String[] tooltips = {"Save", "Open", "Backup", "Add", "Remove", "Edit", "Print", "Dropout", "Search"};
-    
+    private static DeleteRowWindow deleteRow;
     /**
      * Displays the main application window with dog data
      * @throws IOException if there's an error reading/writing files
@@ -167,6 +167,7 @@ public class MainWindow
         
         // Save data back to CSV file
         fm.outputToCSV("src/data/dogs3.csv", dogs);
+        
     }
     
     private static void handleButtonClick(int buttonIndex)
@@ -176,14 +177,16 @@ public class MainWindow
             String buttonName = tooltips[buttonIndex];
             
             switch(buttonIndex) {
-            	case 4:
-            		try {/**/
-            			DeleteWindow.getCol();
-                    } catch (IOException e) {
-                    }
-                    break;
+            case 4: 
+                try {
+                	    deleteRow = new DeleteRowWindow(dogsTable);
+                	    int row = deleteRow.getRow();
+                	    deleteRow.deleteRowByNumber(row - 1); 
+                } catch (IOException e) {
+                }
+                break;
                 case 6:
-                    try {/**/
+                    try {
                         PrinterWindow.show();
                     } catch (IOException e) {
                     }
