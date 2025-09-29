@@ -2,18 +2,26 @@ package ScreenForms;
 
 public class temp {
     public static void main(String[] args) {
-        IOTextW ioDialog = new IOTextW();
+    	// Создание окна с текстом, заголовком и количеством полей
+    	IOTextWindow inputWindow = new IOTextWindow(
+    	    "Введите данные о собаке:",  // текст сообщения
+    	    "Добавление собаки",         // заголовок окна  
+    	    3                           // количество полей ввода
+    	);
 
-        // Тестируем
-        String[] result = ioDialog.use("Введите данные собаки:", "hui",  4);
-        
-        if (result != null) {
-            System.out.println("=== РЕЗУЛЬТАТ ===");
-            for (int i = 0; i < result.length; i++) {
-                System.out.println("Поле " + (i + 1) + ": '" + result[i] + "'");
-            }
-        } else {
-            System.out.println("Ввод отменен");
+    	// Показать окно
+    	inputWindow.show();
+
+    	// Получить введенные данные
+    	String[] results = inputWindow.getData();
+    	if (results != null) {
+    	    // Обработка данных
+    	    String name = results[0];
+    	    String breed = results[1];
+    	    String awards = results[2];
+    	}
+    	for (int i = 0; i < results.length; i++) {
+            System.out.println(results[i]);
         }
     }
 }

@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JDialog;
 import javax.swing.UIManager;
 
-public class PrinterW
+public class PrinterWindow
 {
 	public static void show() throws IOException
     {	

@@ -3,7 +3,7 @@ package ScreenForms;
 import javax.swing.*;
 import java.awt.*;
 
-public class EditW {
+public class EditWindow{
     public static void show(String[] data) {
         if (data == null) {
             return; // Пользователь отменил ввод

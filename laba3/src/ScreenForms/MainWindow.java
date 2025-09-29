@@ -1,7 +1,8 @@
 package ScreenForms;
 
 import fileManager.FileManager;
-import ScreenForms.PrinterW;
+import ScreenForms.PrinterWindow;
+import ScreenForms.DeleteWindow;
 import java.io.IOException;
 import list.List;
 import object.dog.Dog;
@@ -175,9 +176,15 @@ public class MainWindow
             String buttonName = tooltips[buttonIndex];
             
             switch(buttonIndex) {
+            	case 4:
+            		try {/**/
+            			DeleteWindow.getCol();
+                    } catch (IOException e) {
+                    }
+                    break;
                 case 6:
                     try {/**/
-                        PrinterW.show();
+                        PrinterWindow.show();
                     } catch (IOException e) {
                     }
                     break;
@@ -185,7 +192,6 @@ public class MainWindow
                     exitApplication();
                     break;
                 case 3: // Add button
-                case 4: // Remove button  
                 case 5: // Edit button
                 case 8: // Search button
                 default:
