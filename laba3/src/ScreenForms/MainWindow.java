@@ -2,7 +2,7 @@ package ScreenForms;
 
 import fileManager.FileManager;
 import ScreenForms.PrinterWindow;
-import ScreenForms.DeleteRowWindow;
+import ScreenForms.DeleteElementWindow;
 import java.io.IOException;
 import list.List;
 import object.dog.Dog;
@@ -35,8 +35,6 @@ public class MainWindow
     private static JButton[] buttons;
     private static JScrollPane tableScrollPane;
     private static String[] tooltips = {"Save", "Open", "Backup", "Add", "Remove", "Edit", "Print", "Dropout", "Search"};
-    private static DeleteRowWindow deleteRow;
-    private static AddRowWindow addRow;
     /**
      * Displays the main application window with dog data
      * @throws IOException if there's an error reading/writing files
@@ -179,42 +177,75 @@ public class MainWindow
             
             switch(buttonIndex) {
 	            case 3:
-	            	try {
-	            		addRow = new AddRowWindow(dogsTable);
-	            		String[] data = addRow.getRowData();
-	            		addRow.addRowToTable(data);
-	            	} catch (IOException e) {
+	                try {
+	                    AddElementWindow addElem = new AddElementWindow(
+	                        dogsTable,
+	                        "Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)",
+	                        "Add Row",
+	                        3
+	                    );
+	                    
+	                    String[] newData = addElem.getRowData();
+	                    if (newData != null) {
+	                        addElem.addRowToTable(newData);
+	                    }
+	                } catch (IOException e) {
+	                    e.printStackTrace();
 	                }
-	            	break;
+	                break;
+	
 	            case 4: 
 	                try {
-	            	    deleteRow = new DeleteRowWindow(dogsTable);
-	            	    int row = deleteRow.getRow();
-	            	    deleteRow.deleteRowByNumber(row - 1); 
+	                    DeleteElementWindow deleteElem = new DeleteElementWindow(
+	                        dogsTable, 
+	                        "Enter the row number to delete", 
+	                        "Delete Row", 
+	                        1
+	                    );
+	                    
+	                    int row = deleteElem.getRow();
+	                    if (row > 0) {
+	                        deleteElem.deleteRowByNumber(row - 1); 
+	                    }
 	                } catch (IOException e) {
+	                    e.printStackTrace();
 	                }
-                break;
-	            case 5:
-                    try {
-                        EditRowWindow editWindow = new EditRowWindow(dogsTable);
-                        int row = editWindow.getRow();
-                        editWindow.EditRowByNumber(row - 1); 
-                    } catch (IOException e) {
-                    }
-                    break;
-                case 6:
-                    try {
-                        PrinterWindow.show();
-                    } catch (IOException e) {
-                    }
-                    break;
-                case 7: 
-                    exitApplication();
-                    break;
-                
-                case 8: // Search button
-                //default:
-                //    new ToolWindow(buttonName, null);
+	                break;
+	
+	            case 5: 
+	                try {
+	                    EditElementWindow editElem = new EditElementWindow(
+	                        dogsTable,
+	                        "Enter the row number to edit",
+	                        "Edit Row", 
+	                        1
+	                    );
+	                    
+	                    int row = editElem.getRow();
+	                    if (row > 0) {
+	
+	                        EditElementWindow editDataWindow = new EditElementWindow(
+	                            dogsTable,
+	                            "Enter new values: 1 - Name, 2 - Breed, 3 - Awards",
+	                            "Edit Data", 
+	                            3
+	                        );
+	                        editDataWindow.EditRowByNumber(row - 1); 
+	                    }
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	                break;
+	                case 6:
+	                    try {
+	                        PrinterWindow.show();
+	                    } catch (IOException e) {
+	                    }
+	                    break;
+	                case 7: 
+	                    exitApplication();
+	                    break;
+
             }
         }
     }

@@ -3,7 +3,7 @@ package ScreenForms;
 public class temp {
     public static void main(String[] args) {
     	// Создание окна с текстом, заголовком и количеством полей
-    	IOTextWindow inputWindow = new IOTextWindow(
+    	InputOutputWindow inputWindow = new InputOutputWindow(
     	    "Введите данные о собаке:",  // текст сообщения
     	    "Добавление собаки",         // заголовок окна  
     	    3                           // количество полей ввода
