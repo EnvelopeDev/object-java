@@ -194,6 +194,14 @@ public class MainWindow
 	                } catch (IOException e) {
 	                }
                 break;
+	            case 5:
+                    try {
+                        EditRowWindow editWindow = new EditRowWindow(dogsTable);
+                        int row = editWindow.getRow();
+                        editWindow.EditRowByNumber(row - 1); 
+                    } catch (IOException e) {
+                    }
+                    break;
                 case 6:
                     try {
                         PrinterWindow.show();
@@ -203,8 +211,7 @@ public class MainWindow
                 case 7: 
                     exitApplication();
                     break;
-
-                case 5: // Edit button
+                
                 case 8: // Search button
                 //default:
                 //    new ToolWindow(buttonName, null);
