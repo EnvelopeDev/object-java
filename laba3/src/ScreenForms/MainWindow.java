@@ -176,7 +176,7 @@ public class MainWindow
             String buttonName = tooltips[buttonIndex];
             
             switch(buttonIndex) {
-	            case 3:
+	            case 3: // Add button
 	                try {
 	                    AddElementWindow addElem = new AddElementWindow(
 	                        dogsTable,
@@ -185,15 +185,11 @@ public class MainWindow
 	                        3
 	                    );
 	                    
-	                    String[] newData = addElem.getRowData();
-	                    if (newData != null) {
-	                        addElem.addRowToTable(newData);
-	                    }
+	                    addElem.addRowToTable();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
 	                }
 	                break;
-	
 	            case 4: 
 	                try {
 	                    DeleteElementWindow deleteElem = new DeleteElementWindow(

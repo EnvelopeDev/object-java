@@ -57,7 +57,7 @@ public class InputOutputWindow
     
     public String[] getData()
     {
-        if (IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
+        if (IOPane.getValue() != null && IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
         {
             for (int i = 0; i < numFields; i++)
             {
@@ -103,7 +103,6 @@ public class InputOutputWindow
             JOptionPane.PLAIN_MESSAGE,                    
             JOptionPane.YES_NO_OPTION                     
         );
-        
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 14));
         JDialog confirmDialog = IOPane.createDialog(title_window);
         confirmDialog.setIconImage(icon.getImage()); 
@@ -124,7 +123,6 @@ public class InputOutputWindow
         if (result != null)
         {
         	return Integer.parseInt(result[0].trim());
-           
         }
         else
         {
