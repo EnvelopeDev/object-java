@@ -36,6 +36,7 @@ public class MainWindow
     private static JScrollPane tableScrollPane;
     private static String[] tooltips = {"Save", "Open", "Backup", "Add", "Remove", "Edit", "Print", "Dropout", "Search"};
     private static DeleteRowWindow deleteRow;
+    private static AddRowWindow addRow;
     /**
      * Displays the main application window with dog data
      * @throws IOException if there's an error reading/writing files
@@ -177,13 +178,21 @@ public class MainWindow
             String buttonName = tooltips[buttonIndex];
             
             switch(buttonIndex) {
-            case 4: 
-                try {
-                	    deleteRow = new DeleteRowWindow(dogsTable);
-                	    int row = deleteRow.getRow();
-                	    deleteRow.deleteRowByNumber(row - 1); 
-                } catch (IOException e) {
-                }
+	            case 3:
+	            	try {
+	            		addRow = new AddRowWindow(dogsTable);
+	            		String[] data = addRow.getRowData();
+	            		addRow.addRowToTable(data);
+	            	} catch (IOException e) {
+	                }
+	            	break;
+	            case 4: 
+	                try {
+	            	    deleteRow = new DeleteRowWindow(dogsTable);
+	            	    int row = deleteRow.getRow();
+	            	    deleteRow.deleteRowByNumber(row - 1); 
+	                } catch (IOException e) {
+	                }
                 break;
                 case 6:
                     try {
@@ -194,11 +203,11 @@ public class MainWindow
                 case 7: 
                     exitApplication();
                     break;
-                case 3: // Add button
+
                 case 5: // Edit button
                 case 8: // Search button
-                default:
-                    new ToolWindow(buttonName, null);
+                //default:
+                //    new ToolWindow(buttonName, null);
             }
         }
     }

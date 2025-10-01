@@ -9,7 +9,8 @@ import java.io.IOException;
  * @version 1.0
  */
 public class DogList
-{
+{	
+	
 	public static void main(String[] args) throws IOException {
     
         MainWindow.show();

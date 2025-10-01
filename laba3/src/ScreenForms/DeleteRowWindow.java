@@ -45,7 +45,8 @@ public class DeleteRowWindow
         return 0;
     }
 
-    public void deleteRowByNumber(int rowNumber) {
+    public void deleteRowByNumber(int rowNumber)
+    {
         
         icon = new ImageIcon("src/picts/dogIcon.png"); 
         
@@ -68,7 +69,8 @@ public class DeleteRowWindow
         confirmDialog.setIconImage(icon.getImage());
         confirmDialog.setVisible(true);
         
-        if (confirmPane.getValue().equals(JOptionPane.YES_OPTION)) {
+        if (confirmPane.getValue().equals(JOptionPane.YES_OPTION))
+        {
             tableModel = (DefaultTableModel) deleteTable.getModel();
             tableModel.removeRow(rowNumber);
             updateRowNumbers();
@@ -93,8 +95,10 @@ public class DeleteRowWindow
             successDialog.setVisible(true);
         }
     }
-    private void updateRowNumbers() {
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
+    private void updateRowNumbers()
+    {
+        for (int i = 0; i < tableModel.getRowCount(); i++)
+        {
             tableModel.setValueAt(String.valueOf(i + 1), i, 0); 
         }
     }
