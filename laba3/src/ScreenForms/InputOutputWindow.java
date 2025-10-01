@@ -104,9 +104,9 @@ public class InputOutputWindow
             JOptionPane.YES_NO_OPTION                     
         );
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 14));
-        JDialog confirmDialog = IOPane.createDialog(title_window);
-        confirmDialog.setIconImage(icon.getImage()); 
-        confirmDialog.setVisible(true);
+        IODialog = IOPane.createDialog(title_window);
+        IODialog.setIconImage(icon.getImage()); 
+        IODialog.setVisible(true);
         
         if (IOPane.getValue().equals(JOptionPane.YES_OPTION))
 		{

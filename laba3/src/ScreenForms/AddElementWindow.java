@@ -22,7 +22,8 @@ public class AddElementWindow extends InputOutputWindow
         show();
         String[] newData = getData();
         
-        if (newData != null && newData.length >= 3) {
+        if (newData != null)
+        {
             
             int newRowNumber = tableModel.getRowCount() + 1;
             tableModel.addRow(new Object[]{

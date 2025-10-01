@@ -9,7 +9,6 @@ public class DeleteElementWindow extends InputOutputWindow
 {
     private JTable deleteTable;
     private DefaultTableModel tableModel;
-    private int row;
     
     public DeleteElementWindow(JTable table, String text, String title_window, int num_Fields)
     {
