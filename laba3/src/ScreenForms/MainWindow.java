@@ -27,66 +27,99 @@ import java.awt.Color;
  */
 public class MainWindow
 {
+	private static ImageIcon icon;
     private static JFrame mainFrame;
     private static JTable dogsTable;
+    private static String[][] tableData;
     private static JPanel buttonsPanel;
     private static JPanel inputPanel;
-    private static JTextField textField;
     private static JButton[] buttons;
-    private static JScrollPane tableScrollPane;
-    private static String[] tooltips = {"Save", "Open", "Backup", "Add", "Remove", "Edit", "Print", "Dropout", "Search"};
+    private static String[] tooltips = {
+    		"Save",
+    		"Open",
+    		"Backup",
+    		"Add",
+    		"Remove",
+    		"Edit",
+    		"Print",
+    		"Dropout",
+    		"Search"};
+    private static String[] imagePaths = {
+            "scr/picts/save.png",
+            "scr/picts/folder_documents.png",
+            "scr/picts/cloud.png",
+            "scr/picts/plus.png", 
+            "scr/picts/minus.png",
+            "scr/picts/edit.png",
+            "scr/picts/print.png",
+            "scr/picts/exit.png",
+            "scr/picts/search.png",
+            "scr/picts/dogIcon.png",
+            "scr/picts/exit.jpg"
+            
+        };
+    private static String[] columnNames = {
+            "№",
+            "Name",
+            "Breed",
+            "Awards"
+        };
     /**
      * Displays the main application window with dog data
      * @throws IOException if there's an error reading/writing files
      */
-    public static void show() throws IOException
+    public MainWindow() throws IOException
     {
-        // Initialize file manager and load dog data from CSV
+    	//INITIALIZATION SECTION
+    	// Initialize file manager and load dog data from CSV
         FileManager fm = new FileManager();
         List<Dog> dogs = new List<>();
-        dogs = fm.inputFromCSV("src/data/dogs3.csv");
-         
-        // Create main application frame
+        dogs = fm.inputFromCSV("scr/data/dogs3.csv");
+        
+        icon = new ImageIcon(imagePaths[9]);
         mainFrame = new JFrame("Dog Festival");
-        ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
-        mainFrame.setIconImage(icon.getImage());
-
-        // Create panels for buttons and input
+        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        
+        //BUTTON SECTION
         buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));
         
-        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        buttons = new JButton[9];
+        for(int i = 0; i < 9; i++) 
+        {		    
+            ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
+            Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            final int buttonIndex = i; // need final for lambda
+            
+            buttons[i] = new JButton(scaledIcon);
+            buttons[i].setToolTipText(tooltips[i]); 
+            buttons[i].setBorderPainted(false);
+            buttons[i].setContentAreaFilled(false);
+            buttons[i].setFocusPainted(false);
+            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));
+            if (i < 8) {
+            	buttonsPanel.add(buttons[i]);	
+            }          
+        }
         
-        // Define table column names with row numbers column
-        String[] columnNamesWithNumbers = {
-            "№", "Name", "Breed", "Awards"
-        };
-        
-        // Convert dog data to table format with row numbers
-        String[][] dataWithNumbers = new String[dogs.getSize()][4];
+        //TABLE SECTION
+        // Convert dog data to table format
+        tableData = new String[dogs.getSize()][4];
         String[] strListDogs = dogs.convToStr();
         
-        // Process each dog's data for display with row numbers
+        // Process each dog's data for display
         for(int i = 0; i < dogs.getSize(); i++) 
         {
-            dataWithNumbers[i][0] = String.valueOf(i + 1); // Row number
-            String[] dogData = strListDogs[i].split(";");
-            dataWithNumbers[i][1] = dogData[0]; // Dog name
-            dataWithNumbers[i][2] = dogData[1]; // Dog breed
-            
-            // Convert award indicator to readable format
-            if(Integer.parseInt(dogData[2]) == 1) 
-            {
-                dataWithNumbers[i][3] = "Yes";
-            }
-            else 
-            {
-                dataWithNumbers[i][3] = "No";
-            }
+        	String[] dogData = strListDogs[i].split(";");
+        	tableData[i][0] = String.valueOf(i + 1); // Row number
+            tableData[i][1] = dogData[0]; // Dog name
+            tableData[i][2] = dogData[1]; // Dog breed
+            tableData[i][3] = dogData[2]; // Dog awards
         }
         
         // Create table model
-        DefaultTableModel tableModel = new DefaultTableModel(dataWithNumbers, columnNamesWithNumbers);
+        DefaultTableModel tableModel = new DefaultTableModel(tableData, columnNames);
         dogsTable = new JTable(tableModel);
         dogsTable.setDefaultEditor(Object.class, null);
         
@@ -106,67 +139,23 @@ public class MainWindow
         dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
         dogsTable.setRowHeight(25);
         
-        tableScrollPane = new JScrollPane(dogsTable);
+        JScrollPane tableScrollPane = new JScrollPane(dogsTable);
         
-        // Create search text field
-        textField = new JTextField(12); 
+        //SEARCH SECTION
+        JTextField textField = new JTextField(12); 
         textField.setFont(new Font("Arial", Font.PLAIN, 14));
+        
         inputPanel.add(textField);
+        inputPanel.add(buttons[8]);
         
-        // Define button images and tooltips
-        String[] imagePaths = {
-            "src/picts/save.png",
-            "src/picts/folder_documents.png",
-            "src/picts/cloud.png",
-            "src/picts/plus.png", 
-            "src/picts/minus.png",
-            "src/picts/edit.png",
-            "src/picts/print.png",
-            "src/picts/exit.png",
-            "src/picts/search.png"
-        };
-
-        buttons = new JButton[9];
-
-        // Create and configure buttons
-        for(int i = 0; i < 9; i++) 
-        {		    
-            ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
-            Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            final int buttonIndex = i; // need final for lambda
-            
-            buttons[i] = new JButton(scaledIcon);
-            buttons[i].setToolTipText(tooltips[i]); 
-            buttons[i].setBorderPainted(false);
-            buttons[i].setContentAreaFilled(false);
-            buttons[i].setFocusPainted(false);
-            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));
-            
-            if(i == 8) 
-            {
-                inputPanel.add(buttons[i]); 
-            } 
-            else 
-            {
-                buttonsPanel.add(buttons[i]);
-            }
-        }
-        
-        // Add components to frame
+        //MAINFRAME ADDING ELEMENTS SECTION
+        mainFrame.setIconImage(icon.getImage());
         mainFrame.add(buttonsPanel, BorderLayout.NORTH);          
         mainFrame.add(tableScrollPane, BorderLayout.CENTER);   
         mainFrame.add(inputPanel, BorderLayout.SOUTH);            
-        
-        // Configure frame properties
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(900, 500);
         mainFrame.setLocationRelativeTo(null);
-        mainFrame.setVisible(true);
-        
-        // Save data back to CSV file
-        fm.outputToCSV("src/data/dogs3.csv", dogs);
-        
     }
     
     private static void handleButtonClick(int buttonIndex)
@@ -181,8 +170,7 @@ public class MainWindow
 	                    AddElementWindow addElem = new AddElementWindow(
 	                        dogsTable,
 	                        "Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)",
-	                        "Add Row",
-	                        3
+	                        "Add Row"
 	                    );
 	                    
 	                    addElem.addRowToTable();
@@ -195,8 +183,7 @@ public class MainWindow
 	                    DeleteElementWindow deleteElem = new DeleteElementWindow(
 	                        dogsTable, 
 	                        "Enter the row number to delete", 
-	                        "Delete Row", 
-	                        1
+	                        "Delete Row"
 	                    );
 	                    
 	                    int row = deleteElem.getRow();
@@ -250,8 +237,8 @@ public class MainWindow
     {
         JPanel exitPanel = new JPanel(new BorderLayout());
         
-        ImageIcon exitIcon = new ImageIcon("src/picts/exit.jpg");
-        Image scaledImage = exitIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        ImageIcon exitImage = new ImageIcon(imagePaths[10]);
+        Image scaledImage = exitImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  
@@ -275,5 +262,11 @@ public class MainWindow
         {
             System.exit(0);
         }
+    }
+    
+
+    public static void show() throws IOException
+    {
+        mainFrame.setVisible(true);
     }
 }

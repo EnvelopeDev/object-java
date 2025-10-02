@@ -10,9 +10,9 @@ public class AddElementWindow extends InputOutputWindow
     private JTable addTable;
     private DefaultTableModel tableModel;
     
-    public AddElementWindow(JTable table, String text, String title_window, int num_Fields)
+    public AddElementWindow(JTable table, String text, String title_window)
     {
-        super(text, title_window, num_Fields);
+        super(text, title_window, 3);
         addTable = table;
         tableModel = (DefaultTableModel) addTable.getModel();
     }

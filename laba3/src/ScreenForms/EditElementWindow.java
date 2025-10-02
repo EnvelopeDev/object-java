@@ -14,11 +14,12 @@ public class EditElementWindow extends InputOutputWindow
     {
         super(text, title_window, num_Fields);
         editTable = table;
+        tableModel = (DefaultTableModel) editTable.getModel();
     }
     
     public String[] getDataForEdit(int rowNumber) throws IOException
     {
-        tableModel = (DefaultTableModel) editTable.getModel();
+        
         String currentName = tableModel.getValueAt(rowNumber, 1).toString();
         String currentBreed = tableModel.getValueAt(rowNumber, 2).toString();
         String currentAwards = tableModel.getValueAt(rowNumber, 3).toString();
@@ -29,7 +30,7 @@ public class EditElementWindow extends InputOutputWindow
     
     public void EditRowByNumber(int rowNumber) throws IOException 
     {
-        tableModel = (DefaultTableModel) editTable.getModel();
+        
         String[] editedData = getDataForEdit(rowNumber);
         
         if (editedData != null) {
