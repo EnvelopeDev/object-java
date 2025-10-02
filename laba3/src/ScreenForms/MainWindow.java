@@ -45,17 +45,17 @@ public class MainWindow
     		"Dropout",
     		"Search"};
     private static String[] imagePaths = {
-            "scr/picts/save.png",
-            "scr/picts/folder_documents.png",
-            "scr/picts/cloud.png",
-            "scr/picts/plus.png", 
-            "scr/picts/minus.png",
-            "scr/picts/edit.png",
-            "scr/picts/print.png",
-            "scr/picts/exit.png",
-            "scr/picts/search.png",
-            "scr/picts/dogIcon.png",
-            "scr/picts/exit.jpg"
+            "src/picts/save.png",
+            "src/picts/folder_documents.png",
+            "src/picts/cloud.png",
+            "src/picts/plus.png", 
+            "src/picts/minus.png",
+            "src/picts/edit.png",
+            "src/picts/print.png",
+            "src/picts/exit.png",
+            "src/picts/search.png",
+            "src/picts/dogIcon.png",
+            "src/picts/exit.jpg"
             
         };
     private static String[] columnNames = {
@@ -70,11 +70,12 @@ public class MainWindow
      */
     public MainWindow() throws IOException
     {
+    	System.out.println("Working dir: " + System.getProperty("user.dir"));
     	//INITIALIZATION SECTION
     	// Initialize file manager and load dog data from CSV
         FileManager fm = new FileManager();
         List<Dog> dogs = new List<>();
-        dogs = fm.inputFromCSV("scr/data/dogs3.csv");
+        dogs = fm.inputFromCSV("src/data/dogs3.csv");
         
         icon = new ImageIcon(imagePaths[9]);
         mainFrame = new JFrame("Dog Festival");
