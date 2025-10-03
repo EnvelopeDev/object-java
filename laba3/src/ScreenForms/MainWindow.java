@@ -1,12 +1,9 @@
 package ScreenForms;
 
 import fileManager.FileManager;
-import ScreenForms.PrinterWindow;
-import ScreenForms.DeleteElementWindow;
 import java.io.IOException;
 import list.List;
 import object.dog.Dog;
-import java.io.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -17,7 +14,6 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
-import java.awt.Color;
 
 /**
  * Main window class for the Dog Festival application
@@ -31,6 +27,7 @@ public class MainWindow
     private static JFrame mainFrame;
     private static JTable dogsTable;
     private static String[][] tableData;
+    private static String[][] originalTableData;
     private static JPanel buttonsPanel;
     private static JPanel inputPanel;
     private static JButton[] buttons;
@@ -70,7 +67,6 @@ public class MainWindow
      */
     public MainWindow() throws IOException
     {
-    	System.out.println("Working dir: " + System.getProperty("user.dir"));
     	//INITIALIZATION SECTION
     	// Initialize file manager and load dog data from CSV
         FileManager fm = new FileManager();
@@ -91,7 +87,7 @@ public class MainWindow
             ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
             Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            final int buttonIndex = i; // need final for lambda
+            int buttonIndex = i; // need final for lambda
             
             buttons[i] = new JButton(scaledIcon);
             buttons[i].setToolTipText(tooltips[i]); 
@@ -119,6 +115,11 @@ public class MainWindow
             tableData[i][3] = dogData[2]; // Dog awards
         }
         
+        originalTableData = new String[tableData.length][4];
+        for (int i = 0; i < tableData.length; i++) {
+            System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);
+        }
+        
         // Create table model
         DefaultTableModel tableModel = new DefaultTableModel(tableData, columnNames);
         dogsTable = new JTable(tableModel);
@@ -143,11 +144,13 @@ public class MainWindow
         JScrollPane tableScrollPane = new JScrollPane(dogsTable);
         
         //SEARCH SECTION
-        JTextField textField = new JTextField(12); 
-        textField.setFont(new Font("Arial", Font.PLAIN, 14));
-        
-        inputPanel.add(textField);
-        inputPanel.add(buttons[8]);
+        JTextField searchTextField = new JTextField(12); 
+        searchTextField.setFont(new Font("Arial", Font.PLAIN, 14));
+        searchTextField.addActionListener(e -> performSearch(searchTextField.getText()));
+        buttons[8].addActionListener(e -> performSearch(searchTextField.getText()));
+
+        inputPanel.add(searchTextField);
+        inputPanel.add(buttons[8]); 
         
         //MAINFRAME ADDING ELEMENTS SECTION
         mainFrame.setIconImage(icon.getImage());
@@ -162,9 +165,7 @@ public class MainWindow
     private static void handleButtonClick(int buttonIndex)
     {
         if (buttonIndex < tooltips.length) 
-        {
-            String buttonName = tooltips[buttonIndex];
-            
+        {   
             switch(buttonIndex) {
 	            case 3: // Add button
 	                try {
@@ -264,7 +265,42 @@ public class MainWindow
             System.exit(0);
         }
     }
+
+    private static void performSearch(String searchText) {
+        if (searchText == null || searchText.trim().isEmpty()) {
+            restoreOriginalData();
+            return;
+        }
+        
+        searchText = searchText.toLowerCase().trim();
+        java.util.List<String[]> filteredData = new java.util.ArrayList<>();
+        
+        for (String[] row : originalTableData) {
+            for (String cell : row) {
+                if (cell.toLowerCase().startsWith(searchText)) {
+                    filteredData.add(row);
+                    break;
+                }
+            }
+        } 
+        updateTableWithData(filteredData);
+    }
     
+    private static void restoreOriginalData() {
+        DefaultTableModel model = (DefaultTableModel) dogsTable.getModel();
+        model.setRowCount(0);
+        for (String[] row : originalTableData) {
+            model.addRow(row);
+        }
+    }
+    
+    private static void updateTableWithData(java.util.List<String[]> data) {
+        DefaultTableModel model = (DefaultTableModel) dogsTable.getModel();
+        model.setRowCount(0);
+        for (String[] row : data) {
+            model.addRow(row);
+        }
+    }
 
     public static void show() throws IOException
     {
