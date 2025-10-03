@@ -71,62 +71,60 @@ public class MainWindow
     public MainWindow() throws IOException
     {
     	//INITIALIZATION SECTION
-    	// Initialize file manager and load dog data from CSV
-        FileManager fm = new FileManager();
-        List<Dog> dogs = new List<>();
-        dogs = fm.inputFromCSV("src/data/dogs3.csv");
+        FileManager file = new FileManager();//init FileManager object
+        List<Dog> dogs = new List<>();//init List fot dogs data
+        dogs = file.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
         
-        icon = new ImageIcon(imagePaths[9]);
-        mainFrame = new JFrame("Dog Festival");
-        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        icon = new ImageIcon(imagePaths[9]);//init window icon
+        mainFrame = new JFrame("Dog Festival");//init mainfraime and init window title
+        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init inputPanel with center align, 10 width, 5 heigth 
         
         //BUTTON SECTION
-        buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));
+        buttonsPanel = new JPanel();//init buttons panel
+        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));//set 1 row, 8 cols, 10 width, 10 heigth
         
-        buttons = new JButton[9];
+        buttons = new JButton[9];//init buttons array
         for(int i = 0; i < 9; i++) 
         {		    
-            ImageIcon buttonIcon = new ImageIcon(imagePaths[i]);
-            Image scaledImage = buttonIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            int buttonIndex = i; // need final for lambda
+            ImageIcon imageForButton = new ImageIcon(imagePaths[i]);//init image for icon 
+            Image scaledImage = imageForButton.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);//scale without loss of quality and fixed size of 32 by 32 px
+            ImageIcon buttonIcon = new ImageIcon(scaledImage);//init icon for button
+            final int buttonIndex = i; // need final for lambda function
             
-            buttons[i] = new JButton(scaledIcon);
-            buttons[i].setToolTipText(tooltips[i]); 
-            buttons[i].setBorderPainted(false);
-            buttons[i].setContentAreaFilled(false);
-            buttons[i].setFocusPainted(false);
-            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));
+            buttons[i] = new JButton(buttonIcon);//set icon 
+            buttons[i].setToolTipText(tooltips[i]);//set button tooltips
+            buttons[i].setBorderPainted(false);//remove the frame
+            buttons[i].setContentAreaFilled(false);//set transparent background
+            buttons[i].setFocusPainted(false);//Remove backlight when focusing
+            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));//add click handler calls lambda that calls click logic
             if (i < 8) {
-            	buttonsPanel.add(buttons[i]);	
+            	buttonsPanel.add(buttons[i]);//add button into buttonsPanel
             }          
         }
         
         //TABLE SECTION
-        // Convert dog data to table format
-        tableData = new String[dogs.getSize()][4];
-        String[] strListDogs = dogs.convToStr();
+        tableData = new String[dogs.getSize()][4];//init table data
+        String[] strListDogs = dogs.convToStr();//get dogs data
         
         // Process each dog's data for display
         for(int i = 0; i < dogs.getSize(); i++) 
         {
-        	String[] dogData = strListDogs[i].split(";");
+        	String[] RowData = strListDogs[i].split(";");//split separator ;
         	tableData[i][0] = String.valueOf(i + 1); // Row number
-            tableData[i][1] = dogData[0]; // Dog name
-            tableData[i][2] = dogData[1]; // Dog breed
-            tableData[i][3] = dogData[2]; // Dog awards
+            tableData[i][1] = RowData[0]; // Dog name
+            tableData[i][2] = RowData[1]; // Dog breed
+            tableData[i][3] = RowData[2]; // Dog awards
         }
         
-        originalTableData = new String[tableData.length][4];
+        originalTableData = new String[tableData.length][4];//init reserve copy table data
         for (int i = 0; i < tableData.length; i++) {
-            System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);
+            System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);//copy array (source_arr, start_i, target_arr, start_i, length_of_elements)
         }
         
         // Create table model
-        tableModel = new DefaultTableModel(tableData, columnNames);
-        dogsTable = new JTable(tableModel);
-        dogsTable.setDefaultEditor(Object.class, null);
+        tableModel = new DefaultTableModel(tableData, columnNames);//init table model
+        dogsTable = new JTable(tableModel);//creating a data visualization 
+        dogsTable.setDefaultEditor(Object.class, null);//prohibits editing of table cells
         
         // Configure first column
         TableColumnModel columnModel = dogsTable.getColumnModel();
@@ -141,13 +139,13 @@ public class MainWindow
         // Configure table appearance
         dogsTable.setFont(new Font("Arial", Font.PLAIN, 14));
         dogsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
+        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition//set fixed row height to move columns
         dogsTable.setRowHeight(25);
         
         JScrollPane tableScrollPane = new JScrollPane(dogsTable);
 
         //SEARCH SECTION
-        searchTextField = new JTextField(12); 
+        searchTextField = new JTextField(12);
         searchTextField.setFont(new Font("Arial", Font.PLAIN, 14));
         buttons[8].addActionListener(e -> handleButtonClick(8));
 
@@ -164,6 +162,9 @@ public class MainWindow
         mainFrame.setLocationRelativeTo(null);
     }
     
+    /**
+     * Handles all button clicks in the app
+     */
     private static void handleButtonClick(int buttonIndex)
     {
         if (buttonIndex < tooltips.length) 
@@ -207,16 +208,16 @@ public class MainWindow
 	                        "Edit Row", 
 	                        1
 	                    );
-	                    
+	                    editElem.show();
 	                    int row = editElem.getRow();
 	                    
-                        EditElementWindow editDataWindow = new EditElementWindow(
+                        editElem = new EditElementWindow(
                             dogsTable,
                             "Enter new values: 1 - Name, 2 - Breed, 3 - Awards",
                             "Edit Data", 
                             3
                         );
-                        editDataWindow.EditRowByNumber(row - 1); 
+                        editElem.EditRowByNumber(row - 1); 
 	                    
 	                } catch (IOException e) {
 	                    e.printStackTrace();
@@ -240,6 +241,9 @@ public class MainWindow
         }
     }
     
+    /**
+     *Displays a confirmation dialog box with a picture and text
+     */
     private static void exitApplication() 
     {
         JPanel exitPanel = new JPanel(new BorderLayout());
@@ -270,12 +274,15 @@ public class MainWindow
             System.exit(0);
         }
     }
-
+    
+    /**
+     *Searches the table and shows only the matching rows
+     */
     private static void performSearch(String searchText)
     {
         if (searchText == null)
         {
-            restoreOriginalData();
+            restoreData();
             return;
         }
         searchText = searchText.toLowerCase().trim();
@@ -302,7 +309,10 @@ public class MainWindow
         updateTableWithData(findedData);
     }
     
-    private static void restoreOriginalData()
+    /**
+     *Restores the full table from the backup after searching
+     */
+    private static void restoreData()
     {
     	tableModel.setRowCount(0);
         for (String[] row : originalTableData)
@@ -311,6 +321,9 @@ public class MainWindow
         }
     }
     
+    /**
+     *Replaces the data in the table with the passed list of rows 
+     */
     private static void updateTableWithData(List<String[]> data)
     {
         tableModel.setRowCount(0);
@@ -320,7 +333,10 @@ public class MainWindow
             tableModel.addRow(row);
         }
     }
-
+    
+    /**
+     *Makes the main application window visible 
+     */
     public static void show() throws IOException
     {
         mainFrame.setVisible(true);

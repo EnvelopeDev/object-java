@@ -17,21 +17,9 @@ public class EditElementWindow extends InputOutputWindow
         tableModel = (DefaultTableModel) editTable.getModel();
     }
     
-    public String[] getDataForEdit(int rowNumber) throws IOException
-    {
-        
-        String currentName = tableModel.getValueAt(rowNumber, 1).toString();
-        String currentBreed = tableModel.getValueAt(rowNumber, 2).toString();
-        String currentAwards = tableModel.getValueAt(rowNumber, 3).toString();
-        
-        show();
-        return getData();
-    }
-    
     public void EditRowByNumber(int rowNumber) throws IOException 
     {
-        
-        String[] editedData = getDataForEdit(rowNumber);
+        String[] editedData = getData();
         
         if (editedData != null) {
             tableModel.setValueAt(editedData[0].trim(), rowNumber, 1); 
