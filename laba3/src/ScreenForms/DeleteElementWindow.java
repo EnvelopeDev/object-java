@@ -10,35 +10,39 @@ public class DeleteElementWindow extends InputOutputWindow
     private JTable deleteTable;
     private DefaultTableModel tableModel;
     
-    public DeleteElementWindow(JTable table, String text, String title_window)
+    public DeleteElementWindow(JTable table)
     {
-        super(text, title_window, 1);
+        super("Enter the row number to delete", "Delete Row", 1);
         deleteTable = table;
     }
 
-    public void deleteRowByNumber(int rowNumber)
+    @Override
+    public void show() throws IOException
     {
-        boolean confirmed = confirmOperationWindow(	
-        	"Confirm Delete",
-            "Delete row " + (rowNumber + 1) + "?"
-        );
+    	IODialog.setVisible(true);
+    	int rowToDelete = Integer.parseInt(getData()[0]);
+    	this.deleteRowByNumber(rowToDelete);
+    }
+    
+    private void deleteRowByNumber(int rowNumber)
+    {
+        boolean confirmed = confirmOperationWindow("Delete row " + rowNumber + "?");
         
         if (confirmed)
         {
             tableModel = (DefaultTableModel) deleteTable.getModel();
-            tableModel.removeRow(rowNumber);
+            tableModel.removeRow(rowNumber-1);
             updateRowNumbers();
 
-            successOperationWindow("Row deleted ");
-            show();
+            successOperationWindow("Row deleted");
         }
     }
     
     private void updateRowNumbers()
     {
-        for (int i = 0; i < tableModel.getRowCount(); i++)
+        for (int i=0; i<tableModel.getRowCount(); i++)
         {
-            tableModel.setValueAt(String.valueOf(i + 1), i, 0); 
+            tableModel.setValueAt(String.valueOf(i+1), i, 0); 
         }
     }
 }

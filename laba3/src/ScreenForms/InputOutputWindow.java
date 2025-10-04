@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
-public class InputOutputWindow
+abstract public class InputOutputWindow
 {
 	protected String[] results;
     protected JTextField[] textFields;
@@ -16,10 +16,13 @@ public class InputOutputWindow
     protected JDialog IODialog;
     protected JLabel IOLabel;
     protected JPanel fieldsPanel;
+    protected Font ioDefaultFont;
     
+    abstract public void show() throws IOException;
     
     public InputOutputWindow(String text, String title_window, int num_Fields)
     {	
+    	ioDefaultFont = new Font("Arial", Font.PLAIN, 14);
         numFields = num_Fields;
         title = title_window;
         results = new String[numFields];
@@ -30,13 +33,13 @@ public class InputOutputWindow
         IOPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
         IOLabel = new JLabel(text, JLabel.CENTER);
-        IOLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        IOLabel.setFont(ioDefaultFont);
         
         fieldsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         for (int i = 0; i < numFields; i++)
         {
             textFields[i] = new JTextField(15);
-            textFields[i].setFont(new Font("Arial", Font.PLAIN, 14));
+            textFields[i].setFont(ioDefaultFont);
             fieldsPanel.add(textFields[i]);
         }
         
@@ -49,7 +52,7 @@ public class InputOutputWindow
             JOptionPane.YES_NO_OPTION
         );
         
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 14));
+        UIManager.put("OptionPane.buttonFont", ioDefaultFont);
         
         IODialog = IOPane.createDialog(title);
         IODialog.setIconImage(icon.getImage());
@@ -70,69 +73,13 @@ public class InputOutputWindow
     
     public void successOperationWindow(String text)
     {
-    	IOLabel = new JLabel(text +"successfully", JLabel.CENTER);
-    	IOLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        
-    	IOPanel = new JPanel(new BorderLayout());
-    	IOPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-    	IOPanel.add(IOLabel, BorderLayout.CENTER);
-        
-    	IOPane = new JOptionPane(
-    			IOPanel,
-            JOptionPane.PLAIN_MESSAGE,                    
-            JOptionPane.DEFAULT_OPTION                     
-        );
-        
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 14));
-        IODialog = IOPane.createDialog("Success");
-
-        IODialog.setIconImage(icon.getImage());
+    	String message = text + " successfully!";
+    	JOptionPane.showMessageDialog(null, message, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
     
-    public boolean confirmOperationWindow(String title_window, String text)
+    public boolean confirmOperationWindow(String text)
     {
-    	IOLabel = new JLabel(text, JLabel.CENTER);
-    	IOLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        
-    	IOPanel = new JPanel(new BorderLayout());
-    	IOPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-    	IOPanel.add(IOLabel, BorderLayout.CENTER);
-        
-    	IOPane = new JOptionPane(
-    		IOPanel,
-            JOptionPane.PLAIN_MESSAGE,                    
-            JOptionPane.YES_NO_OPTION                     
-        );
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 14));
-        IODialog = IOPane.createDialog(title_window);
-        IODialog.setIconImage(icon.getImage()); 
-        IODialog.setVisible(true);
-        
-        if (IOPane.getValue().equals(JOptionPane.YES_OPTION))
-		{
-        	return true;
-		}
-        return false;
-    }
-    
-    public int getRow() throws IOException
-    {
-        show();
-        String[] result = getData();
-        
-        if (result != null)
-        {
-        	return Integer.parseInt(result[0].trim());
-        }
-        else
-        {
-            System.out.println("Input cancelled");
-        }
-        return 0;
-    }
-
-    public void show()
-    {	
-    	IODialog.setVisible(true);
+    	int result = JOptionPane.showConfirmDialog(null, text, title, JOptionPane.YES_NO_OPTION);
+    	return result == JOptionPane.YES_OPTION;
     }
 }

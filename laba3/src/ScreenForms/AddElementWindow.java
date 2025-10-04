@@ -10,21 +10,25 @@ public class AddElementWindow extends InputOutputWindow
     private JTable addTable;
     private DefaultTableModel tableModel;
     
-    public AddElementWindow(JTable table, String text, String title_window)
+    public AddElementWindow(JTable table)
     {
-        super(text, title_window, 3);
+        super("Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)", "Add Row", 3);
         addTable = table;
         tableModel = (DefaultTableModel) addTable.getModel();
     }
     
-    public void addRowToTable() throws IOException
+    @Override
+    public void show() throws IOException
+    {
+    	IODialog.setVisible(true);
+    	addRowToTable();
+    }
+    
+    private void addRowToTable() throws IOException
     {   
-        show();
         String[] newData = getData();
-        
         if (newData != null)
         {
-            
             int newRowNumber = tableModel.getRowCount() + 1;
             tableModel.addRow(new Object[]{
                 String.valueOf(newRowNumber),
@@ -33,17 +37,9 @@ public class AddElementWindow extends InputOutputWindow
                 newData[2].trim()     
             });
             
-            successOperationWindow("Row added ");
-            showSuccessWindow();
+            successOperationWindow("Row added");
         } else {
             System.out.println("Input cancelled or insufficient data");
         }
-    }
-    
-    private void showSuccessWindow()
-    {
-        JDialog successDialog = IOPane.createDialog("Success");
-        successDialog.setIconImage(icon.getImage());
-        successDialog.setVisible(true);
     }
 }

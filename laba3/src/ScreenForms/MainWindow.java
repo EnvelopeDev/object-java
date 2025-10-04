@@ -33,6 +33,12 @@ public class MainWindow
     private static String[][] originalTableData;
     private static DefaultTableModel tableModel;
     private static JTable dogsTable;
+    private static Font defaultFont;
+    private static Font boldDefaultFont;
+    private static Font subHeaderFont;
+    private static Font boldSubHeaderFont;
+    private static Font headerFont;
+    private static Font boldHeaderFont;
     private static final String[] tooltips = {
     		"Save",
     		"Open",
@@ -42,7 +48,8 @@ public class MainWindow
     		"Edit",
     		"Print",
     		"Dropout",
-    		"Search"};
+    		"Search"
+    };
     private static final String[] imagePaths = {
             "src/picts/save.png",
             "src/picts/folder_documents.png",
@@ -56,13 +63,13 @@ public class MainWindow
             "src/picts/dogIcon.png",
             "src/picts/exit.jpg"
             
-        };
+    };
     private static final String[] columnNames = {
             "№",
             "Name",
             "Breed",
             "Awards"
-        };
+     };
     
     /**
      * Displays the main application window with dog data
@@ -78,6 +85,12 @@ public class MainWindow
         icon = new ImageIcon(imagePaths[9]);//init window icon
         mainFrame = new JFrame("Dog Festival");//init mainfraime and init window title
         inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init inputPanel with center align, 10 width, 5 heigth 
+        defaultFont = new Font("Arial", Font.PLAIN, 14);
+        boldDefaultFont = new Font("Arial", Font.BOLD, 14);
+        subHeaderFont = new Font("Arial", Font.PLAIN, 16);
+        boldSubHeaderFont = new Font("Arial", Font.BOLD, 16);
+        headerFont = new Font("Arial", Font.PLAIN, 20);
+        boldHeaderFont = new Font("Arial", Font.BOLD, 20);
         
         //BUTTON SECTION
         buttonsPanel = new JPanel();//init buttons panel
@@ -137,8 +150,8 @@ public class MainWindow
         numberColumn.setCellRenderer(centerRenderer); //Applying a renderer to a column
         
         // Configure table appearance
-        dogsTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        dogsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        dogsTable.setFont(defaultFont);
+        dogsTable.getTableHeader().setFont(boldDefaultFont);
         dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition//set fixed row height to move columns
         dogsTable.setRowHeight(25);
         
@@ -146,7 +159,7 @@ public class MainWindow
 
         //SEARCH SECTION
         searchTextField = new JTextField(12);
-        searchTextField.setFont(new Font("Arial", Font.PLAIN, 14));
+        searchTextField.setFont(defaultFont);
         buttons[8].addActionListener(e -> handleButtonClick(8));
 
         inputPanel.add(searchTextField);
@@ -172,29 +185,17 @@ public class MainWindow
             switch(buttonIndex) {
 	            case 3: // Add button
 	                try {
-	                    AddElementWindow addElem = new AddElementWindow(
-	                        dogsTable,
-	                        "Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)",
-	                        "Add Row"
-	                    );
-	                    
-	                    addElem.addRowToTable();
+	                    AddElementWindow addElem = new AddElementWindow(dogsTable);
+	                    addElem.show();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
 	                }
 	                break;
 	            case 4: 
 	                try {
-	                    DeleteElementWindow deleteElem = new DeleteElementWindow(
-	                        dogsTable, 
-	                        "Enter the row number to delete", 
-	                        "Delete Row"
-	                    );
+	                    DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);
 	                    
-	                    int row = deleteElem.getRow();
-	                    
-                        deleteElem.deleteRowByNumber(row - 1); 
-	                    
+	                    deleteElem.show();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
 	                }
@@ -202,23 +203,8 @@ public class MainWindow
 	
 	            case 5: 
 	                try {
-	                    EditElementWindow editElem = new EditElementWindow(
-	                        dogsTable,
-	                        "Enter the row number to edit",
-	                        "Edit Row", 
-	                        1
-	                    );
-	                    editElem.show();
-	                    int row = editElem.getRow();
-	                    
-                        editElem = new EditElementWindow(
-                            dogsTable,
-                            "Enter new values: 1 - Name, 2 - Breed, 3 - Awards",
-                            "Edit Data", 
-                            3
-                        );
-                        editElem.EditRowByNumber(row - 1); 
-	                    
+	                    EditElementWindow editElem = new EditElementWindow(dogsTable);
+	                    editElem.show();	                    
 	                } catch (IOException e) {
 	                    e.printStackTrace();
 	                }
@@ -254,12 +240,12 @@ public class MainWindow
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  
         JLabel textLabel = new JLabel("Are you sure you want to exit?", JLabel.CENTER);
-        textLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        textLabel.setFont(subHeaderFont);
         
         exitPanel.add(imageLabel, BorderLayout.CENTER);
         exitPanel.add(textLabel, BorderLayout.SOUTH);
         
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 16));
+        UIManager.put("OptionPane.buttonFont", subHeaderFont);
 
         int result = JOptionPane.showConfirmDialog(
             mainFrame, //parent window

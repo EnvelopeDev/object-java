@@ -10,14 +10,33 @@ public class EditElementWindow extends InputOutputWindow
     private JTable editTable;
     private DefaultTableModel tableModel;
     
-    public EditElementWindow(JTable table, String text, String title_window, int num_Fields)
+    public EditElementWindow(JTable table) 
     {
-        super(text, title_window, num_Fields);
+    	super("Enter the row number to edit", "Edit Row", 1);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
     }
     
-    public void EditRowByNumber(int rowNumber) throws IOException 
+    private EditElementWindow(JTable table, int num_Fields)
+    {
+        super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", num_Fields);
+        editTable = table;
+        tableModel = (DefaultTableModel) editTable.getModel();
+    }
+    
+    @Override
+    public void show() throws IOException 
+    {
+    	IODialog.setVisible(true);
+    	int rowToEdit = Integer.parseInt(getData()[0]);
+    	EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3);
+    	inputNewElementWindow.IODialog.setVisible(true);
+    	inputNewElementWindow.EditRowByNumber(rowToEdit-1);
+    }
+    
+    
+    
+    private void EditRowByNumber(int rowNumber) throws IOException 
     {
         String[] editedData = getData();
         
@@ -27,7 +46,6 @@ public class EditElementWindow extends InputOutputWindow
             tableModel.setValueAt(editedData[2].trim(), rowNumber, 3); 
             
             successOperationWindow("Row edited "); 
-            show();
         }
     }  
 }
