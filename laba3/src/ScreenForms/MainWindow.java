@@ -23,6 +23,8 @@ import java.awt.FlowLayout;
  */
 public class MainWindow
 {
+	private List<Dog> dogs;
+	private FileManager fileMngr;
 	private ImageIcon icon; 
     private String[][] tableData;
     private JPanel buttonsPanel;
@@ -33,6 +35,7 @@ public class MainWindow
     private static String[][] originalTableData;
     private static DefaultTableModel tableModel;
     private static JTable dogsTable;
+    JScrollPane tableScrollPane;
     private static Font defaultFont;
     private static Font boldDefaultFont;
     private static Font subHeaderFont;
@@ -77,23 +80,50 @@ public class MainWindow
      */
     public MainWindow() throws IOException
     {
-    	//INITIALIZATION SECTION
-        FileManager file = new FileManager();//init FileManager object
-        List<Dog> dogs = new List<>();//init List fot dogs data
-        dogs = file.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
+        initData();
+        initMainFrame();
+        initFonts();
         
-        icon = new ImageIcon(imagePaths[9]);//init window icon
-        mainFrame = new JFrame("Dog Festival");//init mainfraime and init window title
-        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init inputPanel with center align, 10 width, 5 heigth 
-        defaultFont = new Font("Arial", Font.PLAIN, 14);
+        //BUTTON SECTION
+        initButtonsPanel();
+        //TABLE SECTION
+        initTable();
+        //SEARCH SECTION
+        initSearchPanel();
+        //MAINFRAME ADDING ELEMENTS SECTION
+        assembleMainFrame();
+    }
+    
+    private void initData() throws IOException
+    {
+    	fileMngr = new FileManager();//init FileManager object
+        dogs = new List<>();//init List fot dogs data
+        dogs = fileMngr.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
+    }
+    
+    private void initFonts() 
+    {
+    	defaultFont = new Font("Arial", Font.PLAIN, 14);
         boldDefaultFont = new Font("Arial", Font.BOLD, 14);
         subHeaderFont = new Font("Arial", Font.PLAIN, 16);
         boldSubHeaderFont = new Font("Arial", Font.BOLD, 16);
         headerFont = new Font("Arial", Font.PLAIN, 20);
         boldHeaderFont = new Font("Arial", Font.BOLD, 20);
-        
-        //BUTTON SECTION
-        buttonsPanel = new JPanel();//init buttons panel
+    }
+    
+    private void initMainFrame()
+    {
+    	icon = new ImageIcon(imagePaths[9]);//init window icon
+        mainFrame = new JFrame("Dog Festival");//init mainfraime and init window title
+        mainFrame.setIconImage(icon.getImage());
+    	mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(900, 500);
+        mainFrame.setLocationRelativeTo(null);
+    }
+    
+    private void initButtonsPanel()
+    {
+    	buttonsPanel = new JPanel();//init buttons panel
         buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));//set 1 row, 8 cols, 10 width, 10 heigth
         
         buttons = new JButton[9];//init buttons array
@@ -114,9 +144,11 @@ public class MainWindow
             	buttonsPanel.add(buttons[i]);//add button into buttonsPanel
             }          
         }
-        
-        //TABLE SECTION
-        tableData = new String[dogs.getSize()][4];//init table data
+    }
+    
+    private void initTable() 
+    {
+    	tableData = new String[dogs.getSize()][4];//init table data
         String[] strListDogs = dogs.convToStr();//get dogs data
         
         // Process each dog's data for display
@@ -155,24 +187,25 @@ public class MainWindow
         dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition//set fixed row height to move columns
         dogsTable.setRowHeight(25);
         
-        JScrollPane tableScrollPane = new JScrollPane(dogsTable);
+        tableScrollPane = new JScrollPane(dogsTable);
 
-        //SEARCH SECTION
-        searchTextField = new JTextField(12);
+    }
+    
+    private void initSearchPanel() 
+    {
+    	inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init text panel for search
+    	searchTextField = new JTextField(12);
         searchTextField.setFont(defaultFont);
         buttons[8].addActionListener(e -> handleButtonClick(8));
-
         inputPanel.add(searchTextField);
         inputPanel.add(buttons[8]); 
-        
-        //MAINFRAME ADDING ELEMENTS SECTION
-        mainFrame.setIconImage(icon.getImage());
+    }
+    
+    private void assembleMainFrame()
+    {
         mainFrame.add(buttonsPanel, BorderLayout.NORTH);          
         mainFrame.add(tableScrollPane, BorderLayout.CENTER);   
         mainFrame.add(inputPanel, BorderLayout.SOUTH);            
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(900, 500);
-        mainFrame.setLocationRelativeTo(null);
     }
     
     /**
@@ -182,7 +215,8 @@ public class MainWindow
     {
         if (buttonIndex < tooltips.length) 
         {   
-            switch(buttonIndex) {
+            switch(buttonIndex)
+            {
 	            case 3: // Add button
 	                try {
 	                    AddElementWindow addElem = new AddElementWindow(dogsTable);
