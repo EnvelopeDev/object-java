@@ -32,7 +32,7 @@ public class EditElementWindow extends InputOutputWindow
     	EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3);
     	inputNewElementWindow.IODialog.setVisible(true);
     	inputNewElementWindow.EditRowByNumber(rowToEdit-1);
-    	SCSDialog.setVisible(true);
+    	inputNewElementWindow.SCSDialog.setVisible(true);
     }
     
     
