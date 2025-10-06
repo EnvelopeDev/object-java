@@ -22,6 +22,7 @@ public class DeleteElementWindow extends InputOutputWindow
     	IODialog.setVisible(true);
     	int rowToDelete = Integer.parseInt(getData()[0]);
     	this.deleteRowByNumber(rowToDelete);
+    	SCSDialog.setVisible(true);
     }
     
     private void deleteRowByNumber(int rowNumber)

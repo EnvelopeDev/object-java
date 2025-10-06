@@ -22,6 +22,10 @@ public class AddElementWindow extends InputOutputWindow
     {
     	IODialog.setVisible(true);
     	addRowToTable();
+    	if (SCSDialog != null)
+    	{
+    		SCSDialog.setVisible(true);
+    	}
     }
     
     private void addRowToTable() throws IOException

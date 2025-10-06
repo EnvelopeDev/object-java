@@ -9,14 +9,23 @@ abstract public class InputOutputWindow
 	protected String[] results;
     protected JTextField[] textFields;
     protected ImageIcon icon;
-    protected JPanel IOPanel;
-    protected JOptionPane IOPane;
     protected int numFields;
     protected String title;
-    protected JDialog IODialog;
-    protected JLabel IOLabel;
     protected JPanel fieldsPanel;
     protected Font ioDefaultFont;
+    protected JPanel IOPanel;
+    protected JOptionPane IOPane;
+    protected JLabel IOLabel;
+    protected JDialog IODialog;
+    protected JPanel SCSPanel;
+    protected JOptionPane SCSPane;
+    protected JLabel SCSLabel;
+    protected JDialog SCSDialog;
+    protected JPanel CONPanel;
+    protected JOptionPane CONPane;
+    protected JLabel CONLabel;
+    protected JDialog CONDialog;
+    
     
     abstract public void show() throws IOException;
     
@@ -60,7 +69,7 @@ abstract public class InputOutputWindow
     
     public String[] getData()
     {
-        if (IOPane.getValue() != null && IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
+        if (IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
         {
             for (int i = 0; i < numFields; i++)
             {
@@ -74,12 +83,48 @@ abstract public class InputOutputWindow
     public void successOperationWindow(String text)
     {
     	String message = text + " successfully!";
-    	JOptionPane.showMessageDialog(null, message, "Success", JOptionPane.INFORMATION_MESSAGE);
+    	SCSPanel = new JPanel(new BorderLayout());
+        SCSPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        SCSLabel = new JLabel(message, JLabel.CENTER);
+        SCSLabel.setFont(ioDefaultFont);
+        
+    	SCSPane = new JOptionPane(
+    			SCSLabel,
+    			JOptionPane.DEFAULT_OPTION
+    			);
+    	
+    	UIManager.put("OptionPane.buttonFont", ioDefaultFont);
+        
+    	SCSDialog = SCSPane.createDialog(title);
+    	SCSDialog.setIconImage(icon.getImage());				
     }
     
     public boolean confirmOperationWindow(String text)
     {
-    	int result = JOptionPane.showConfirmDialog(null, text, title, JOptionPane.YES_NO_OPTION);
-    	return result == JOptionPane.YES_OPTION;
+    	CONPanel = new JPanel(new BorderLayout());
+    	CONPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+    	CONLabel = new JLabel(text, JLabel.CENTER);
+    	CONLabel.setFont(ioDefaultFont);
+        
+    	CONPane = new JOptionPane(
+    			CONLabel,
+    			JOptionPane.PLAIN_MESSAGE,
+    			JOptionPane.YES_NO_OPTION
+    			);
+    	
+    	UIManager.put("OptionPane.buttonFont", ioDefaultFont);
+        
+    	CONDialog = CONPane.createDialog(title);
+    	CONDialog.setIconImage(icon.getImage());
+    	CONDialog.setVisible(true);
+    	
+    	if (CONPane.getValue().equals(JOptionPane.YES_OPTION)) 
+        {
+            
+            return true;
+        }
+        return false;
     }
 }
