@@ -30,18 +30,14 @@ public class MainWindow
     private JPanel buttonsPanel;
     private JPanel inputPanel;
     private JButton[] buttons;
+    private JScrollPane tableScrollPane;
     private static JFrame mainFrame;
     private static JTextField searchTextField;
     private static String[][] originalTableData;
     private static DefaultTableModel tableModel;
     private static JTable dogsTable;
-    JScrollPane tableScrollPane;
     private static Font defaultFont;
-    private static Font boldDefaultFont;
-    private static Font subHeaderFont;
-    private static Font boldSubHeaderFont;
     private static Font headerFont;
-    private static Font boldHeaderFont;
     private static final String[] tooltips = {
     		"Save",
     		"Open",
@@ -104,11 +100,8 @@ public class MainWindow
     private void initFonts() 
     {
     	defaultFont = new Font("Arial", Font.PLAIN, 14);
-        boldDefaultFont = new Font("Arial", Font.BOLD, 14);
-        subHeaderFont = new Font("Arial", Font.PLAIN, 16);
-        boldSubHeaderFont = new Font("Arial", Font.BOLD, 16);
-        headerFont = new Font("Arial", Font.PLAIN, 20);
-        boldHeaderFont = new Font("Arial", Font.BOLD, 20);
+        headerFont = new Font("Arial", Font.BOLD, 16);
+
     }
     
     private void initMainFrame()
@@ -183,7 +176,7 @@ public class MainWindow
         
         // Configure table appearance
         dogsTable.setFont(defaultFont);
-        dogsTable.getTableHeader().setFont(boldDefaultFont);
+        dogsTable.getTableHeader().setFont(headerFont);
         dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition//set fixed row height to move columns
         dogsTable.setRowHeight(25);
         
@@ -217,7 +210,7 @@ public class MainWindow
         {   
             switch(buttonIndex)
             {
-	            case 3: // Add button
+	            case 3: 
 	                try {
 	                    AddElementWindow addElem = new AddElementWindow(dogsTable);
 	                    addElem.show();
@@ -227,8 +220,7 @@ public class MainWindow
 	                break;
 	            case 4: 
 	                try {
-	                    DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);
-	                    
+	                    DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);    
 	                    deleteElem.show();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
@@ -274,12 +266,12 @@ public class MainWindow
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  
         JLabel textLabel = new JLabel("Are you sure you want to exit?", JLabel.CENTER);
-        textLabel.setFont(subHeaderFont);
+        textLabel.setFont(defaultFont);
         
         exitPanel.add(imageLabel, BorderLayout.CENTER);
         exitPanel.add(textLabel, BorderLayout.SOUTH);
         
-        UIManager.put("OptionPane.buttonFont", subHeaderFont);
+        UIManager.put("OptionPane.buttonFont", defaultFont);
 
         int result = JOptionPane.showConfirmDialog(
             mainFrame, //parent window
@@ -297,44 +289,56 @@ public class MainWindow
     
     /**
      *Searches the table and shows only the matching rows
+     *@param searchText the words you want to search for
      */
     private static void performSearch(String searchText)
     {
+        // If no search text, show all data again
         if (searchText == null)
         {
             restoreData();
             return;
         }
+        // Make search text lowercase and remove extra spaces
         searchText = searchText.toLowerCase().trim();
 
+        // Create a list to store matching rows
         List<String[]> findedData = new List<>();
         
+        // Look through every row in the table
         for (int i = 0; i < originalTableData.length; i++)
         {
         	String[] row = originalTableData[i];
         		boolean found = false;
+        		// Check every cell in this row
         		for(String cell : row)
         		{
+	                // If cell starts with search text, we found a match
 	                if (cell.toLowerCase().startsWith(searchText))
 	                {
 	                    found = true;
-	                    break;
+	                    break; // Stop checking this row
 	                }
         		}
+        		// If we found matching text, save this row
         		if(found)
         		{
         			findedData.push_back(row);
         		}
         } 
+        // Show only the matching rows in the table
         updateTableWithData(findedData);
     }
     
     /**
-     *Restores the full table from the backup after searching
+     * Shows all the data again after searching
+     * Goes back to the original full table
      */
     private static void restoreData()
     {
+    	// Clear the table
     	tableModel.setRowCount(0);
+        // Add back all the original rows
         for (String[] row : originalTableData)
         {
         	tableModel.addRow(row);
@@ -342,20 +346,23 @@ public class MainWindow
     }
     
     /**
-     *Replaces the data in the table with the passed list of rows 
+     * Updates the table to show only certain rows
+     * @param data the rows you want to show in the table
      */
     private static void updateTableWithData(List<String[]> data)
     {
+        // Clear the table
         tableModel.setRowCount(0);
+        // Add each row from the search results
         for (int i = 0; i < data.getSize(); i++)
         {
             String[] row = data.at(i);
             tableModel.addRow(row);
         }
     }
-    
     /**
-     *Makes the main application window visible 
+     * Makes the main application window visible 
+     * @throws IOException if there's an error displaying the window
      */
     public static void show() throws IOException
     {

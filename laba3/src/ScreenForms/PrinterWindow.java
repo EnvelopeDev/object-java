@@ -14,37 +14,56 @@ import javax.swing.JPanel;
 import javax.swing.JDialog;
 import javax.swing.UIManager;
 
+/**
+ * Window for displaying printer error messages
+ * Shows a dialog when printer is not available
+ * @author Vadim Ustinov
+ * @version 1.0
+ */
 public class PrinterWindow
 {
+	/**
+	 * Shows the printer error window
+	 * Displays an error message when printer is not found
+	 * @throws IOException if there's an error displaying the window
+	 */
 	public static void show() throws IOException
     {	
-		
+		// Set application icon
 		ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
+		
+		// Create main panel for printer error message
 		JPanel printPanel = new JPanel(new BorderLayout());
         
+        // Load and scale printer error image
         ImageIcon exitImage = new ImageIcon("src/picts/printer.png");
         Image scaledImage = exitImage.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  
+        // Create error message label
         JLabel textLabel = new JLabel("The system cannot see the printer. Check the connection and try again...", JLabel.CENTER);
         textLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         
+        // Add image and text to panel
         printPanel.add(imageLabel, BorderLayout.CENTER);
         printPanel.add(textLabel, BorderLayout.SOUTH);
         
+        // Set font for dialog buttons
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 16));
 
+        // Create option pane for error message
         JOptionPane optionPane = new JOptionPane(
                 printPanel,
                 JOptionPane.PLAIN_MESSAGE,
                 JOptionPane.DEFAULT_OPTION
             );
         
+        // Create and configure dialog window
         JDialog dialog = optionPane.createDialog("Printing error");
-        dialog.setModal(false);
-        dialog.setVisible(true);
-        dialog.setIconImage(icon.getImage());
+        dialog.setModal(false); // Allow interaction with other windows
+        dialog.setVisible(true); // Show the dialog
+        dialog.setIconImage(icon.getImage()); // Set window icon
         
 	}
 }
