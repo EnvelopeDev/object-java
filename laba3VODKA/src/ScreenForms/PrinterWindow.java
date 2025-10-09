@@ -36,8 +36,8 @@ public class PrinterWindow
 		JPanel printPanel = new JPanel(new BorderLayout());
         
         // Load and scale printer error image
-        ImageIcon exitImage = new ImageIcon("src/picts/printer.png");
-        Image scaledImage = exitImage.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+        ImageIcon printerImage = new ImageIcon("src/picts/printer.png");
+        Image scaledImage = printerImage.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  

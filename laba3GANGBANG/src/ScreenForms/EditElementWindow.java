@@ -28,20 +28,29 @@ public class EditElementWindow extends InputOutputWindow
     }
     
     /**
-     * Creates window to enter new values for editing
+     * Creates window to enter new values for editing with pre-filled current data
      * @param table the table that contains the data to edit
      * @param num_Fields how many fields to edit (name, breed, awards)
+     * @param currentData current values of the row being edited
      */
-    private EditElementWindow(JTable table, int num_Fields)
+    private EditElementWindow(JTable table, int num_Fields, String[] currentData)
     {
         super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", num_Fields);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
+        
+        // Pre-fill text fields with current data
+        if (currentData != null && currentData.length >= 3)
+        {
+            textFields[0].setText(currentData[0]); // Name
+            textFields[1].setText(currentData[1]); // Breed
+            textFields[2].setText(currentData[2]); // Awards
+        }
     }
     
     /**
      * Shows the edit window and processes user input
-     * First asks for row number, then asks for new values
+     * First asks for row number, then asks for new values with current data pre-filled
      * @throws IOException if there's an error during input/output operations
      */
     @Override
@@ -50,11 +59,16 @@ public class EditElementWindow extends InputOutputWindow
     	// Show first window to get row number from user
     	IODialog.setVisible(true);
     	
-    	// Get the row number user wants to edit
     	int rowToEdit = Integer.parseInt(getData()[0]);
-    	
-    	// Create second window to get new values from user
-    	EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3);
+        
+        // Get current data from the selected row
+        String[] currentData = new String[3];
+        currentData[0] = tableModel.getValueAt(rowToEdit-1, 1).toString(); // Name
+        currentData[1] = tableModel.getValueAt(rowToEdit-1, 2).toString(); // Breed
+        currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
+        
+    	// Create second window to get new values from user with current data pre-filled
+    	EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3, currentData);
     	inputNewElementWindow.IODialog.setVisible(true);
     	
     	// Update the table with new values
