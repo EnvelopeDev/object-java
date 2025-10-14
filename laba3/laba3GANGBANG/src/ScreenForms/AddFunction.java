@@ -1,17 +1,16 @@
 package ScreenForms;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 
 /**
  * Window for adding new rows to the table
  * User can enter data for a new dog entry
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
-public class AddElementWindow extends InputOutputWindow
+public class AddFunction extends DialogWindow
 {
     private JTable addTable;
     private DefaultTableModel tableModel;
@@ -20,7 +19,7 @@ public class AddElementWindow extends InputOutputWindow
      * Creates window for adding new rows
      * @param table the table to add new row to
      */
-    public AddElementWindow(JTable table)
+    public AddFunction(JTable table)
     {
         super("Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)", "Add Row", 3);
         addTable = table;

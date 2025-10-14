@@ -8,10 +8,10 @@ import java.io.IOException;
  * Base class for all input and output windows in the application
  * Provides common functionality for dialogs that get user input
  * and show messages to the user
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
-abstract public class InputOutputWindow
+abstract public class DialogWindow
 {
 	protected String[] results;
     protected JTextField[] textFields;
@@ -45,7 +45,7 @@ abstract public class InputOutputWindow
      * @param title_window the title of the window
      * @param num_Fields how many input fields to create
      */
-    public InputOutputWindow(String text, String title_window, int num_Fields)
+    public DialogWindow(String text, String title_window, int num_Fields)
     {	
     	// Set up fonts and basic properties
     	ioDefaultFont = new Font("Arial", Font.PLAIN, 14);
@@ -179,4 +179,102 @@ abstract public class InputOutputWindow
         }
         return false;
     }
+    
+    /**
+     * Creates a search dialog that remains open after search operations
+     * @param text the instruction text to show to user
+     * @param title_window the title of the window
+     * @param num_Fields how many input fields to create
+     */
+    public void createSearchDialog(String text, String title_window, int num_Fields)
+    {	
+        // Set up fonts and basic properties
+        ioDefaultFont = new Font("Arial", Font.PLAIN, 14);
+        numFields = num_Fields;
+        title = title_window;
+        results = new String[numFields];
+        textFields = new JTextField[numFields];
+        icon = new ImageIcon("src/picts/icon.png"); 
+        
+        // Create main panel with borders
+        IOPanel = new JPanel(new BorderLayout());
+        IOPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        // Create label with instructions
+        IOLabel = new JLabel(text, JLabel.CENTER);
+        IOLabel.setFont(ioDefaultFont);
+        
+        // Create panel for input fields
+        fieldsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        
+        // Create each text field and add to panel
+        for (int i = 0; i < numFields; i++)
+        {
+            textFields[i] = new JTextField(15);
+            textFields[i].setFont(ioDefaultFont);
+            fieldsPanel.add(textFields[i]);
+        }
+        
+        // Add label and fields to main panel
+        IOPanel.add(IOLabel, BorderLayout.NORTH);
+        IOPanel.add(fieldsPanel, BorderLayout.CENTER);
+        
+        // Create custom buttons panel - ONLY ONE Search BUTTON
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton searchButton = new JButton("Search");
+        
+        searchButton.setFont(ioDefaultFont);
+        
+        searchButton.addActionListener(e -> {
+            // Store the results when search is explicitly clicked
+            for (int i = 0; i < numFields; i++)
+            {
+                results[i] = textFields[i].getText();
+            }
+
+            performSearchAction();
+        });
+        
+        buttonPanel.add(searchButton);
+        
+        IOPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Create non-modal dialog window
+        IODialog = new JDialog();
+        IODialog.setTitle(title);
+        IODialog.setModal(false); 
+        IODialog.setContentPane(IOPanel);
+        IODialog.pack();
+        IODialog.setLocationRelativeTo(null);
+        IODialog.setIconImage(icon.getImage());
+        
+        // Handle window closing event
+        IODialog.addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e)
+            {
+                restoreDataOnClose();
+            }
+        });
+    }
+
+    /**
+     * Method to be overridden for search functionality when search button is clicked
+     * Provides default empty implementation
+     */
+    protected void performSearchAction()
+    {
+    
+    }
+
+    /**
+     * Method to restore data when dialog closes - to be overridden by subclasses
+     * Provides default empty implementation
+     */
+    protected void restoreDataOnClose() 
+    {
+
+    }
+
 }

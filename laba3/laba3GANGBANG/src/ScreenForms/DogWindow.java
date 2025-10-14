@@ -13,7 +13,6 @@ import java.awt.Image;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.FlowLayout;
 
 import java.awt.Graphics;
 import java.awt.Color;    
@@ -21,21 +20,19 @@ import java.awt.Color;
 /**
  * Main window class for the Dog Festival application
  * Handles GUI creation and user interface components
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
-public class MainWindow
+public class DogWindow
 {
 	private List<Dog> dogs;
 	private FileManager fileMngr;
 	private ImageIcon icon; 
     private String[][] tableData;
     private JPanel buttonsPanel;
-    private JPanel inputPanel;
     private JButton[] buttons;
     private JScrollPane tableScrollPane;
     private static JFrame mainFrame;
-    private static JTextField searchTextField;
     private static String[][] originalTableData;
     private static DefaultTableModel tableModel;
     private static JTable dogsTable;
@@ -77,20 +74,17 @@ public class MainWindow
      * Displays the main application window with dog data
      * @throws IOException if there's an error reading/writing files
      */
-    public MainWindow() throws IOException
+    public DogWindow() throws IOException
     {
         initData();
         initMainFrame();
         initFonts();
         
-        // СНАЧАЛА инициализируем все компоненты
         initButtonsPanel();
         initTable();
         
-        // ПОТОМ устанавливаем фон
         setBackgroundImage();
-        
-        // УДАЛИТЕ метод assembleMainFrame() полностью
+
     }
     
     private void initData() throws IOException
@@ -139,6 +133,8 @@ public class MainWindow
             System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);//copy array (source_arr, start_i, target_arr, start_i, length_of_elements)
         }
         
+        SearchFunction.setOriginalData(originalTableData);
+        
         // Create table model
         tableModel = new DefaultTableModel(tableData, columnNames);//init table model
         dogsTable = new JTable(tableModel);//creating a data visualization 
@@ -163,19 +159,16 @@ public class MainWindow
         tableScrollPane = new JScrollPane(dogsTable);
         
         dogsTable.setOpaque(false);
-        dogsTable.setBackground(new Color(255, 255, 255, 200)); // белый с прозрачностью
+        dogsTable.setBackground(new Color(255, 255, 255, 200)); 
         dogsTable.setForeground(Color.BLACK);
         dogsTable.setFont(defaultFont);
         
-        // Настройка выделения строк
         dogsTable.setSelectionBackground(new Color(100, 150, 255, 150));
         dogsTable.setSelectionForeground(Color.BLACK);
         
-        // Делаем панель прокрутки прозрачной
         tableScrollPane.setOpaque(false);
         tableScrollPane.getViewport().setOpaque(false);
         
-        // Можно также сделать заголовок таблицы полупрозрачным
         dogsTable.getTableHeader().setOpaque(false);
         dogsTable.getTableHeader().setBackground(new Color(240, 240, 240, 200));
 
@@ -209,56 +202,27 @@ public class MainWindow
         ImageIcon backgroundIcon = new ImageIcon("src/picts/background.png");
         final Image backgroundImage = backgroundIcon.getImage();
         
-        // Создаем панель с фоном
         JPanel backgroundPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Рисуем изображение вместо красного цвета
                 if (backgroundImage != null) {
                     g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 }
             }
         };
         
-        // ДЕЛАЕМ ВСЕ КОМПОНЕНТЫ ПРОЗРАЧНЫМИ (как в рабочем варианте)
         buttonsPanel.setOpaque(false);
         tableScrollPane.setOpaque(false);
         tableScrollPane.getViewport().setOpaque(false);
         dogsTable.setOpaque(false);
         
-        // Добавляем компоненты на фоновую панель
         backgroundPanel.add(buttonsPanel, BorderLayout.SOUTH);
         backgroundPanel.add(tableScrollPane, BorderLayout.CENTER);
         
-        // Устанавливаем как основную панель
         mainFrame.setContentPane(backgroundPanel);
-            
+    }
    
-            
-
-    }
-    /*
-    private void initSearchPanel() 
-    {
-    	inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init text panel for search
-    	searchTextField = new JTextField(12);
-        searchTextField.setFont(defaultFont);
-        buttons[8].addActionListener(e -> handleButtonClick(8));
-        inputPanel.add(searchTextField);
-        inputPanel.add(buttons[8]); 
-    }*/
-    
-    private void assembleMainFrame()
-    {
-        mainFrame.add(buttonsPanel, BorderLayout.SOUTH);          
-        mainFrame.add(tableScrollPane, BorderLayout.CENTER);   
-     //   mainFrame.add(inputPanel, BorderLayout.SOUTH);            
-    }
-    
-    /**
-     * Handles all button clicks in the app
-     */
     private static void handleButtonClick(int buttonIndex)
     {
         if (buttonIndex < tooltips.length) 
@@ -267,7 +231,7 @@ public class MainWindow
             {
 	            case 3: 
 	                try {
-	                    AddElementWindow addElem = new AddElementWindow(dogsTable);
+	                    AddFunction addElem = new AddFunction(dogsTable);
 	                    addElem.show();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
@@ -275,7 +239,7 @@ public class MainWindow
 	                break;
 	            case 4: 
 	                try {
-	                    DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);    
+	                    DeleteFunction deleteElem = new DeleteFunction(dogsTable);    
 	                    deleteElem.show();
 	                } catch (IOException e) {
 	                    e.printStackTrace();
@@ -284,7 +248,7 @@ public class MainWindow
 	
 	            case 5: 
 	                try {
-	                    EditElementWindow editElem = new EditElementWindow(dogsTable);
+	                    EditFunction editElem = new EditFunction(dogsTable);
 	                    editElem.show();	                    
 	                } catch (IOException e) {
 	                    e.printStackTrace();
@@ -292,24 +256,34 @@ public class MainWindow
 	                break;
 	                case 6:
 	                    try {
-	                        PrinterWindow.show();
+	                        PrintFunction.show();
 	                    } catch (IOException e) {
 	                    }
 	                    break;
 	                case 7: 
 	                    exitApplication();
 	                    break;
-	               /* case 8:
-	                	String text = searchTextField.getText(); 
-	                	performSearch(text);
-	                	break;*/
+	                case 8: 
+	                    try {
+	                        SearchFunction searchWindow = new SearchFunction(
+	                            "Enter search term:", 
+	                            "Search Dogs", 
+	                            1, 
+	                            dogsTable
+	                        );
+	                        searchWindow.show();
+	                    } catch (IOException e) {
+	                        e.printStackTrace();
+	                    }
+	                    break;
 
             }
         }
     }
     
     /**
-     *Displays a confirmation dialog box with a picture and text
+     * Displays a confirmation dialog box with a picture and text
+     * for exiting the application
      */
     private static void exitApplication() 
     {
@@ -343,80 +317,7 @@ public class MainWindow
     }
     
     /**
-     *Searches the table and shows only the matching rows
-     *@param searchText the words you want to search for
-     */
-    private static void performSearch(String searchText)
-    {
-        // If no search text, show all data again
-        if (searchText == null)
-        {
-            restoreData();
-            return;
-        }
-        // Make search text lowercase and remove extra spaces
-        searchText = searchText.toLowerCase().trim();
-
-        // Create a list to store matching rows
-        List<String[]> findedData = new List<>();
-        
-        // Look through every row in the table
-        for (int i = 0; i < originalTableData.length; i++)
-        {
-        	String[] row = originalTableData[i];
-        		boolean found = false;
-        		// Check every cell in this row
-        		for(String cell : row)
-        		{
-	                // If cell starts with search text, we found a match
-	                if (cell.toLowerCase().startsWith(searchText))
-	                {
-	                    found = true;
-	                    break; // Stop checking this row
-	                }
-        		}
-        		// If we found matching text, save this row
-        		if(found)
-        		{
-        			findedData.push_back(row);
-        		}
-        } 
-        // Show only the matching rows in the table
-        updateTableWithData(findedData);
-    }
-    
-    /**
-     * Shows all the data again after searching
-     * Goes back to the original full table
-     */
-    private static void restoreData()
-    {
-    	// Clear the table
-    	tableModel.setRowCount(0);
-        // Add back all the original rows
-        for (String[] row : originalTableData)
-        {
-        	tableModel.addRow(row);
-        }
-    }
-    
-    /**
-     * Updates the table to show only certain rows
-     * @param data the rows you want to show in the table
-     */
-    private static void updateTableWithData(List<String[]> data)
-    {
-        // Clear the table
-        tableModel.setRowCount(0);
-        // Add each row from the search results
-        for (int i = 0; i < data.getSize(); i++)
-        {
-            String[] row = data.at(i);
-            tableModel.addRow(row);
-        }
-    }
-    /**
-     * Makes the main application window visible 
+     * Displays the main application window
      * @throws IOException if there's an error displaying the window
      */
     public static void show() throws IOException

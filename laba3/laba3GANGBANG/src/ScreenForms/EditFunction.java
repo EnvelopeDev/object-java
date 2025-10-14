@@ -1,17 +1,16 @@
 package ScreenForms;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 
 /**
  * Window for editing existing rows in the table
  * User can select a row and change its data
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
-public class EditElementWindow extends InputOutputWindow
+public class EditFunction extends DialogWindow
 {
     private JTable editTable;
     private DefaultTableModel tableModel;
@@ -20,7 +19,7 @@ public class EditElementWindow extends InputOutputWindow
      * Creates window to select which row to edit
      * @param table the table that contains the data to edit
      */
-    public EditElementWindow(JTable table) 
+    public EditFunction(JTable table) 
     {
     	super("Enter the row number to edit", "Edit Row", 1);
         editTable = table;
@@ -33,7 +32,7 @@ public class EditElementWindow extends InputOutputWindow
      * @param num_Fields how many fields to edit (name, breed, awards)
      * @param currentData current values of the row being edited
      */
-    private EditElementWindow(JTable table, int num_Fields, String[] currentData)
+    private EditFunction(JTable table, int num_Fields, String[] currentData)
     {
         super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", num_Fields);
         editTable = table;
@@ -68,7 +67,7 @@ public class EditElementWindow extends InputOutputWindow
         currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
         
     	// Create second window to get new values from user with current data pre-filled
-    	EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3, currentData);
+    	EditFunction inputNewElementWindow = new EditFunction(editTable, 3, currentData);
     	inputNewElementWindow.IODialog.setVisible(true);
     	
     	// Update the table with new values

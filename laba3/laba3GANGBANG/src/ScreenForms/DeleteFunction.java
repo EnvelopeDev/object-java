@@ -1,17 +1,16 @@
 package ScreenForms;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 
 /**
  * Window for deleting rows from the table
  * User can select a row to remove from the data
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
-public class DeleteElementWindow extends InputOutputWindow
+public class DeleteFunction extends DialogWindow
 {
     private JTable deleteTable;
     private DefaultTableModel tableModel;
@@ -20,7 +19,7 @@ public class DeleteElementWindow extends InputOutputWindow
      * Creates window for deleting rows
      * @param table the table to delete rows from
      */
-    public DeleteElementWindow(JTable table)
+    public DeleteFunction(JTable table)
     {
         super("Enter the row number to delete", "Delete Row", 1);
         deleteTable = table;
