@@ -179,4 +179,17 @@ abstract public class InputOutputWindow
         }
         return false;
     }
+
+	/**
+	 * Shows an error message dialog
+	 * @param errorMessage the error message to display
+	 */
+	public void showErrorDialog(String errorMessage) {
+	    JOptionPane.showMessageDialog(
+	        IODialog,
+	        errorMessage,
+	        "Error",
+	        JOptionPane.ERROR_MESSAGE
+	    );
+	}
 }

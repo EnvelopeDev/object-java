@@ -24,27 +24,44 @@ public class DeleteElementWindow extends InputOutputWindow
     {
         super("Enter the row number to delete", "Delete Row", 1);
         deleteTable = table;
+        tableModel = (DefaultTableModel) deleteTable.getModel();
     }
 
     /**
      * Shows the delete window and handles row deletion
      * Asks for row number and removes it after confirmation
      * @throws IOException if there's an error during input/output operations
+     * @throws InputException if validation fails
      */
     @Override
     public void show() throws IOException
     {
-    	// Show window to get row number from user
-    	IODialog.setVisible(true);
-    	
-    	// Get the row number user wants to delete
-    	int rowToDelete = Integer.parseInt(getData()[0]);
-    	
-    	// Delete the selected row
-    	this.deleteRowByNumber(rowToDelete);
-    	
-    	// Show success message
-    	SCSDialog.setVisible(true);
+        try {
+            // Show window to get row number from user
+            IODialog.setVisible(true);
+            
+            // Get the data user entered
+            String[] inputData = getData();
+            
+            if (inputData != null && inputData.length > 0) {
+                // Validate row number
+                InputException.validateRowNumber(inputData[0], tableModel.getRowCount());
+                
+                int rowToDelete = Integer.parseInt(inputData[0]);
+                
+                // Delete the selected row
+                this.deleteRowByNumber(rowToDelete);
+                
+                // Show success message
+                if (SCSDialog != null) {
+                    SCSDialog.setVisible(true);
+                }
+            }
+        } catch (InputException e) {
+            showErrorDialog(e.getMessage());
+            // Повторно показываем окно ввода
+            this.show();
+        }
     }
     
     /**
@@ -60,7 +77,6 @@ public class DeleteElementWindow extends InputOutputWindow
         // If user confirmed, delete the row
         if (confirmed)
         {
-            tableModel = (DefaultTableModel) deleteTable.getModel();
             // Remove the row (convert from 1-based to 0-based index)
             tableModel.removeRow(rowNumber-1);
             // Update all row numbers after deletion

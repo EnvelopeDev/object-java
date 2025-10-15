@@ -210,45 +210,69 @@ public class MainWindow
         {   
             switch(buttonIndex)
             {
-	            case 3: 
-	                try {
-	                    AddElementWindow addElem = new AddElementWindow(dogsTable);
-	                    addElem.show();
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                }
-	                break;
-	            case 4: 
-	                try {
-	                    DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);    
-	                    deleteElem.show();
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                }
-	                break;
-	
-	            case 5: 
-	                try {
-	                    EditElementWindow editElem = new EditElementWindow(dogsTable);
-	                    editElem.show();	                    
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                }
-	                break;
-	                case 6:
-	                    try {
-	                        PrinterWindow.show();
-	                    } catch (IOException e) {
-	                    }
-	                    break;
-	                case 7: 
-	                    exitApplication();
-	                    break;
-	                case 8:
-	                	String text = searchTextField.getText(); 
-	                	performSearch(text);
-	                	break;
+                case 3: 
+                    try {
+                        AddElementWindow addElem = new AddElementWindow(dogsTable);
+                        addElem.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(
+                            mainFrame,
+                            "Ошибка при добавлении: " + e.getMessage(),
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                    break;
+                case 4: 
+                    try {
+                        DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);    
+                        deleteElem.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(
+                            mainFrame,
+                            "Ошибка при удалении: " + e.getMessage(),
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                    break;
 
+                case 5: 
+                    try {
+                        EditElementWindow editElem = new EditElementWindow(dogsTable);
+                        editElem.show();	                    
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(
+                            mainFrame,
+                            "Ошибка при редактировании: " + e.getMessage(),
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                    break;
+                case 6:
+                    try {
+                        PrinterWindow.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(
+                            mainFrame,
+                            "Ошибка при печати: " + e.getMessage(),
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                    break;
+                case 7: 
+                    exitApplication();
+                    break;
+                case 8:
+                    String text = searchTextField.getText(); 
+                    performSearch(text);
+                    break;
             }
         }
     }

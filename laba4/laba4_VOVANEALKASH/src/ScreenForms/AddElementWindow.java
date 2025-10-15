@@ -31,21 +31,35 @@ public class AddElementWindow extends InputOutputWindow
      * Shows the add window and processes new data
      * Gets user input and adds new row to table
      * @throws IOException if there's an error during input/output operations
+     * @throws InputException if validation fails
      */
     @Override
     public void show() throws IOException
     {
-    	// Show input window to get data from user
-    	IODialog.setVisible(true);
-    	
-    	// Add the new row to table with user data
-    	addRowToTable();
-    	
-    	// Show success message if row was added
-    	if (SCSDialog != null)
-    	{
-    		SCSDialog.setVisible(true);
-    	}
+        try {
+            // Show input window to get data from user
+            IODialog.setVisible(true);
+            
+            // Get the data user entered
+            String[] newData = getData();
+            
+            // If user provided data, validate and add new row
+            if (newData != null) {
+                InputException.validateRequiredFields(textFields);
+                
+                // Add the new row to table with user data
+                addRowToTable();
+                
+                // Show success message if row was added
+                if (SCSDialog != null) {
+                    SCSDialog.setVisible(true);
+                }
+            }
+        } catch (InputException e) {
+            showErrorDialog(e.getMessage());
+            // Повторно показываем окно ввода
+            this.show();
+        }
     }
     
     /**

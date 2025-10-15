@@ -22,7 +22,7 @@ public class EditElementWindow extends InputOutputWindow
      */
     public EditElementWindow(JTable table) 
     {
-    	super("Enter the row number to edit", "Edit Row", 1);
+        super("Enter the row number to edit", "Edit Row", 1);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
     }
@@ -52,30 +52,51 @@ public class EditElementWindow extends InputOutputWindow
      * Shows the edit window and processes user input
      * First asks for row number, then asks for new values with current data pre-filled
      * @throws IOException if there's an error during input/output operations
+     * @throws InputException if validation fails
      */
     @Override
-    public void show() throws IOException 
+    public void show() throws IOException
     {
-    	// Show first window to get row number from user
-    	IODialog.setVisible(true);
-    	
-    	int rowToEdit = Integer.parseInt(getData()[0]);
-        
-        // Get current data from the selected row
-        String[] currentData = new String[3];
-        currentData[0] = tableModel.getValueAt(rowToEdit-1, 1).toString(); // Name
-        currentData[1] = tableModel.getValueAt(rowToEdit-1, 2).toString(); // Breed
-        currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
-        
-    	// Create second window to get new values from user with current data pre-filled
-    	EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3, currentData);
-    	inputNewElementWindow.IODialog.setVisible(true);
-    	
-    	// Update the table with new values
-    	inputNewElementWindow.EditRowByNumber(rowToEdit-1);
-    	
-    	// Show success message
-    	inputNewElementWindow.SCSDialog.setVisible(true);
+        try {
+            // Show first window to get row number from user
+            IODialog.setVisible(true);
+            
+            String[] inputData = getData();
+            
+            if (inputData != null && inputData.length > 0) {
+                // Validate row number
+                InputException.validateRowNumber(inputData[0], tableModel.getRowCount());
+                
+                int rowToEdit = Integer.parseInt(inputData[0]);
+                
+                // Get current data from the selected row
+                String[] currentData = new String[3];
+                currentData[0] = tableModel.getValueAt(rowToEdit-1, 1).toString(); // Name
+                currentData[1] = tableModel.getValueAt(rowToEdit-1, 2).toString(); // Breed
+                currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
+                
+                // Create second window to get new values from user with current data pre-filled
+                EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3, currentData);
+                inputNewElementWindow.IODialog.setVisible(true);
+                
+                // Get new data and validate
+                String[] newData = inputNewElementWindow.getData();
+                if (newData != null) {
+                    InputException.validateRequiredFields(inputNewElementWindow.textFields);
+                    
+                    // Update the table with new values
+                    inputNewElementWindow.EditRowByNumber(rowToEdit-1);
+                    
+                    // Show success message
+                    inputNewElementWindow.SCSDialog.setVisible(true);
+                }
+            }
+        } catch (InputException e) {
+            showErrorDialog(e.getMessage());
+            this.show();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            showErrorDialog("Ошибка доступа к данным таблицы");
+        }
     }
     
     /**
