@@ -210,19 +210,9 @@ public class MainWindow
         {   
             switch(buttonIndex)
             {
-                case 3: 
-                    try {
-                        AddElementWindow addElem = new AddElementWindow(dogsTable);
-                        addElem.show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(
-                            mainFrame,
-                            "Ошибка при добавлении: " + e.getMessage(),
-                            "Ошибка",
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                    }
+                case 3:
+                    AddElementWindow addElem = new AddElementWindow(dogsTable);
+                    addElem.show();
                     break;
                 case 4: 
                     DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable);    

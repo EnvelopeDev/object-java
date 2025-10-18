@@ -1,9 +1,7 @@
 package ScreenForms;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.DefaultTableModel;
-import java.io.IOException;
 
 /**
  * Window for adding new rows to the table
@@ -15,14 +13,28 @@ public class AddElementWindow extends InputOutputWindow
 {
     private JTable addTable;
     private DefaultTableModel tableModel;
+    private int rowToAdd;
+    private int rowIndex;
     
     /**
-     * Creates window for adding new rows
+     * Creates window for selecting position to add new row
      * @param table the table to add new row to
      */
     public AddElementWindow(JTable table)
     {
-        super("Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)", "Add Row", 3);
+        super("Enter the position to add new row", "Add Row", 1);
+        addTable = table;
+        tableModel = (DefaultTableModel) addTable.getModel();
+    }
+    
+    /**
+     * Creates window for entering new data
+     * @param table the table to add new row to
+     * @param num_Fields number of input fields
+     */
+    private AddElementWindow(JTable table, int num_Fields)
+    {
+        super("Enter the data to add (1 - Name; 2 - Breed; 3 - Awards)", "Add Row", num_Fields);
         addTable = table;
         tableModel = (DefaultTableModel) addTable.getModel();
     }
@@ -30,66 +42,101 @@ public class AddElementWindow extends InputOutputWindow
     /**
      * Shows the add window and processes new data
      * Gets user input and adds new row to table
-     * @throws IOException if there's an error during input/output operations
-     * @throws InputException if validation fails
      */
-    @Override
-    public void show() throws IOException
+    public void show()
     {
         try {
-            // Show input window to get data from user
-            IODialog.setVisible(true);
-            
-            // Get the data user entered
-            String[] newData = getData();
-            
-            // If user provided data, validate and add new row
-            if (newData != null) {
-                InputException.validEmptyField(textFields);
-                
-                // Add the new row to table with user data
-                addRowToTable();
-                
-                // Show success message if row was added
-                if (SCSDialog != null) {
-                    SCSDialog.setVisible(true);
-                }
-            }
+        	rowSelectionWindow();
+            dataAddingWindow();
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
-            show();
         }
     }
     
     /**
-     * Adds a new row to the table with user input data
-     * Creates new row with number, name, breed, and awards
-     * @throws IOException if there's an error during file operations or data processing
+     * First window - select position to add new row
+     * Shows error dialog and retries on invalid position input
      */
-    private void addRowToTable() throws IOException
-    {   
-        // Get the data user entered
-        String[] newData = getData();
+    private void rowSelectionWindow() throws InputException
+    {
+        try {
+            IODialog.setVisible(true);
+            String[] rowData = getData();
+            
+            if (rowData != null) 
+            {
+                // Validate position (1 to tableSize+1)
+                InputException.validRowNumber(rowData[0], tableModel.getRowCount() + 1);
+                rowToAdd = Integer.parseInt(rowData[0]);
+            }
+        } catch (InputException e) {
+            showErrorDialog(e.getMessage());
+            rowSelectionWindow();
+        }
+    }
+    
+    /**
+     * Second window - enter data for new row
+     * Shows error dialog and retries on invalid data input
+     */
+    private void dataAddingWindow() throws InputException
+    {
+        InputException.validRowNumber(String.valueOf(rowToAdd), tableModel.getRowCount() + 1);
         
-        // If user provided data, add new row
-        if (newData != null)
+        AddElementWindow dataInputWindow = new AddElementWindow(addTable, 3);
+        
+        try {
+            dataInputWindow.IODialog.setVisible(true);
+            String[] addData = dataInputWindow.getData();
+            
+            if (addData != null)
+            {
+                InputException.validEmptyField(dataInputWindow.textFields);
+                InputException.validDataArray(addData, 3);
+                
+                dataInputWindow.addRowToTable(rowToAdd, addData);
+                
+                if (dataInputWindow.SCSDialog != null)
+                {
+                    dataInputWindow.SCSDialog.setVisible(true);
+                }
+            }
+        } catch (InputException e)
         {
-            // Calculate new row number (last row number + 1)
-            int newRowNumber = tableModel.getRowCount() + 1;
-            
-            // Add new row to table with all data
-            tableModel.addRow(new Object[]{
-                String.valueOf(newRowNumber),        // Row number
-                newData[0].trim(),   // Dog name
-                newData[1].trim(),    // Dog breed
-                newData[2].trim()     // Dog awards
-            });
-            
-            // Show success message
-            successOperationWindow("Row added");
-        } else {
-            // User cancelled or didn't enter data
-            System.out.println("Input cancelled or insufficient data");
+            dataInputWindow.showErrorDialog(e.getMessage());
+            dataAddingWindow();
+        }
+    }
+    
+    /**
+     * Adds a new row to the table at specified position
+     * @param rowToAdd position to insert new row (1-based)
+     * @param newData the data to add [name, breed, awards]
+     */
+    private void addRowToTable(int rowToAdd, String[] newData)
+    {   
+        rowIndex = rowToAdd - 1;
+        
+        tableModel.insertRow(rowIndex, new Object[]{
+            String.valueOf(rowToAdd),        
+            newData[0].trim(),               
+            newData[1].trim(),               
+            newData[2].trim()                
+        });
+        
+        updateRowNumbers(rowToAdd);
+        
+        successOperationWindow("Row added");
+    }
+    
+    /**
+     * Updates row numbers starting from specified index
+     * @param startIndex the index to start updating from (0-based)
+     */
+    private void updateRowNumbers(int startIndex)
+    {
+        for (int i = startIndex; i < tableModel.getRowCount(); i++) {
+            tableModel.setValueAt(String.valueOf(i + 1), i, 0);
         }
     }
 }

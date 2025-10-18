@@ -38,6 +38,12 @@ public class DeleteElementWindow extends InputOutputWindow
             showErrorDialog(e.getMessage());
         }
     }
+    
+    /**
+     * Displays the row selection window and handles row number input validation
+     * Shows error dialog and retries on invalid row number input
+     * Proceeds to data deleting window upon successful row selection
+     */
     private void deleteSelectedRowWindow() throws InputException
     {
         try {
@@ -56,6 +62,7 @@ public class DeleteElementWindow extends InputOutputWindow
             deleteSelectedRowWindow();
         }
     }
+    
     /**
      * Deletes a specific row from the table
      * Asks user to confirm before deleting

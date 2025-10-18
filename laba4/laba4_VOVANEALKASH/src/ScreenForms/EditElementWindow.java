@@ -107,6 +107,7 @@ public class EditElementWindow extends InputOutputWindow
             if (editData != null)
             {
                 InputException.validEmptyField(editDataWindow.textFields);
+                InputException.validDataArray(editData, 3);
                 
                 editDataWindow.EditRowByNumber(rowToEdit, editData);
                 
@@ -126,12 +127,9 @@ public class EditElementWindow extends InputOutputWindow
      * Gets current data from the specified row
      * @param rowToEdit the row number (starting from 1)
      * @return array with current data [name, breed, awards]
-     * @throws InputException if row number is invalid or table access fails
      */
-    private String[] getCurrentRowData(int rowToEdit) throws InputException
+    private String[] getCurrentRowData(int rowToEdit)
     {
-        InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
-        
         rowIndex = rowToEdit - 1;
         
         String[] currentData = new String[3];
@@ -146,13 +144,9 @@ public class EditElementWindow extends InputOutputWindow
      * Updates the table with edited data for specific row
      * @param rowToEdit the row to edit (starting from 0)
      * @param editedData the new data to set
-     * @throws InputException if there's an error during data processing
      */
-    private void EditRowByNumber(int rowToEdit, String[] editedData) throws InputException
+    private void EditRowByNumber(int rowToEdit, String[] editedData)
     {
-    	InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
-        InputException.validDataArray(editedData, 3);
-        
         rowIndex = rowToEdit - 1;
         
         tableModel.setValueAt(editedData[0].trim(), rowIndex, 1); 
