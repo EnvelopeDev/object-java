@@ -1,7 +1,6 @@
 package ScreenForms;
 
 import fileManager.FileManager;
-import java.io.IOException;
 import list.List;
 import object.dog.Dog;
 import javax.swing.*;
@@ -17,9 +16,11 @@ import java.awt.FlowLayout;
 
 /**
  * Main window class for the Dog Festival application
- * Handles GUI creation and user interface components
+ * Handles GUI creation, user interface components, and application workflow
+ * Provides functionality for displaying dog data, adding, editing, deleting records,
+ * searching, and other table operations
  * @author Vadim Ustinov
- * @version 1.0
+ * @version 2.0
  */
 public class MainWindow
 {
@@ -38,6 +39,8 @@ public class MainWindow
     private static JTable dogsTable;
     private static Font defaultFont;
     private static Font headerFont;
+    
+    /** Array of tooltips for application buttons */
     private static final String[] tooltips = {
     		"Save",
     		"Open",
@@ -49,6 +52,8 @@ public class MainWindow
     		"Dropout",
     		"Search"
     };
+    
+    /** Array of image paths for button icons and application images */
     private static final String[] imagePaths = {
             "src/picts/save.png",
             "src/picts/folder_documents.png",
@@ -61,8 +66,9 @@ public class MainWindow
             "src/picts/search.png",
             "src/picts/dogIcon.png",
             "src/picts/exit.jpg"
-            
     };
+    
+    /** Array of column names for the data table */
     private static final String[] columnNames = {
             "№",
             "Name",
@@ -71,53 +77,91 @@ public class MainWindow
      };
     
     /**
-     * Displays the main application window with dog data
-     * @throws IOException if there's an error reading/writing files
+     * Makes the main application window visible
+     * Displays the initialized GUI components to the user
      */
-    public MainWindow() throws IOException
+    public void show()
     {
-        initData();
+        mainFrame.setVisible(true);
+    }
+    
+    /**
+     * Constructs the main application window and initializes all components
+     * Loads data from file, creates GUI elements, and sets up event handlers
+     * @throws InputException if there's an error reading data files or initializing components
+     */
+    public MainWindow() throws InputException
+    {
+    	//DATA INIT SECTION
+    	initData();
+    	
+    	//STYLE SECTION
         initMainFrame();
         initFonts();
         
         //BUTTON SECTION
         initButtonsPanel();
+        
         //TABLE SECTION
         initTable();
+        
         //SEARCH SECTION
         initSearchPanel();
-        //MAINFRAME ADDING ELEMENTS SECTION
+        
+        //ASSEMBLE MAINFRAME SECTION
         assembleMainFrame();
     }
     
-    private void initData() throws IOException
+    /**
+     * Initializes application data by loading dog information from CSV file
+     * Creates FileManager and List objects to store and manage dog data
+     * @throws InputException if CSV file cannot be read or contains invalid data
+     */
+    private void initData() throws InputException
     {
-    	fileMngr = new FileManager();//init FileManager object
-        dogs = new List<>();//init List fot dogs data
-        dogs = fileMngr.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
+        try {
+            fileMngr = new FileManager();//init FileManager object
+            dogs = new List<>();//init List for dogs data
+            dogs = fileMngr.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
+        } catch (Exception e) {
+            throw new InputException("Error initializing data: " + e.getMessage(), 
+                                   InputException.ErrorType.INVALID_FORMAT);
+        }
     }
     
+    /**
+     * Initializes font settings for the application
+     * Sets default font for regular text and header font for table headers
+     */
     private void initFonts() 
     {
     	defaultFont = new Font("Arial", Font.PLAIN, 14);
         headerFont = new Font("Arial", Font.BOLD, 16);
-
     }
     
+    /**
+     * Initializes the main application frame
+     * Sets window title, icon, size, and default close operation
+     */
     private void initMainFrame()
     {
     	icon = new ImageIcon(imagePaths[9]);//init window icon
-        mainFrame = new JFrame("Dog Festival");//init mainfraime and init window title
+        mainFrame = new JFrame("Dog Festival");//init mainframe and init window title
         mainFrame.setIconImage(icon.getImage());
     	mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(900, 500);
         mainFrame.setLocationRelativeTo(null);
     }
     
+    /**
+     * Initializes the buttons panel with application control buttons
+     * Creates buttons with icons, tooltips, and event handlers
+     * Buttons include Save, Open, Backup, Add, Remove, Edit, Print, Dropout, and Search
+     */
     private void initButtonsPanel()
     {
     	buttonsPanel = new JPanel();//init buttons panel
-        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));//set 1 row, 8 cols, 10 width, 10 heigth
+        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));//set 1 row, 8 cols, 10 width, 10 height
         
         buttons = new JButton[9];//init buttons array
         for(int i = 0; i < 9; i++) 
@@ -139,6 +183,11 @@ public class MainWindow
         }
     }
     
+    /**
+     * Initializes the data table with dog information
+     * Converts dog data from List to table format, sets up table model,
+     * configures column properties and table appearance
+     */
     private void initTable() 
     {
     	tableData = new String[dogs.getSize()][4];//init table data
@@ -177,13 +226,16 @@ public class MainWindow
         // Configure table appearance
         dogsTable.setFont(defaultFont);
         dogsTable.getTableHeader().setFont(headerFont);
-        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition//set fixed row height to move columns
+        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
         dogsTable.setRowHeight(25);
         
         tableScrollPane = new JScrollPane(dogsTable);
-
     }
     
+    /**
+     * Initializes the search panel with text field and search button
+     * Provides functionality for filtering table data based on user input
+     */
     private void initSearchPanel() 
     {
     	inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init text panel for search
@@ -194,6 +246,10 @@ public class MainWindow
         inputPanel.add(buttons[8]); 
     }
     
+    /**
+     * Assembles all GUI components into the main application frame
+     * Arranges buttons panel, table, and search panel in appropriate layout positions
+     */
     private void assembleMainFrame()
     {
         mainFrame.add(buttonsPanel, BorderLayout.NORTH);          
@@ -202,7 +258,9 @@ public class MainWindow
     }
     
     /**
-     * Handles all button clicks in the app
+     * Handles all button clicks in the application
+     * Routes button events to appropriate functionality based on button index
+     * @param buttonIndex the index of the clicked button (0-8)
      */
     private static void handleButtonClick(int buttonIndex)
     {
@@ -218,7 +276,6 @@ public class MainWindow
                     DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable);    
                     deleteWindow.show();
                     break;
-
                 case 5: 
                     EditElementWindow editWindow = new EditElementWindow(dogsTable);
                     editWindow.show();	       
@@ -239,7 +296,8 @@ public class MainWindow
     }
     
     /**
-     *Displays a confirmation dialog box with a picture and text
+     * Displays a confirmation dialog box with exit image and confirmation text
+     * Prompts user to confirm application exit before terminating the program
      */
     private static void exitApplication() 
     {
@@ -273,8 +331,9 @@ public class MainWindow
     }
     
     /**
-     *Searches the table and shows only the matching rows
-     *@param searchText the words you want to search for
+     * Searches the table and shows only the matching rows
+     * Filters table data based on search text, showing rows where any cell starts with the search text
+     * @param searchText the text to search for in table cells
      */
     private static void performSearch(String searchText)
     {
@@ -311,13 +370,12 @@ public class MainWindow
         			findedData.push_back(row);
         		}
         } 
-        // Show only the matching rows in the table
         updateTableWithData(findedData);
     }
     
     /**
      * Shows all the data again after searching
-     * Goes back to the original full table
+     * Restores the original full table data, clearing any search filters
      */
     private static void restoreData()
     {
@@ -332,7 +390,8 @@ public class MainWindow
     
     /**
      * Updates the table to show only certain rows
-     * @param data the rows you want to show in the table
+     * Replaces current table data with the provided filtered data set
+     * @param data the rows to display in the table after filtering
      */
     private static void updateTableWithData(List<String[]> data)
     {
@@ -344,13 +403,5 @@ public class MainWindow
             String[] row = data.at(i);
             tableModel.addRow(row);
         }
-    }
-    /**
-     * Makes the main application window visible 
-     * @throws IOException if there's an error displaying the window
-     */
-    public static void show() throws IOException
-    {
-        mainFrame.setVisible(true);
     }
 }
