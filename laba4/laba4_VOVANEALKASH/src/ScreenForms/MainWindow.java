@@ -224,17 +224,8 @@ public class MainWindow
                     editWindow.show();	       
                     break;
                 case 6:
-                    try {
-                        PrinterWindow.show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(
-                            mainFrame,
-                            "Ошибка при печати: " + e.getMessage(),
-                            "Ошибка",
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                    }
+                	PrinterWindow printWindow = new PrinterWindow();
+                    printWindow.show();
                     break;
                 case 7: 
                     exitApplication();

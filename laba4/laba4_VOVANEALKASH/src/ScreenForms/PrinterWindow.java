@@ -3,12 +3,9 @@ package ScreenForms;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JDialog;
@@ -22,48 +19,51 @@ import javax.swing.UIManager;
  */
 public class PrinterWindow
 {
+	private ImageIcon icon;
+	private JPanel printPanel;
+	private JDialog dialog;
+	private JLabel imageLabel;
+	private JLabel textLabel;
+	private ImageIcon printerImage ;
+	private Image scaledImage;
+	private static final String[] imagePaths = {
+			"src/picts/dogIcon.png",
+			"src/picts/printer.png"
+            
+    };
 	/**
 	 * Shows the printer error window
 	 * Displays an error message when printer is not found
-	 * @throws IOException if there's an error displaying the window
 	 */
-	public static void show() throws IOException
+	public void show()
     {	
-		// Set application icon
-		ImageIcon icon = new ImageIcon("src/picts/dogIcon.png");
+		icon = new ImageIcon(imagePaths[0]);
 		
-		// Create main panel for printer error message
-		JPanel printPanel = new JPanel(new BorderLayout());
+		printPanel = new JPanel(new BorderLayout());
         
-        // Load and scale printer error image
-        ImageIcon printerImage = new ImageIcon("src/picts/printer.png");
-        Image scaledImage = printerImage.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+        printerImage = new ImageIcon(imagePaths[1]);
+        scaledImage = printerImage.getImage().getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+        imageLabel = new JLabel(new ImageIcon(scaledImage));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
  
-        // Create error message label
-        JLabel textLabel = new JLabel("The system cannot see the printer. Check the connection and try again...", JLabel.CENTER);
+        textLabel = new JLabel("The system cannot see the printer. Check the connection and try again...", JLabel.CENTER);
         textLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         
-        // Add image and text to panel
         printPanel.add(imageLabel, BorderLayout.CENTER);
         printPanel.add(textLabel, BorderLayout.SOUTH);
         
-        // Set font for dialog buttons
         UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 16));
 
-        // Create option pane for error message
         JOptionPane optionPane = new JOptionPane(
                 printPanel,
                 JOptionPane.PLAIN_MESSAGE,
                 JOptionPane.DEFAULT_OPTION
             );
         
-        // Create and configure dialog window
-        JDialog dialog = optionPane.createDialog("Printing error");
-        dialog.setModal(false); // Allow interaction with other windows
-        dialog.setVisible(true); // Show the dialog
-        dialog.setIconImage(icon.getImage()); // Set window icon
+        dialog = optionPane.createDialog("Error");
+        dialog.setModal(false); 
+        dialog.setVisible(true); 
+        dialog.setIconImage(icon.getImage()); 
         
 	}
 }
