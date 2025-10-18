@@ -1,7 +1,6 @@
 package ScreenForms;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 
@@ -45,12 +44,12 @@ public class DeleteElementWindow extends InputOutputWindow
             
             if (inputData != null && inputData.length > 0) {
                 // Validate row number
-                InputException.validateRowNumber(inputData[0], tableModel.getRowCount());
+                InputException.validRowNumber(inputData[0], tableModel.getRowCount());
                 
                 int rowToDelete = Integer.parseInt(inputData[0]);
                 
                 // Delete the selected row
-                this.deleteRowByNumber(rowToDelete);
+                deleteRowByNumber(rowToDelete);
                 
                 // Show success message
                 if (SCSDialog != null) {
@@ -59,8 +58,7 @@ public class DeleteElementWindow extends InputOutputWindow
             }
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
-            // Повторно показываем окно ввода
-            this.show();
+            show();
         }
     }
     

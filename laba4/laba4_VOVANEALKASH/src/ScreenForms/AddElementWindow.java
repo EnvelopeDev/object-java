@@ -45,7 +45,7 @@ public class AddElementWindow extends InputOutputWindow
             
             // If user provided data, validate and add new row
             if (newData != null) {
-                InputException.validateRequiredFields(textFields);
+                InputException.validEmptyField(textFields);
                 
                 // Add the new row to table with user data
                 addRowToTable();
@@ -57,8 +57,7 @@ public class AddElementWindow extends InputOutputWindow
             }
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
-            // Повторно показываем окно ввода
-            this.show();
+            show();
         }
     }
     

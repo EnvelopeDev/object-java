@@ -6,10 +6,9 @@ import javax.swing.JTextField;
  * Универсальное исключение для обработки ошибок ввода в приложении
  * с методами валидации
  * @author Vadim Ustinov
- * @version 1.0
+ * @version 1.1
  */
 public class InputException extends Exception {
-    private final String fieldName;
     private final ErrorType errorType;
     
     public enum ErrorType {
@@ -19,14 +18,9 @@ public class InputException extends Exception {
         INVALID_FORMAT
     }
     
-    public InputException(String message, String fieldName, ErrorType errorType) {
+    public InputException(String message, ErrorType errorType) {
         super(message);
-        this.fieldName = fieldName;
         this.errorType = errorType;
-    }
-    
-    public String getFieldName() {
-        return fieldName;
     }
     
     public ErrorType getErrorType() {
@@ -38,31 +32,14 @@ public class InputException extends Exception {
      * @param textFields array of text fields to validate
      * @throws InputException if any required field is empty
      */
-    public static void validateRequiredFields(JTextField[] textFields) throws InputException {
+    public static void validEmptyField(JTextField[] textFields) throws InputException {
         for (int i = 0; i < textFields.length; i++) {
             if (textFields[i].getText().trim().isEmpty()) {
                 throw new InputException(
-                    "Поле " + (i + 1) + " не может быть пустым", 
-                    "Поле " + (i + 1), 
+                    "Field " + (i + 1) + " cannot be empty", 
                     ErrorType.EMPTY_FIELD
                 );
             }
-        }
-    }
-    
-    /**
-     * Validates that a specific field is filled
-     * @param textField the text field to validate
-     * @param fieldName the name of the field for error message
-     * @throws InputException if the field is empty
-     */
-    public static void validateFieldNotEmpty(JTextField textField, String fieldName) throws InputException {
-        if (textField.getText().trim().isEmpty()) {
-            throw new InputException(
-                fieldName + " не может быть пустым",
-                fieldName,
-                ErrorType.EMPTY_FIELD
-            );
         }
     }
     
@@ -72,11 +49,10 @@ public class InputException extends Exception {
      * @param maxRows maximum allowed row number
      * @throws InputException if row number is invalid or not a number
      */
-    public static void validateRowNumber(String rowNumberStr, int maxRows) throws InputException {
+    public static void validRowNumber(String rowNumberStr, int maxRows) throws InputException {
         if (rowNumberStr.trim().isEmpty()) {
             throw new InputException(
-                "Номер строки не может быть пустым",
-                "Номер строки",
+                "Row number cannot be empty",
                 ErrorType.EMPTY_FIELD
             );
         }
@@ -85,15 +61,13 @@ public class InputException extends Exception {
             int rowNumber = Integer.parseInt(rowNumberStr);
             if (rowNumber < 1 || rowNumber > maxRows) {
                 throw new InputException(
-                    "Некорректный номер строки: " + rowNumber + ". Допустимый диапазон: 1-" + maxRows,
-                    "Номер строки",
+                    "Invalid row number: " + rowNumber + ". Valid range: 1-" + maxRows,
                     ErrorType.OUT_OF_RANGE
                 );
             }
         } catch (NumberFormatException e) {
             throw new InputException(
-                "Номер строки должен быть числом",
-                "Номер строки", 
+                "Row number must be a number",
                 ErrorType.INVALID_NUMBER
             );
         }
@@ -105,11 +79,10 @@ public class InputException extends Exception {
      * @param fieldName the name of the field for error message
      * @throws InputException if text is not a number
      */
-    public static void validateNumber(String text, String fieldName) throws InputException {
+    public static void validInputField(String text, String fieldName) throws InputException {
         if (text.trim().isEmpty()) {
             throw new InputException(
-                fieldName + " не может быть пустым",
-                fieldName,
+                fieldName + " cannot be empty",
                 ErrorType.EMPTY_FIELD
             );
         }
@@ -118,27 +91,30 @@ public class InputException extends Exception {
             Integer.parseInt(text);
         } catch (NumberFormatException e) {
             throw new InputException(
-                fieldName + " должен быть числом",
-                fieldName, 
+                fieldName + " must be a number",
                 ErrorType.INVALID_NUMBER
             );
         }
     }
-    
+ 
     /**
-     * Validates number range
-     * @param number the number to validate
-     * @param fieldName the name of the field for error message
-     * @param min minimum allowed value
-     * @param max maximum allowed value
-     * @throws InputException if number is out of range
+     * Validates data array for editing
+     * @param data the data array to validate
+     * @param expectedLength expected length of the array
+     * @throws InputException if data array is invalid
      */
-    public static void validateNumberRange(int number, String fieldName, int min, int max) throws InputException {
-        if (number < min || number > max) {
+    public static void validDataArray(String[] data, int expectedLength) throws InputException {
+        if (data == null) {
             throw new InputException(
-                fieldName + " должен быть в диапазоне " + min + "-" + max,
-                fieldName,
-                ErrorType.OUT_OF_RANGE
+                "Data cannot be null",
+                ErrorType.INVALID_FORMAT
+            );
+        }
+        
+        if (data.length < expectedLength) {
+            throw new InputException(
+                "Invalid data format. Expected " + expectedLength + " fields, got " + data.length,
+                ErrorType.INVALID_FORMAT
             );
         }
     }

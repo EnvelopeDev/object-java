@@ -240,18 +240,8 @@ public class MainWindow
                     break;
 
                 case 5: 
-                    try {
-                        EditElementWindow editElem = new EditElementWindow(dogsTable);
-                        editElem.show();	                    
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(
-                            mainFrame,
-                            "Ошибка при редактировании: " + e.getMessage(),
-                            "Ошибка",
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                    }
+                    EditElementWindow editWindow = new EditElementWindow(dogsTable);
+                    editWindow.show();	       
                     break;
                 case 6:
                     try {

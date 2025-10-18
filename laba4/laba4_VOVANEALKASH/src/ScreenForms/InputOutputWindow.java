@@ -2,14 +2,13 @@ package ScreenForms;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * Base class for all input and output windows in the application
  * Provides common functionality for dialogs that get user input
  * and show messages to the user
  * @author Vadim Ustinov
- * @version 1.0
+ * @version 1.1
  */
 abstract public class InputOutputWindow
 {
@@ -35,9 +34,9 @@ abstract public class InputOutputWindow
     
     /**
      * Makes the application window visible 
-     * @throws IOException if there's an error displaying the window
+     * @throws InputException if there's an error displaying the window or input validation fails
      */
-    abstract public void show() throws IOException;
+    abstract public void show() throws InputException;
     
     /**
      * Creates a new window for input and output
@@ -98,7 +97,7 @@ abstract public class InputOutputWindow
      */
     public String[] getData()
     {
-        // Check if user clicked Yes/OK button
+        // Check if user clicked OK button
         if (IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
         {
             // Get text from each input field

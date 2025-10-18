@@ -1,28 +1,28 @@
 package ScreenForms;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.DefaultTableModel;
-import java.io.IOException;
 
 /**
  * Window for editing existing rows in the table
  * User can select a row and change its data
  * @author Vadim Ustinov
- * @version 1.0
+ * @version 2.0
  */
 public class EditElementWindow extends InputOutputWindow
 {
     private JTable editTable;
     private DefaultTableModel tableModel;
-    
+    private int rowToEdit;  
+    private int rowIndex;
+    private String[] currentData;  
     /**
      * Creates window to select which row to edit
      * @param table the table that contains the data to edit
      */
     public EditElementWindow(JTable table) 
     {
-        super("Enter the row number to edit", "Edit Row", 1);
+    	super("Enter the row number to edit", "Edit Row", 1);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
     }
@@ -42,84 +42,126 @@ public class EditElementWindow extends InputOutputWindow
         // Pre-fill text fields with current data
         if (currentData != null && currentData.length >= 3)
         {
-            textFields[0].setText(currentData[0]); // Name
-            textFields[1].setText(currentData[1]); // Breed
-            textFields[2].setText(currentData[2]); // Awards
+            textFields[0].setText(currentData[0]); 
+            textFields[1].setText(currentData[1]); 
+            textFields[2].setText(currentData[2]); 
+        }
+    }
+    
+    
+    /**
+     * Main entry point for the editing process
+     * Initiates the row selection window to start editing workflow
+     */
+    public void show()
+    {
+        try {
+            showRowSelectionWindow();
+            showDataEditingWindow();
+        } catch (InputException e) {
+            showErrorDialog(e.getMessage());
         }
     }
     
     /**
-     * Shows the edit window and processes user input
-     * First asks for row number, then asks for new values with current data pre-filled
-     * @throws IOException if there's an error during input/output operations
-     * @throws InputException if validation fails
+     * Displays the row selection window and handles row number input validation
+     * Shows error dialog and retries on invalid row number input
+     * Proceeds to data editing window upon successful row selection
      */
-    @Override
-    public void show() throws IOException
+    private void showRowSelectionWindow() throws InputException
     {
         try {
-            // Show first window to get row number from user
             IODialog.setVisible(true);
+            String[] rowData = getData();
             
-            String[] inputData = getData();
-            
-            if (inputData != null && inputData.length > 0) {
-                // Validate row number
-                InputException.validateRowNumber(inputData[0], tableModel.getRowCount());
+            if (rowData != null) 
+            {
+                InputException.validRowNumber(rowData[0], tableModel.getRowCount());
+                rowToEdit = Integer.parseInt(rowData[0]);
                 
-                int rowToEdit = Integer.parseInt(inputData[0]);
-                
-                // Get current data from the selected row
-                String[] currentData = new String[3];
-                currentData[0] = tableModel.getValueAt(rowToEdit-1, 1).toString(); // Name
-                currentData[1] = tableModel.getValueAt(rowToEdit-1, 2).toString(); // Breed
-                currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
-                
-                // Create second window to get new values from user with current data pre-filled
-                EditElementWindow inputNewElementWindow = new EditElementWindow(editTable, 3, currentData);
-                inputNewElementWindow.IODialog.setVisible(true);
-                
-                // Get new data and validate
-                String[] newData = inputNewElementWindow.getData();
-                if (newData != null) {
-                    InputException.validateRequiredFields(inputNewElementWindow.textFields);
-                    
-                    // Update the table with new values
-                    inputNewElementWindow.EditRowByNumber(rowToEdit-1);
-                    
-                    // Show success message
-                    inputNewElementWindow.SCSDialog.setVisible(true);
-                }
+                currentData = getCurrentRowData(rowToEdit);
+                InputException.validDataArray(currentData, 3);
             }
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
-            this.show();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            showErrorDialog("Ошибка доступа к данным таблицы");
+            showRowSelectionWindow();
         }
+    }
+    
+    /**
+     * Displays the data editing window with pre-filled current values
+     * Handles data input validation and table updates
+     * Shows error dialog and retries on invalid data input
+     * @param rowToEdit the row number to edit (1-based index)
+     * @param currentData current values of the row [name, breed, awards]
+     */
+    private void showDataEditingWindow()  throws InputException
+    {
+        InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
+        InputException.validDataArray(currentData, 3);
+        
+        EditElementWindow editDataWindow = new EditElementWindow(editTable, 3, currentData);
+        
+        try {
+            editDataWindow.IODialog.setVisible(true);
+            String[] editData = editDataWindow.getData();
+            
+            if (editData != null)
+            {
+                InputException.validEmptyField(editDataWindow.textFields);
+                
+                editDataWindow.EditRowByNumber(rowToEdit, editData);
+                
+                if (editDataWindow.SCSDialog != null)
+                {
+                    editDataWindow.SCSDialog.setVisible(true);
+                }
+            }
+        } catch (InputException e)
+        {
+            editDataWindow.showErrorDialog(e.getMessage());
+            showDataEditingWindow();
+        }
+    }
+    
+    /**
+     * Gets current data from the specified row
+     * @param rowNumber the row number (starting from 1)
+     * @return array with current data [name, breed, awards]
+     * @throws InputException if row number is invalid or table access fails
+     */
+    private String[] getCurrentRowData(int rowToEdit) throws InputException
+    {
+        InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
+        
+        rowIndex = rowToEdit - 1;
+        
+        String[] currentData = new String[3];
+        currentData[0] = tableModel.getValueAt(rowIndex, 1).toString();
+        currentData[1] = tableModel.getValueAt(rowIndex, 2).toString(); 
+        currentData[2] = tableModel.getValueAt(rowIndex, 3).toString(); 
+        
+        return currentData;
     }
     
     /**
      * Updates the table with edited data for specific row
      * @param rowNumber the row to edit (starting from 0)
-     * @throws IOException if there's an error during file operations or data processing
+     * @param editedData the new data to set
+     * @throws InputException if there's an error during data processing
      */
-    private void EditRowByNumber(int rowNumber) throws IOException 
+    private void EditRowByNumber(int rowToEdit, String[] editedData) throws InputException
     {
-        // Get the new values from user input
-        String[] editedData = getData();
+    	InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
+        InputException.validDataArray(editedData, 3);
         
-        // If user provided data, update the table
-        if (editedData != null) {
-            // Update name in column 1
-            tableModel.setValueAt(editedData[0].trim(), rowNumber, 1); 
-            // Update breed in column 2
-            tableModel.setValueAt(editedData[1].trim(), rowNumber, 2); 
-            // Update awards in column 3
-            tableModel.setValueAt(editedData[2].trim(), rowNumber, 3); 
-            
-            // Show success message
-            successOperationWindow("Row edited "); 
-        }
-    }  
+        rowIndex = rowToEdit - 1;
+        
+        tableModel.setValueAt(editedData[0].trim(), rowIndex, 1); 
+        tableModel.setValueAt(editedData[1].trim(), rowIndex, 2); 
+        tableModel.setValueAt(editedData[2].trim(), rowIndex, 3); 
+        
+        successOperationWindow("Row edited"); 
+    }
+   
 }
