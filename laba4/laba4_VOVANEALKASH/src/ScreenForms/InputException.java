@@ -86,15 +86,6 @@ public class InputException extends Exception {
                 ErrorType.EMPTY_FIELD
             );
         }
-        
-        try {
-            Integer.parseInt(text);
-        } catch (NumberFormatException e) {
-            throw new InputException(
-                fieldName + " must be a number",
-                ErrorType.INVALID_NUMBER
-            );
-        }
     }
  
     /**

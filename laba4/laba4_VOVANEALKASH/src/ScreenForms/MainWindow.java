@@ -225,18 +225,8 @@ public class MainWindow
                     }
                     break;
                 case 4: 
-                    try {
-                        DeleteElementWindow deleteElem = new DeleteElementWindow(dogsTable);    
-                        deleteElem.show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(
-                            mainFrame,
-                            "Ошибка при удалении: " + e.getMessage(),
-                            "Ошибка",
-                            JOptionPane.ERROR_MESSAGE
-                        );
-                    }
+                    DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable);    
+                    deleteWindow.show();
                     break;
 
                 case 5: 

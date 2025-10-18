@@ -16,6 +16,7 @@ public class EditElementWindow extends InputOutputWindow
     private int rowToEdit;  
     private int rowIndex;
     private String[] currentData;  
+    
     /**
      * Creates window to select which row to edit
      * @param table the table that contains the data to edit
@@ -47,8 +48,7 @@ public class EditElementWindow extends InputOutputWindow
             textFields[2].setText(currentData[2]); 
         }
     }
-    
-    
+   
     /**
      * Main entry point for the editing process
      * Initiates the row selection window to start editing workflow
@@ -56,8 +56,8 @@ public class EditElementWindow extends InputOutputWindow
     public void show()
     {
         try {
-            showRowSelectionWindow();
-            showDataEditingWindow();
+            rowSelectionWindow();
+            dataEditingWindow();
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
         }
@@ -68,7 +68,7 @@ public class EditElementWindow extends InputOutputWindow
      * Shows error dialog and retries on invalid row number input
      * Proceeds to data editing window upon successful row selection
      */
-    private void showRowSelectionWindow() throws InputException
+    private void rowSelectionWindow() throws InputException
     {
         try {
             IODialog.setVisible(true);
@@ -84,7 +84,7 @@ public class EditElementWindow extends InputOutputWindow
             }
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
-            showRowSelectionWindow();
+            rowSelectionWindow();
         }
     }
     
@@ -92,10 +92,8 @@ public class EditElementWindow extends InputOutputWindow
      * Displays the data editing window with pre-filled current values
      * Handles data input validation and table updates
      * Shows error dialog and retries on invalid data input
-     * @param rowToEdit the row number to edit (1-based index)
-     * @param currentData current values of the row [name, breed, awards]
      */
-    private void showDataEditingWindow()  throws InputException
+    private void dataEditingWindow()  throws InputException
     {
         InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
         InputException.validDataArray(currentData, 3);
@@ -120,13 +118,13 @@ public class EditElementWindow extends InputOutputWindow
         } catch (InputException e)
         {
             editDataWindow.showErrorDialog(e.getMessage());
-            showDataEditingWindow();
+            dataEditingWindow();
         }
     }
     
     /**
      * Gets current data from the specified row
-     * @param rowNumber the row number (starting from 1)
+     * @param rowToEdit the row number (starting from 1)
      * @return array with current data [name, breed, awards]
      * @throws InputException if row number is invalid or table access fails
      */
@@ -146,7 +144,7 @@ public class EditElementWindow extends InputOutputWindow
     
     /**
      * Updates the table with edited data for specific row
-     * @param rowNumber the row to edit (starting from 0)
+     * @param rowToEdit the row to edit (starting from 0)
      * @param editedData the new data to set
      * @throws InputException if there's an error during data processing
      */
@@ -163,5 +161,4 @@ public class EditElementWindow extends InputOutputWindow
         
         successOperationWindow("Row edited"); 
     }
-   
 }
