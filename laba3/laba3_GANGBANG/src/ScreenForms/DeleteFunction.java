@@ -21,7 +21,7 @@ public class DeleteFunction extends DialogWindow
      */
     public DeleteFunction(JTable table)
     {
-        super("Enter the row number to delete", "Delete Row", 1);
+        super("Enter the row number to delete", "Delete Row", 1, 0);
         deleteTable = table;
     }
 
