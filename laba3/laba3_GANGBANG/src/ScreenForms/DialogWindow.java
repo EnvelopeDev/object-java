@@ -123,10 +123,10 @@ abstract public class DialogWindow
             for (int i = 0; i < numRadioButtons; i++)
             {
                 if(radioButtons[i].isSelected()) {
-                	results[currArrSize] = "1";
+                	results[currArrSize] = "Да";
                 }
                 else {
-                	results[currArrSize] = "0";
+                	results[currArrSize] = "Нет";
                 }
                 currArrSize++;
             }

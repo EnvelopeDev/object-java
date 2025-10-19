@@ -42,7 +42,7 @@ public class EditFunction extends DialogWindow
         if (currentData != null && currentData.length >= 3)
         {
         	boolean hasAwards=false;
-        	if(currentData[2] == "1") {
+        	if(currentData[2] == "Да") {
         		hasAwards=true;
         	}
             textFields[0].setText(currentData[0]); // Name
@@ -67,7 +67,7 @@ public class EditFunction extends DialogWindow
         // Get current data from the selected row
         String[] currentData = new String[3];
         currentData[0] = tableModel.getValueAt(rowToEdit-1, 1).toString(); // Name
-        currentData[1] = tableModel.getValueAt(rowToEdit-1, 2).toString(); // Breed
+        currentData[1] = tableModel.getValueAt(rowToEdit-1, 2).toString(); // Breed}
         currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
         
     	// Create second window to get new values from user with current data pre-filled
