@@ -97,8 +97,9 @@ abstract public class InputOutputWindow
      */
     public String[] getData()
     {
-        // Check if user clicked OK button
-        if (IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
+        // Check if user clicked OK button (handle null when window is closed with X)
+        Object value = IOPane.getValue();
+        if (value != null && value.equals(JOptionPane.YES_OPTION)) 
         {
             // Get text from each input field
             for (int i = 0; i < numFields; i++)
@@ -144,35 +145,36 @@ abstract public class InputOutputWindow
     /**
      * Shows a window to confirm an action with user
      * @param text the question to ask user
-     * @return true if user clicked Yes, false if user clicked No
+     * @return true if user clicked Yes, false if user clicked No or closed window
      */
     public boolean confirmOperationWindow(String text)
     {
-    	// Create panel for confirmation message
-    	CONPanel = new JPanel(new BorderLayout());
-    	CONPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        // Create panel for confirmation message
+        CONPanel = new JPanel(new BorderLayout());
+        CONPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
         // Create label with question
-    	CONLabel = new JLabel(text, JLabel.CENTER);
-    	CONLabel.setFont(ioDefaultFont);
+        CONLabel = new JLabel(text, JLabel.CENTER);
+        CONLabel.setFont(ioDefaultFont);
         
         // Create option pane with Yes/No buttons
-    	CONPane = new JOptionPane(
-    			CONLabel,
-    			JOptionPane.PLAIN_MESSAGE,
-    			JOptionPane.YES_NO_OPTION
-    			);
-    	
-    	// Set font for buttons
-    	UIManager.put("OptionPane.buttonFont", ioDefaultFont);
+        CONPane = new JOptionPane(
+            CONLabel,
+            JOptionPane.PLAIN_MESSAGE,
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        // Set font for buttons
+        UIManager.put("OptionPane.buttonFont", ioDefaultFont);
         
         // Create and show dialog window
-    	CONDialog = CONPane.createDialog(title);
-    	CONDialog.setIconImage(icon.getImage());
-    	CONDialog.setVisible(true);
-    	
-    	// Check if user confirmed
-    	if (CONPane.getValue().equals(JOptionPane.YES_OPTION)) 
+        CONDialog = CONPane.createDialog(title);
+        CONDialog.setIconImage(icon.getImage());
+        CONDialog.setVisible(true);
+        
+        // Check if user confirmed (handle null when window is closed with X)
+        Object value = CONPane.getValue();
+        if (value != null && value.equals(JOptionPane.YES_OPTION)) 
         {
             return true;
         }

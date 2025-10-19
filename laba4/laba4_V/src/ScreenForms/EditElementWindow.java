@@ -16,6 +16,7 @@ public class EditElementWindow extends InputOutputWindow
     private int rowToEdit;  
     private int rowIndex;
     private String[] currentData;  
+    private boolean operationCancelled = false;
     
     /**
      * Creates window to select which row to edit
@@ -56,8 +57,12 @@ public class EditElementWindow extends InputOutputWindow
     public void show()
     {
         try {
-            rowSelectionWindow();
-            dataEditingWindow();
+        	showRowSelection();
+        	if (operationCancelled)
+        	{
+        		return;
+        	}
+        	showDataEditing();
         } catch (InputException e) {
             showErrorDialog(e.getMessage());
         }
@@ -68,23 +73,33 @@ public class EditElementWindow extends InputOutputWindow
      * Shows error dialog and retries on invalid row number input
      * Proceeds to data editing window upon successful row selection
      */
-    private void rowSelectionWindow() throws InputException
+    private void showRowSelection() throws InputException
     {
-        try {
-            IODialog.setVisible(true);
-            String[] rowData = getData();
-            
-            if (rowData != null) 
-            {
-                InputException.validRowNumber(rowData[0], tableModel.getRowCount());
-                rowToEdit = Integer.parseInt(rowData[0]);
+        boolean validInput = false;
+        while (!validInput && !operationCancelled)
+        {
+            try {
+                IODialog.setVisible(true);
+                String[] rowData = getData();
                 
-                currentData = getCurrentRowData(rowToEdit);
-                InputException.validDataArray(currentData, 3);
+                if (rowData != null) 
+                {
+                    InputException.validRowNumber(rowData[0], tableModel.getRowCount());
+                    rowToEdit = Integer.parseInt(rowData[0]);
+                    
+                    currentData = getCurrentRowData(rowToEdit);
+                    InputException.validDataArray(currentData, 3);
+                    
+                    validInput = true;
+                }
+                else 
+                {
+                    operationCancelled = true;
+                    validInput = true;
+                }
+            } catch (InputException e) {           
+                showErrorDialog(e.getMessage());
             }
-        } catch (InputException e) {
-            showErrorDialog(e.getMessage());
-            rowSelectionWindow();
         }
     }
     
@@ -93,34 +108,45 @@ public class EditElementWindow extends InputOutputWindow
      * Handles data input validation and table updates
      * Shows error dialog and retries on invalid data input
      */
-    private void dataEditingWindow()  throws InputException
+    private void showDataEditing() throws InputException
     {
-        InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
-        InputException.validDataArray(currentData, 3);
-        
-        EditElementWindow editDataWindow = new EditElementWindow(editTable, 3, currentData);
-        
-        try {
-            editDataWindow.IODialog.setVisible(true);
-            String[] editData = editDataWindow.getData();
-            
-            if (editData != null)
-            {
-                InputException.validEmptyField(editDataWindow.textFields);
-                InputException.validDataArray(editData, 3);
+    	boolean validInput = false;
+    	
+    	while (!validInput && !operationCancelled)
+    	{
+    		try {
+    			InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
+    	        InputException.validDataArray(currentData, 3);
+    	        
+    	        EditElementWindow editDataWindow = new EditElementWindow(editTable, 3, currentData);
+                editDataWindow.IODialog.setVisible(true);
                 
-                editDataWindow.EditRowByNumber(rowToEdit, editData);
+                String[] editData = editDataWindow.getData();
                 
-                if (editDataWindow.SCSDialog != null)
+                if (editData != null)
                 {
-                    editDataWindow.SCSDialog.setVisible(true);
+                    InputException.validEmptyField(editDataWindow.textFields);
+                    InputException.validDataArray(editData, 3);
+                    
+                    editDataWindow.EditRowByNumber(rowToEdit, editData);
+                    
+                    if (editDataWindow.SCSDialog != null)
+                    {
+                        editDataWindow.SCSDialog.setVisible(true);
+                    }
+                    
+                    validInput = true;
                 }
+                else 
+                {
+                    operationCancelled = true;
+                    validInput = true;
+                }
+            } catch (InputException e)
+            {
+                showErrorDialog(e.getMessage());
             }
-        } catch (InputException e)
-        {
-            editDataWindow.showErrorDialog(e.getMessage());
-            dataEditingWindow();
-        }
+    	}
     }
     
     /**
