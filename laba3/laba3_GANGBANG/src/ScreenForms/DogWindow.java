@@ -132,9 +132,7 @@ public class DogWindow
         for (int i = 0; i < tableData.length; i++) {
             System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);//copy array (source_arr, start_i, target_arr, start_i, length_of_elements)
         }
-        
-        SearchFunction.setOriginalData(originalTableData);
-        
+                
         // Create table model
         tableModel = new DefaultTableModel(tableData, columnNames);//init table model
         dogsTable = new JTable(tableModel);//creating a data visualization 
@@ -264,18 +262,7 @@ public class DogWindow
 	                    exitApplication();
 	                    break;
 	                case 8: 
-	                    try {
-	                        SearchFunction searchWindow = new SearchFunction(
-	                            "Enter search term:", 
-	                            "Search Dogs", 
-	                            1, 
-	                            dogsTable
-	                        );
-	                        searchWindow.show();
-	                    } catch (IOException e) {
-	                        e.printStackTrace();
-	                    }
-	                    break;
+	                	break;
 
             }
         }

@@ -5,7 +5,7 @@ import java.io.IOException;
 
 /**
  * Main function
- * @author Vadim Ustinov
+ * @author Gushchin Kirill
  * @version 1.0
  */
 public class DogList

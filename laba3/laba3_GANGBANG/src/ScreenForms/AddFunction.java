@@ -21,7 +21,7 @@ public class AddFunction extends DialogWindow
      */
     public AddFunction(JTable table)
     {
-        super("Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)", "Add Row", 3);
+        super("Enter the data to add( 1 - Name; 2 - Breed;3 - Awards)", "Add Row", 2, 1);
         addTable = table;
         tableModel = (DefaultTableModel) addTable.getModel();
     }
