@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableModel;
  * Window for editing existing rows in the table
  * User can select a row and change its data
  * @author Vadim Ustinov
- * @version 2.0
+ * @version 2.1
  */
 public class EditElementWindow extends InputOutputWindow
 {
@@ -17,6 +17,8 @@ public class EditElementWindow extends InputOutputWindow
     private int rowIndex;
     private String[] currentData; 
     private boolean operationCancelled;
+    
+    private static final String[] FIELD_NAMES = {"Name", "Breed", "Awards"};
     
     /**
      * Creates window to select which row to edit
@@ -116,8 +118,11 @@ public class EditElementWindow extends InputOutputWindow
             
             if (editData != null)
             {
-                InputException.validEmptyField(editDataWindow.textFields);
+                InputException.validEmptyField(editDataWindow.textFields, FIELD_NAMES);
                 InputException.validDataArray(editData, 3);
+                InputException.validLettersOnly(editData[0], FIELD_NAMES[0]);
+                InputException.validLettersOnly(editData[1], FIELD_NAMES[1]);
+                InputException.validZeroOrOne(editData[2], FIELD_NAMES[2]);
                 
                 editDataWindow.EditRowByNumber(rowToEdit, editData);
                 

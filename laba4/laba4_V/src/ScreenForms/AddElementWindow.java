@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableModel;
  * Window for adding new rows to the table
  * User can enter data for a new dog entry
  * @author Vadim Ustinov
- * @version 1.0
+ * @version 1.1
  */
 public class AddElementWindow extends InputOutputWindow
 {
@@ -16,6 +16,8 @@ public class AddElementWindow extends InputOutputWindow
     private int rowToAdd;
     private int rowIndex;
     private boolean operationCancelled;
+    
+    private static final String[] FIELD_NAMES = {"Name", "Breed", "Awards"};
     
     /**
      * Creates window for selecting position to add new row
@@ -99,8 +101,11 @@ public class AddElementWindow extends InputOutputWindow
             
             if (addData != null)
             {
-                InputException.validEmptyField(dataInputWindow.textFields);
+                InputException.validEmptyField(dataInputWindow.textFields, FIELD_NAMES);
                 InputException.validDataArray(addData, 3);
+                InputException.validLettersOnly(addData[0], FIELD_NAMES[0]);
+                InputException.validLettersOnly(addData[1], FIELD_NAMES[1]);
+                InputException.validZeroOrOne(addData[2], FIELD_NAMES[2]);
                 
                 dataInputWindow.addRowToTable(rowToAdd, addData);
                 
