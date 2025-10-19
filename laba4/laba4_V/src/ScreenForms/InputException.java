@@ -3,14 +3,17 @@ package ScreenForms;
 import javax.swing.JTextField;
 
 /**
- * Универсальное исключение для обработки ошибок ввода в приложении
- * с методами валидации
+ * Universal exception for handling input errors in the application
+ * with validation methods
  * @author Vadim Ustinov
  * @version 1.2
  */
 public class InputException extends Exception {
     private final ErrorType errorType;
     
+    /**
+     * Types of errors
+     */
     public enum ErrorType {
         EMPTY_FIELD,
         INVALID_NUMBER,
