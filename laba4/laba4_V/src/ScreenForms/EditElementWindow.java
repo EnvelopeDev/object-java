@@ -15,8 +15,8 @@ public class EditElementWindow extends InputOutputWindow
     private DefaultTableModel tableModel;
     private int rowToEdit;  
     private int rowIndex;
-    private String[] currentData;  
-    private boolean operationCancelled = false;
+    private String[] currentData; 
+    private boolean operationCancelled;
     
     /**
      * Creates window to select which row to edit
@@ -54,18 +54,14 @@ public class EditElementWindow extends InputOutputWindow
      * Main entry point for the editing process
      * Initiates the row selection window to start editing workflow
      */
-    public void show()
+    public void show() throws InputException
     {
-        try {
-        	showRowSelection();
-        	if (operationCancelled)
-        	{
-        		return;
-        	}
-        	showDataEditing();
-        } catch (InputException e) {
-            showErrorDialog(e.getMessage());
-        }
+		showRowSelection();
+		if (operationCancelled)
+		{
+			return;
+		}
+		showDataEditing();
     }
     
     /**
@@ -76,29 +72,25 @@ public class EditElementWindow extends InputOutputWindow
     private void showRowSelection() throws InputException
     {
         boolean validInput = false;
+        operationCancelled = false;
         while (!validInput && !operationCancelled)
         {
-            try {
-                IODialog.setVisible(true);
-                String[] rowData = getData();
+            IODialog.setVisible(true);
+            String[] rowData = getData();
+            
+            if (rowData != null) 
+            {
+                InputException.validRowNumber(rowData[0], tableModel.getRowCount());
+                rowToEdit = Integer.parseInt(rowData[0]);
                 
-                if (rowData != null) 
-                {
-                    InputException.validRowNumber(rowData[0], tableModel.getRowCount());
-                    rowToEdit = Integer.parseInt(rowData[0]);
-                    
-                    currentData = getCurrentRowData(rowToEdit);
-                    InputException.validDataArray(currentData, 3);
-                    
-                    validInput = true;
-                }
-                else 
-                {
-                    operationCancelled = true;
-                    validInput = true;
-                }
-            } catch (InputException e) {           
-                showErrorDialog(e.getMessage());
+                currentData = getCurrentRowData(rowToEdit);
+                InputException.validDataArray(currentData, 3);
+                
+                validInput = true;
+            }
+            else 
+            {
+                operationCancelled = true;
             }
         }
     }
@@ -110,43 +102,37 @@ public class EditElementWindow extends InputOutputWindow
      */
     private void showDataEditing() throws InputException
     {
-    	boolean validInput = false;
-    	
-    	while (!validInput && !operationCancelled)
-    	{
-    		try {
-    			InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
-    	        InputException.validDataArray(currentData, 3);
-    	        
-    	        EditElementWindow editDataWindow = new EditElementWindow(editTable, 3, currentData);
-                editDataWindow.IODialog.setVisible(true);
-                
-                String[] editData = editDataWindow.getData();
-                
-                if (editData != null)
-                {
-                    InputException.validEmptyField(editDataWindow.textFields);
-                    InputException.validDataArray(editData, 3);
-                    
-                    editDataWindow.EditRowByNumber(rowToEdit, editData);
-                    
-                    if (editDataWindow.SCSDialog != null)
-                    {
-                        editDataWindow.SCSDialog.setVisible(true);
-                    }
-                    
-                    validInput = true;
-                }
-                else 
-                {
-                    operationCancelled = true;
-                    validInput = true;
-                }
-            } catch (InputException e)
+        boolean validInput = false;
+        operationCancelled = false;
+        while (!validInput && !operationCancelled)
+        {
+            InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
+            InputException.validDataArray(currentData, 3);
+            
+            EditElementWindow editDataWindow = new EditElementWindow(editTable, 3, currentData);
+            editDataWindow.IODialog.setVisible(true);
+            
+            String[] editData = editDataWindow.getData();
+            
+            if (editData != null)
             {
-                showErrorDialog(e.getMessage());
+                InputException.validEmptyField(editDataWindow.textFields);
+                InputException.validDataArray(editData, 3);
+                
+                editDataWindow.EditRowByNumber(rowToEdit, editData);
+                
+                if (editDataWindow.SCSDialog != null)
+                {
+                    editDataWindow.SCSDialog.setVisible(true);
+                }
+                
+                validInput = true;
             }
-    	}
+            else 
+            {
+                operationCancelled = true;
+            }
+        }
     }
     
     /**

@@ -15,6 +15,7 @@ public class AddElementWindow extends InputOutputWindow
     private DefaultTableModel tableModel;
     private int rowToAdd;
     private int rowIndex;
+    private boolean operationCancelled;
     
     /**
      * Creates window for selecting position to add new row
@@ -43,35 +44,39 @@ public class AddElementWindow extends InputOutputWindow
      * Shows the add window and processes new data
      * Gets user input and adds new row to table
      */
-    public void show()
+    public void show() throws InputException
     {
-        try {
-        	rowSelectionWindow();
-            dataAddingWindow();
-        } catch (InputException e) {
-            showErrorDialog(e.getMessage());
-        }
+    	showRowSelection();
+		if (operationCancelled)
+		{
+			return;
+		}
+		showDataAdding();
     }
     
     /**
      * First window - select position to add new row
      * Shows error dialog and retries on invalid position input
      */
-    private void rowSelectionWindow() throws InputException
+    private void showRowSelection() throws InputException
     {
-        try {
-            IODialog.setVisible(true);
+    	boolean validInput = false;
+        operationCancelled = false;
+        while (!validInput && !operationCancelled)
+        {
+        	IODialog.setVisible(true);
             String[] rowData = getData();
             
             if (rowData != null) 
             {
-                // Validate position (1 to tableSize+1)
                 InputException.validRowNumber(rowData[0], tableModel.getRowCount() + 1);
                 rowToAdd = Integer.parseInt(rowData[0]);
+                validInput = true;
             }
-        } catch (InputException e) {
-            showErrorDialog(e.getMessage());
-            rowSelectionWindow();
+            else 
+            {
+                operationCancelled = true;
+            }
         }
     }
     
@@ -79,13 +84,16 @@ public class AddElementWindow extends InputOutputWindow
      * Second window - enter data for new row
      * Shows error dialog and retries on invalid data input
      */
-    private void dataAddingWindow() throws InputException
+    private void showDataAdding() throws InputException
     {
-        InputException.validRowNumber(String.valueOf(rowToAdd), tableModel.getRowCount() + 1);
-        
-        AddElementWindow dataInputWindow = new AddElementWindow(addTable, 3);
-        
-        try {
+    	boolean validInput = false;
+        operationCancelled = false;
+        while (!validInput && !operationCancelled)
+        {
+        	InputException.validRowNumber(String.valueOf(rowToAdd), tableModel.getRowCount() + 1);
+	        
+	        AddElementWindow dataInputWindow = new AddElementWindow(addTable, 3);
+       
             dataInputWindow.IODialog.setVisible(true);
             String[] addData = dataInputWindow.getData();
             
@@ -100,11 +108,13 @@ public class AddElementWindow extends InputOutputWindow
                 {
                     dataInputWindow.SCSDialog.setVisible(true);
                 }
+                
+                validInput = true;
             }
-        } catch (InputException e)
-        {
-            dataInputWindow.showErrorDialog(e.getMessage());
-            dataAddingWindow();
+            else 
+            {
+                operationCancelled = true;
+            }
         }
     }
     

@@ -30,13 +30,9 @@ public class DeleteElementWindow extends InputOutputWindow
      * Shows the delete window and handles row deletion
      * Asks for row number and removes it after confirmation
      */
-    public void show()
+    public void show() throws InputException
     {
-        try {
-        	deleteSelectedRowWindow();
-        } catch (InputException e) {
-            showErrorDialog(e.getMessage());
-        }
+    	showDeleteRow();  
     }
     
     /**
@@ -44,9 +40,12 @@ public class DeleteElementWindow extends InputOutputWindow
      * Shows error dialog and retries on invalid row number input
      * Proceeds to data deleting window upon successful row selection
      */
-    private void deleteSelectedRowWindow() throws InputException
+    private void showDeleteRow() throws InputException
     {
-        try {
+        boolean validInput = false;
+        boolean operationCancelled = false;
+        while (!validInput && !operationCancelled)
+        {
             IODialog.setVisible(true);
             String[] rowData = getData();
             
@@ -56,10 +55,12 @@ public class DeleteElementWindow extends InputOutputWindow
                 rowToDelete = Integer.parseInt(rowData[0]);
                 
                 deleteRowByNumber(rowToDelete);
+                validInput = true;
             }
-        } catch (InputException e) {
-            showErrorDialog(e.getMessage());
-            deleteSelectedRowWindow();
+            else 
+            {
+                operationCancelled = true;
+            }
         }
     }
     

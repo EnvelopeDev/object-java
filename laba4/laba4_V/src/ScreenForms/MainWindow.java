@@ -236,7 +236,7 @@ public class MainWindow
      * Initializes the search panel with text field and search button
      * Provides functionality for filtering table data based on user input
      */
-    private void initSearchPanel() 
+    private void initSearchPanel()
     {
     	inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init text panel for search
     	searchTextField = new JTextField(12);
@@ -266,31 +266,40 @@ public class MainWindow
     {
         if (buttonIndex < tooltips.length) 
         {   
-            switch(buttonIndex)
-            {
-                case 3:
-                    AddElementWindow addElem = new AddElementWindow(dogsTable);
-                    addElem.show();
-                    break;
-                case 4: 
-                    DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable);    
-                    deleteWindow.show();
-                    break;
-                case 5: 
-                    EditElementWindow editWindow = new EditElementWindow(dogsTable);
-                    editWindow.show();	       
-                    break;
-                case 6:
-                	PrinterWindow printWindow = new PrinterWindow();
-                    printWindow.show();
-                    break;
-                case 7: 
-                    exitApplication();
-                    break;
-                case 8:
-                    String text = searchTextField.getText(); 
-                    performSearch(text);
-                    break;
+            try {
+                switch(buttonIndex)
+                {
+                    case 3:
+                        AddElementWindow addElem = new AddElementWindow(dogsTable);
+                        addElem.show();
+                        break;
+                    case 4: 
+                        DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable);    
+                        deleteWindow.show();
+                        break;
+                    case 5: 
+                        EditElementWindow editWindow = new EditElementWindow(dogsTable);
+                        editWindow.show();	       
+                        break;
+                    case 6:
+                        PrinterWindow printWindow = new PrinterWindow();
+                        printWindow.show();
+                        break;
+                    case 7: 
+                        exitApplication();
+                        break;
+                    case 8:
+                        String text = searchTextField.getText(); 
+                        searchElement(text);
+                        break;
+                }
+            } catch (InputException e) {
+                JOptionPane.showMessageDialog(
+                    mainFrame,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
         }
     }
@@ -335,7 +344,7 @@ public class MainWindow
      * Filters table data based on search text, showing rows where any cell starts with the search text
      * @param searchText the text to search for in table cells
      */
-    private static void performSearch(String searchText)
+    private static void searchElement(String searchText)
     {
         // If no search text, show all data again
         if (searchText == null)
