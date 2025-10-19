@@ -21,7 +21,7 @@ public class EditFunction extends DialogWindow
      */
     public EditFunction(JTable table) 
     {
-    	super("Enter the row number to edit", "Edit Row", 1);
+    	super("Enter the row number to edit", "Edit Row", 1, 0);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
     }
@@ -32,18 +32,22 @@ public class EditFunction extends DialogWindow
      * @param num_Fields how many fields to edit (name, breed, awards)
      * @param currentData current values of the row being edited
      */
-    private EditFunction(JTable table, int num_Fields, String[] currentData)
+    private EditFunction(JTable table, String[] currentData, int num_Fields, int _numRadioButtons)
     {
-        super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", num_Fields);
+        super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", num_Fields, _numRadioButtons);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
         
         // Pre-fill text fields with current data
         if (currentData != null && currentData.length >= 3)
         {
+        	boolean hasAwards=false;
+        	if(currentData[2] == "1") {
+        		hasAwards=true;
+        	}
             textFields[0].setText(currentData[0]); // Name
             textFields[1].setText(currentData[1]); // Breed
-            textFields[2].setText(currentData[2]); // Awards
+            radioButtons[0].setSelected(hasAwards); // Awards
         }
     }
     
@@ -67,7 +71,7 @@ public class EditFunction extends DialogWindow
         currentData[2] = tableModel.getValueAt(rowToEdit-1, 3).toString(); // Awards
         
     	// Create second window to get new values from user with current data pre-filled
-    	EditFunction inputNewElementWindow = new EditFunction(editTable, 3, currentData);
+    	EditFunction inputNewElementWindow = new EditFunction(editTable, currentData, 2, 1);
     	inputNewElementWindow.IODialog.setVisible(true);
     	
     	// Update the table with new values
