@@ -61,6 +61,13 @@ public class Dog
      */
     public void setAwards(boolean newHasAward){hasAward = newHasAward;}
     
+    public void copyDog(String newName, String newPoroda, boolean newHasAward) 
+    {
+    	name = newName;
+    	poroda = newPoroda;
+    	hasAward = newHasAward;
+    }
+    
     @Override
     public String toString() 
     {

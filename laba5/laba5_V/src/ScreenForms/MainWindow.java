@@ -287,6 +287,7 @@ public class MainWindow
 						try 
 						{
 							dogs = fileMngr.inputFromCSV(DOGS_FILE_PATH);
+							updateTableWithDataDogs(dogs);
 						} 
 						catch (IOException e) 
 						{
@@ -443,4 +444,24 @@ public class MainWindow
             tableModel.addRow(row);
         }
     }
+    
+    private static void updateTableWithDataDogs(List<Dog> data)
+    {
+        // Clear the table
+        tableModel.setRowCount(0);
+        String[] dogData = new String[3];
+        String[] row = new String[4];
+        // Add each row from the search results
+        for (int i = 0; i < data.getSize(); i++)
+        {
+        	dogData = data.at(i).toString().split(";");
+        	row[0] = Integer.toString(i+1);
+            for(int j=0;j<3;j++) 
+            {	
+            	row[1+j] = dogData[j];
+            }
+            tableModel.addRow(row);
+        }
+    }
+
 }

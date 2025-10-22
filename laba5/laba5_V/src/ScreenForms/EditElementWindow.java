@@ -41,11 +41,12 @@ public class EditElementWindow extends InputOutputWindow
      * @param num_Fields how many fields to edit (name, breed, awards)
      * @param currentData current values of the row being edited
      */
-    private EditElementWindow(JTable table, int num_Fields, String[] currentData)
+    private EditElementWindow(JTable table, int num_Fields, String[] currentData, List<Dog> _dogs)
     {
         super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", 2, 1);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
+        dogs = _dogs;
         
         // Pre-fill text fields with current data
         if (currentData != null && currentData.length >= 3)
@@ -119,7 +120,7 @@ public class EditElementWindow extends InputOutputWindow
             InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
             InputException.validDataArray(currentData, 2);
             
-            EditElementWindow editDataWindow = new EditElementWindow(editTable, 2, currentData);
+            EditElementWindow editDataWindow = new EditElementWindow(editTable, 2, currentData, dogs);
             editDataWindow.IODialog.setVisible(true);
             
             String[] editData = editDataWindow.getData();
@@ -172,7 +173,13 @@ public class EditElementWindow extends InputOutputWindow
     private void EditRowByNumber(int rowToEdit, String[] editedData)
     {
         rowIndex = rowToEdit - 1;
-        
+        boolean hasAward = false;
+        if(editedData[2]=="1") 
+        {
+        	hasAward = true;
+        }
+        Dog newDog = new Dog(editedData[0], editedData[1], hasAward);
+        dogs.replace(newDog, rowIndex);
         tableModel.setValueAt(editedData[0].trim(), rowIndex, 1); 
         tableModel.setValueAt(editedData[1].trim(), rowIndex, 2); 
         tableModel.setValueAt(editedData[2].trim(), rowIndex, 3); 
