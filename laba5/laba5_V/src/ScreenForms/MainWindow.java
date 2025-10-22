@@ -277,10 +277,19 @@ public class MainWindow
 						try 
 						{
 							fileMngr.outputToCSV(DOGS_FILE_PATH, dogs);
+							JLabel message = new JLabel("Data saved successfully!");
+							message.setFont(new Font("Arial", Font.PLAIN, 16));
+							message.setHorizontalAlignment(SwingConstants.CENTER);
+							JOptionPane.showMessageDialog(
+				                    mainFrame,
+				                    message,
+				                    "Save",
+				                    JOptionPane.PLAIN_MESSAGE
+				                );
 						} 
 						catch (IOException e) 
 						{
-							e.printStackTrace();
+							//e.printStackTrace();
 						}
                 		break;
                 	case 2:
@@ -288,10 +297,20 @@ public class MainWindow
 						{
 							dogs = fileMngr.inputFromCSV(DOGS_FILE_PATH);
 							updateTableWithDataDogs(dogs);
+							JLabel message = new JLabel("Date restored successfully!");
+							message.setFont(new Font("Arial", Font.PLAIN, 16));
+							message.setHorizontalAlignment(SwingConstants.CENTER);
+							JOptionPane.showMessageDialog(
+				                    mainFrame,
+				                    message,
+				                    "Backup",
+				                    JOptionPane.PLAIN_MESSAGE
+				                );
+
 						} 
 						catch (IOException e) 
 						{
-							e.printStackTrace();
+							//e.printStackTrace();
 						}
                 		break;
                     case 3:

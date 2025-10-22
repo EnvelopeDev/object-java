@@ -104,6 +104,10 @@ abstract public class InputOutputWindow
         IODialog.setIconImage(icon.getImage());
     }
     
+    public InputOutputWindow()
+    { }
+
+    
     /**
      * Gets the data that user entered in the text fields
      * @return array of strings with user input, or null if user cancelled
