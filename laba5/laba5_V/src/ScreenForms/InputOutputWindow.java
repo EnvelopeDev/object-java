@@ -14,8 +14,10 @@ abstract public class InputOutputWindow
 {
 	protected String[] results;
     protected JTextField[] textFields;
+    protected JRadioButton[] radioButtons;
     protected ImageIcon icon;
     protected int numFields;
+    protected int numRadioButtons;
     protected String title;
     protected JPanel fieldsPanel;
     protected Font ioDefaultFont;
@@ -34,7 +36,7 @@ abstract public class InputOutputWindow
     
     /**
      * Makes the application window visible 
-     * @throws InputException if there's an error displaying the window or input validation fails
+     * @throws IOException if there's an error displaying the window
      */
     abstract public void show() throws InputException;
     
@@ -44,15 +46,17 @@ abstract public class InputOutputWindow
      * @param title_window the title of the window
      * @param num_Fields how many input fields to create
      */
-    public InputOutputWindow(String text, String title_window, int num_Fields)
+    public InputOutputWindow(String text, String title_window, int num_Fields, int _numRadioButtons)
     {	
     	// Set up fonts and basic properties
     	ioDefaultFont = new Font("Arial", Font.PLAIN, 14);
         numFields = num_Fields;
+        numRadioButtons = _numRadioButtons;
         title = title_window;
-        results = new String[numFields];
+        results = new String[numFields+numRadioButtons];
         textFields = new JTextField[numFields];
-        icon = new ImageIcon("src/picts/dogIcon.png"); 
+        radioButtons = new JRadioButton[numRadioButtons];
+        icon = new ImageIcon("src/picts/icon.png"); 
         
         // Create main panel with borders
         IOPanel = new JPanel(new BorderLayout());
@@ -71,6 +75,14 @@ abstract public class InputOutputWindow
             textFields[i].setFont(ioDefaultFont);
             fieldsPanel.add(textFields[i]);
         }
+        
+        for (int i = 0; i < numRadioButtons; i++)
+        {
+            radioButtons[i] = new JRadioButton("Has the dog any awards?");
+            radioButtons[i].setFont(ioDefaultFont);
+            fieldsPanel.add(radioButtons[i]);
+        }
+
         
         // Add label and fields to main panel
         IOPanel.add(IOLabel, BorderLayout.NORTH);
@@ -97,15 +109,27 @@ abstract public class InputOutputWindow
      */
     public String[] getData()
     {
-        // Check if user clicked OK button (handle null when window is closed with X)
-        Object value = IOPane.getValue();
-        if (value != null && value.equals(JOptionPane.YES_OPTION)) 
+    	int currArrSize=0;
+        // Check if user clicked Yes/OK button
+        if (IOPane.getValue().equals(JOptionPane.YES_OPTION)) 
         {
             // Get text from each input field
             for (int i = 0; i < numFields; i++)
             {
-                results[i] = textFields[i].getText();
+                results[currArrSize] = textFields[i].getText();
+                currArrSize++;
             }
+            for (int i = 0; i < numRadioButtons; i++)
+            {
+                if(radioButtons[i].isSelected()) {
+                	results[currArrSize] = "1";
+                }
+                else {
+                	results[currArrSize] = "0";
+                }
+                currArrSize++;
+            }
+            
             return results;
         }
         return null;
@@ -145,42 +169,40 @@ abstract public class InputOutputWindow
     /**
      * Shows a window to confirm an action with user
      * @param text the question to ask user
-     * @return true if user clicked Yes, false if user clicked No or closed window
+     * @return true if user clicked Yes, false if user clicked No
      */
     public boolean confirmOperationWindow(String text)
     {
-        // Create panel for confirmation message
-        CONPanel = new JPanel(new BorderLayout());
-        CONPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    	// Create panel for confirmation message
+    	CONPanel = new JPanel(new BorderLayout());
+    	CONPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
         // Create label with question
-        CONLabel = new JLabel(text, JLabel.CENTER);
-        CONLabel.setFont(ioDefaultFont);
+    	CONLabel = new JLabel(text, JLabel.CENTER);
+    	CONLabel.setFont(ioDefaultFont);
         
         // Create option pane with Yes/No buttons
-        CONPane = new JOptionPane(
-            CONLabel,
-            JOptionPane.PLAIN_MESSAGE,
-            JOptionPane.YES_NO_OPTION
-        );
-        
-        // Set font for buttons
-        UIManager.put("OptionPane.buttonFont", ioDefaultFont);
+    	CONPane = new JOptionPane(
+    			CONLabel,
+    			JOptionPane.PLAIN_MESSAGE,
+    			JOptionPane.YES_NO_OPTION
+    			);
+    	
+    	// Set font for buttons
+    	UIManager.put("OptionPane.buttonFont", ioDefaultFont);
         
         // Create and show dialog window
-        CONDialog = CONPane.createDialog(title);
-        CONDialog.setIconImage(icon.getImage());
-        CONDialog.setVisible(true);
-        
-        // Check if user confirmed (handle null when window is closed with X)
-        Object value = CONPane.getValue();
-        if (value != null && value.equals(JOptionPane.YES_OPTION)) 
+    	CONDialog = CONPane.createDialog(title);
+    	CONDialog.setIconImage(icon.getImage());
+    	CONDialog.setVisible(true);
+    	
+    	// Check if user confirmed
+    	if (CONPane.getValue().equals(JOptionPane.YES_OPTION)) 
         {
             return true;
         }
         return false;
     }
-
 	/**
 	 * Shows an error message dialog
 	 * @param errorMessage the error message to display

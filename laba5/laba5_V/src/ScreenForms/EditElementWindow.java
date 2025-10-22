@@ -26,7 +26,7 @@ public class EditElementWindow extends InputOutputWindow
      */
     public EditElementWindow(JTable table) 
     {
-    	super("Enter the row number to edit", "Edit Row", 1);
+    	super("Enter the row number to edit", "Edit Row", 1, 0);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
     }
@@ -39,16 +39,20 @@ public class EditElementWindow extends InputOutputWindow
      */
     private EditElementWindow(JTable table, int num_Fields, String[] currentData)
     {
-        super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", num_Fields);
+        super("Enter new values: 1 - Name, 2 - Breed, 3 - Awards", "Edit Row", 2, 1);
         editTable = table;
         tableModel = (DefaultTableModel) editTable.getModel();
         
         // Pre-fill text fields with current data
         if (currentData != null && currentData.length >= 3)
         {
-            textFields[0].setText(currentData[0]); 
-            textFields[1].setText(currentData[1]); 
-            textFields[2].setText(currentData[2]); 
+        	boolean hasAwards=false;
+        	if(currentData[2] == "1") {
+        		hasAwards=true;
+        	}
+            textFields[0].setText(currentData[0]); // Name
+            textFields[1].setText(currentData[1]); // Breed
+            radioButtons[0].setSelected(hasAwards); // Awards
         }
     }
    
@@ -109,9 +113,9 @@ public class EditElementWindow extends InputOutputWindow
         while (!validInput && !operationCancelled)
         {
             InputException.validRowNumber(String.valueOf(rowToEdit), tableModel.getRowCount());
-            InputException.validDataArray(currentData, 3);
+            InputException.validDataArray(currentData, 2);
             
-            EditElementWindow editDataWindow = new EditElementWindow(editTable, 3, currentData);
+            EditElementWindow editDataWindow = new EditElementWindow(editTable, 2, currentData);
             editDataWindow.IODialog.setVisible(true);
             
             String[] editData = editDataWindow.getData();
@@ -119,10 +123,9 @@ public class EditElementWindow extends InputOutputWindow
             if (editData != null)
             {
                 InputException.validEmptyField(editDataWindow.textFields, FIELD_NAMES);
-                InputException.validDataArray(editData, 3);
+                InputException.validDataArray(editData, 2);
                 InputException.validLettersOnly(editData[0], FIELD_NAMES[0]);
                 InputException.validLettersOnly(editData[1], FIELD_NAMES[1]);
-                InputException.validZeroOrOne(editData[2], FIELD_NAMES[2]);
                 
                 editDataWindow.EditRowByNumber(rowToEdit, editData);
                 
