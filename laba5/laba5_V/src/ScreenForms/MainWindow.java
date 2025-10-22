@@ -9,6 +9,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Image;
+import java.io.IOException;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -24,8 +25,8 @@ import java.awt.FlowLayout;
  */
 public class MainWindow
 {
-	private List<Dog> dogs;
-	private FileManager fileMngr;
+	private static List<Dog> dogs;
+	private static FileManager fileMngr;
 	private ImageIcon icon; 
     private String[][] tableData;
     private JPanel buttonsPanel;
@@ -39,6 +40,8 @@ public class MainWindow
     private static JTable dogsTable;
     private static Font defaultFont;
     private static Font headerFont;
+    
+    private static final String DOGS_FILE_PATH = "src/data/dogs3.csv";
     
     /** Array of tooltips for application buttons */
     private static final String[] tooltips = {
@@ -92,6 +95,9 @@ public class MainWindow
      */
     public MainWindow() throws InputException
     {
+    	fileMngr = new FileManager();//init FileManager object
+        dogs = new List<>();//init List for dogs data
+
     	//DATA INIT SECTION
     	initData();
     	
@@ -120,9 +126,7 @@ public class MainWindow
     private void initData() throws InputException
     {
         try {
-            fileMngr = new FileManager();//init FileManager object
-            dogs = new List<>();//init List for dogs data
-            dogs = fileMngr.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
+            dogs = fileMngr.inputFromCSV(DOGS_FILE_PATH); //writes data from dogs3.csv
         } catch (Exception e) {
             throw new InputException("Error initializing data: " + e.getMessage(), 
                                    InputException.ErrorType.INVALID_FORMAT);
@@ -269,16 +273,36 @@ public class MainWindow
             try {
                 switch(buttonIndex)
                 {
+                	case 0:
+						try 
+						{
+							fileMngr.outputToCSV(DOGS_FILE_PATH, dogs);
+						} 
+						catch (IOException e) 
+						{
+							e.printStackTrace();
+						}
+                		break;
+                	case 2:
+						try 
+						{
+							dogs = fileMngr.inputFromCSV(DOGS_FILE_PATH);
+						} 
+						catch (IOException e) 
+						{
+							e.printStackTrace();
+						}
+                		break;
                     case 3:
-                        AddElementWindow addElem = new AddElementWindow(dogsTable);
+                        AddElementWindow addElem = new AddElementWindow(dogsTable, dogs);
                         addElem.show();
                         break;
                     case 4: 
-                        DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable);    
+                        DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable, dogs);    
                         deleteWindow.show();
                         break;
                     case 5: 
-                        EditElementWindow editWindow = new EditElementWindow(dogsTable);
+                        EditElementWindow editWindow = new EditElementWindow(dogsTable, dogs);
                         editWindow.show();	       
                         break;
                     case 6:
@@ -307,6 +331,7 @@ public class MainWindow
     /**
      * Displays a confirmation dialog box with exit image and confirmation text
      * Prompts user to confirm application exit before terminating the program
+     * @throws IOException 
      */
     private static void exitApplication() 
     {
@@ -335,6 +360,11 @@ public class MainWindow
 
         if (result == JOptionPane.YES_OPTION)
         {
+        	try {
+				fileMngr.outputToCSV(DOGS_FILE_PATH, dogs);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
             System.exit(0);
         }
     }

@@ -1,7 +1,9 @@
 package ScreenForms;
 
 import javax.swing.*;
+
 import java.awt.*;
+
 
 /**
  * Base class for all input and output windows in the application
@@ -33,7 +35,6 @@ abstract public class InputOutputWindow
     protected JOptionPane CONPane;
     protected JLabel CONLabel;
     protected JDialog CONDialog;
-    
     /**
      * Makes the application window visible 
      * @throws IOException if there's an error displaying the window

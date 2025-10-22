@@ -2,6 +2,9 @@ package ScreenForms;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import list.List;
+import object.dog.Dog;
+
 
 /**
  * Window for deleting rows from the table
@@ -12,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 public class DeleteElementWindow extends InputOutputWindow
 {
     private JTable deleteTable;
+    private List<Dog> dogs;
     private DefaultTableModel tableModel;
     private int rowToDelete;
     
@@ -19,10 +23,11 @@ public class DeleteElementWindow extends InputOutputWindow
      * Creates window for deleting rows
      * @param table the table to delete rows from
      */
-    public DeleteElementWindow(JTable table)
+    public DeleteElementWindow(JTable table, List<Dog> _dogs)
     {
         super("Enter the row number to delete", "Delete Row", 1, 0);
         deleteTable = table;
+        dogs = _dogs;
         tableModel = (DefaultTableModel) deleteTable.getModel();
     }
 
@@ -75,6 +80,7 @@ public class DeleteElementWindow extends InputOutputWindow
         
         if (confirmed)
         {
+        	dogs.remove(rowToDelete-1);
             tableModel.removeRow(rowToDelete-1);
             
             updateRowNumbers();

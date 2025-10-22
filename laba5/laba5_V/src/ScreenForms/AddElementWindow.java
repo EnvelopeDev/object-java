@@ -2,6 +2,9 @@ package ScreenForms;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import list.List;
+import object.dog.Dog;
+
 
 /**
  * Window for adding new rows to the table
@@ -12,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 public class AddElementWindow extends InputOutputWindow
 {
     private JTable addTable;
+    private List<Dog> dogs;
     private DefaultTableModel tableModel;
     private boolean operationCancelled;
     
@@ -21,10 +25,11 @@ public class AddElementWindow extends InputOutputWindow
      * Creates window for selecting position to add new row
      * @param table the table to add new row to
      */
-    public AddElementWindow(JTable table)
+    public AddElementWindow(JTable table, List<Dog> _dogs)
     {
         super("Enter the data to add (1 - Name; 2 - Breed; 3 - Awards)", "Add Row", 2, 1);
         addTable = table;
+        dogs = _dogs;
         tableModel = (DefaultTableModel) addTable.getModel();
     }
     
@@ -81,6 +86,13 @@ public class AddElementWindow extends InputOutputWindow
      */
     private void addRowToTable(String[] newData)
     {   
+    	boolean hasAwards=false;
+    	if(newData[2]=="1") 
+    	{
+    		hasAwards=true;
+    	}
+    	Dog newDog = new Dog(newData[0], newData[1], hasAwards);
+    	dogs.push_back(newDog);
     	int newRowNumber = tableModel.getRowCount() + 1;        
         tableModel.addRow(new Object[]{
                 String.valueOf(newRowNumber),        // Row number

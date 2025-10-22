@@ -2,6 +2,8 @@ package ScreenForms;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import list.List;
+import object.dog.Dog;
 
 /**
  * Window for editing existing rows in the table
@@ -13,6 +15,7 @@ public class EditElementWindow extends InputOutputWindow
 {
     private JTable editTable;
     private DefaultTableModel tableModel;
+    private List<Dog> dogs;
     private int rowToEdit;  
     private int rowIndex;
     private String[] currentData; 
@@ -24,10 +27,11 @@ public class EditElementWindow extends InputOutputWindow
      * Creates window to select which row to edit
      * @param table the table that contains the data to edit
      */
-    public EditElementWindow(JTable table) 
+    public EditElementWindow(JTable table, List<Dog> _dogs) 
     {
     	super("Enter the row number to edit", "Edit Row", 1, 0);
         editTable = table;
+        dogs = _dogs;
         tableModel = (DefaultTableModel) editTable.getModel();
     }
     
