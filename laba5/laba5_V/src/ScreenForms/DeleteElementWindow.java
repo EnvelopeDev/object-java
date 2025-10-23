@@ -22,6 +22,7 @@ public class DeleteElementWindow extends InputOutputWindow
     /**
      * Creates window for deleting rows
      * @param table the table to delete rows from
+     * @param _dogs the list of dogs to modify
      */
     public DeleteElementWindow(JTable table, List<Dog> _dogs)
     {

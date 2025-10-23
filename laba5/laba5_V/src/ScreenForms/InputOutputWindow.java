@@ -37,7 +37,7 @@ abstract public class InputOutputWindow
     protected JDialog CONDialog;
     /**
      * Makes the application window visible 
-     * @throws IOException if there's an error displaying the window
+     * @throws InputException if there's an error displaying the window
      */
     abstract public void show() throws InputException;
     
@@ -46,6 +46,7 @@ abstract public class InputOutputWindow
      * @param text the instruction text to show to user
      * @param title_window the title of the window
      * @param num_Fields how many input fields to create
+     * @param _numRadioButtons how many radio buttons to create
      */
     public InputOutputWindow(String text, String title_window, int num_Fields, int _numRadioButtons)
     {	
@@ -57,7 +58,7 @@ abstract public class InputOutputWindow
         results = new String[numFields+numRadioButtons];
         textFields = new JTextField[numFields];
         radioButtons = new JRadioButton[numRadioButtons];
-        icon = new ImageIcon("src/picts/icon.png"); 
+        icon = new ImageIcon("src/picts/dogIcon.png"); 
         
         // Create main panel with borders
         IOPanel = new JPanel(new BorderLayout());

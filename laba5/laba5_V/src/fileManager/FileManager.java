@@ -21,6 +21,13 @@ public class FileManager implements interfaceFM
     public FileManager() {
     }
 
+    /**
+     * Reads dog data from CSV file and creates a list of Dog objects
+     * CSV format: name;breed;awards (where awards is 0 or 1)
+     * @param filePath the path to the CSV file to read from
+     * @return List of Dog objects populated from the CSV file
+     * @throws IOException if there's an error reading the file or file not found
+     */
     @Override
     public List<Dog> inputFromCSV(String filePath) throws IOException 
     {
@@ -38,6 +45,13 @@ public class FileManager implements interfaceFM
         return dogList;
     }
 
+    /**
+     * Writes dog data to CSV file in format: name;breed;awards
+     * Awards are converted to 1 (true) or 0 (false)
+     * @param filePath the path to the CSV file to write to
+     * @param dogs the list of Dog objects to write to file
+     * @throws IOException if there's an error writing to the file
+     */
     @Override
     public void outputToCSV(String filePath, List<Dog> dogs) throws IOException 
     {

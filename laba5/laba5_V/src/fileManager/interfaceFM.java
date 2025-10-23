@@ -1,6 +1,5 @@
 package fileManager;
 
-import list.interfaceList;
 import java.io.IOException;
 import list.List;
 import object.dog.*;

@@ -24,6 +24,7 @@ public class AddElementWindow extends InputOutputWindow
     /**
      * Creates window for selecting position to add new row
      * @param table the table to add new row to
+     * @param _dogs the list of dogs to modify
      */
     public AddElementWindow(JTable table, List<Dog> _dogs)
     {

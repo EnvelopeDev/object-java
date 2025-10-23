@@ -26,6 +26,7 @@ public class EditElementWindow extends InputOutputWindow
     /**
      * Creates window to select which row to edit
      * @param table the table that contains the data to edit
+     * @param _dogs the list of dogs to modify
      */
     public EditElementWindow(JTable table, List<Dog> _dogs) 
     {
