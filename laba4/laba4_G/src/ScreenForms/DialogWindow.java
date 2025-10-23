@@ -39,7 +39,7 @@ abstract public class DialogWindow
      * Makes the application window visible 
      * @throws IOException if there's an error displaying the window
      */
-    abstract public void show() throws IOException;
+    abstract public void show() throws InputException;
     
     /**
      * Creates a new window for input and output
@@ -123,10 +123,10 @@ abstract public class DialogWindow
             for (int i = 0; i < numRadioButtons; i++)
             {
                 if(radioButtons[i].isSelected()) {
-                	results[currArrSize] = "1";
+                	results[currArrSize] = "Да";
                 }
                 else {
-                	results[currArrSize] = "0";
+                	results[currArrSize] = "Нет";
                 }
                 currArrSize++;
             }

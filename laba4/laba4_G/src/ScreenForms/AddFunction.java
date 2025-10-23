@@ -32,7 +32,7 @@ public class AddFunction extends DialogWindow
      * @throws IOException if there's an error during input/output operations
      */
     @Override
-    public void show() throws IOException
+    public void show() throws InputException
     {
     	// Show input window to get data from user
     	IODialog.setVisible(true);
@@ -52,7 +52,7 @@ public class AddFunction extends DialogWindow
      * Creates new row with number, name, breed, and awards
      * @throws IOException if there's an error during file operations or data processing
      */
-    private void addRowToTable() throws IOException
+    private void addRowToTable() throws InputException
     {   
         // Get the data user entered
         String[] newData = getData();

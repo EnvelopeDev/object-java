@@ -10,12 +10,14 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
 import java.awt.Graphics;
-import java.awt.Color;    
+import java.awt.Color;
+import java.awt.FlowLayout;    
 
 /**
  * Main window class for the Dog Festival application
@@ -32,6 +34,9 @@ public class DogWindow
     private JPanel buttonsPanel;
     private JButton[] buttons;
     private JScrollPane tableScrollPane;
+	private JPanel inputPanel;
+	private JComponent searchTextField;
+	private JPanel sentimentPanel;
     private static JFrame mainFrame;
     private static String[][] originalTableData;
     private static DefaultTableModel tableModel;
@@ -76,43 +81,112 @@ public class DogWindow
      */
     public DogWindow() throws IOException
     {
-        initData();
+    	//DATA INIT SECTION
+    	initData();
+    	
+    	//STYLE SECTION
         initMainFrame();
         initFonts();
         
+        //BUTTON SECTION
         initButtonsPanel();
+        
+        //TABLE SECTION
         initTable();
         
+        initUserSentimetPanel();
+        
+        //SEARCH SECTION
+        initSearchPanel();
         setBackgroundImage();
-
+        //ASSEMBLE MAINFRAME SECTION
+        //assembleMainFrame();
     }
     
+    /**
+     * Initializes application data by loading dog information from CSV file
+     * Creates FileManager and List objects to store and manage dog data
+     * @throws InputException if CSV file cannot be read or contains invalid data
+     */
     private void initData() throws IOException
     {
     	fileMngr = new FileManager();//init FileManager object
-        dogs = new List<>();//init List fot dogs data
+        dogs = new List<>();//init List for dogs data
         dogs = fileMngr.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
     }
     
+    /**
+     * Initializes font settings for the application
+     * Sets default font for regular text and header font for table headers
+     */
     private void initFonts() 
     {
     	defaultFont = new Font("Arial", Font.PLAIN, 14);
         headerFont = new Font("Arial", Font.BOLD, 16);
-
     }
     
+    private void initUserSentimetPanel() 
+    {
+    	sentimentPanel = new JPanel();
+    	sentimentPanel.setLayout(new GridLayout(1, 4, 10, 10));
+    	JButton btn = new JButton();
+    	
+    	ImageIcon imageForButton = new ImageIcon("src/picts/zloy.jpg");
+    	Image scaledImage = imageForButton.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+    	imageForButton = new ImageIcon(scaledImage);
+    	JLabel imgLabel = new JLabel(imageForButton);
+        sentimentPanel.add(imgLabel);
+    }
+    
+    /**
+     * Initializes the main application frame
+     * Sets window title, icon, size, and default close operation
+     */
     private void initMainFrame()
     {
-    	icon = new ImageIcon(imagePaths[9]);//init window icon
-        mainFrame = new JFrame("Dog Festival");//init mainfraime and init window title
+    	icon = new ImageIcon(imagePaths[0]);//init window icon
+        mainFrame = new JFrame("Sabachki");//init mainframe and init window title
         mainFrame.setIconImage(icon.getImage());
     	mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(900, 500);
         mainFrame.setLocationRelativeTo(null);
     }
     
+    /**
+     * Initializes the buttons panel with application control buttons
+     * Creates buttons with icons, tooltips, and event handlers
+     * Buttons include Save, Open, Backup, Add, Remove, Edit, Print, Dropout, and Search
+     */
+    private void initButtonsPanel()
+    {
+    	buttonsPanel = new JPanel();//init buttons panel
+        buttonsPanel.setLayout(new GridLayout(8, 1, 10, 10));//set 8 row, 1 cols, 10 width, 10 height
+        
+        buttons = new JButton[9];//init buttons array
+        for(int i = 0; i < 9; i++) 
+        {		    
+            ImageIcon imageForButton = new ImageIcon(imagePaths[i]);//init image for icon 
+            Image scaledImage = imageForButton.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);//scale without loss of quality and fixed size of 32 by 32 px
+            ImageIcon buttonIcon = new ImageIcon(scaledImage);//init icon for button
+            final int buttonIndex = i; // need final for lambda function
+            
+            buttons[i] = new JButton(buttonIcon);//set icon 
+            buttons[i].setToolTipText(tooltips[i]);//set button tooltips
+            buttons[i].setBorderPainted(false);//remove the frame
+            buttons[i].setContentAreaFilled(false);//set transparent background
+            buttons[i].setFocusPainted(false);//Remove backlight when focusing
+            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));//add click handler calls lambda that calls click logic
+            if (i < 8) {
+            	buttonsPanel.add(buttons[i]);//add button into buttonsPanel
+            }          
+        }
+    }
     
-    
+    /**
+     * Initializes the data table with dog information
+     * Converts dog data from List to table format, sets up table model,
+     * configures column properties and table appearance
+     */
     private void initTable() 
     {
     	tableData = new String[dogs.getSize()][4];//init table data
@@ -126,13 +200,21 @@ public class DogWindow
             tableData[i][1] = RowData[0]; // Dog name
             tableData[i][2] = RowData[1]; // Dog breed
             tableData[i][3] = RowData[2]; // Dog awards
+            if(Integer.parseInt(tableData[i][3])==1) 
+            {
+            	tableData[i][3] = "Да";
+            }
+            else 
+            {
+            	tableData[i][3] = "Нет";
+            }
         }
         
         originalTableData = new String[tableData.length][4];//init reserve copy table data
         for (int i = 0; i < tableData.length; i++) {
             System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);//copy array (source_arr, start_i, target_arr, start_i, length_of_elements)
         }
-                
+        
         // Create table model
         tableModel = new DefaultTableModel(tableData, columnNames);//init table model
         dogsTable = new JTable(tableModel);//creating a data visualization 
@@ -142,7 +224,8 @@ public class DogWindow
         TableColumnModel columnModel = dogsTable.getColumnModel();
         TableColumn numberColumn = columnModel.getColumn(0);
         numberColumn.setMaxWidth(35); 
-        
+        numberColumn = columnModel.getColumn(3);
+        numberColumn.setMaxWidth(135);
         // Center align row numbers
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer(); //creating a render for column
         centerRenderer.setHorizontalAlignment(JLabel.CENTER); //Adjusting the text alignment of the render
@@ -151,53 +234,47 @@ public class DogWindow
         // Configure table appearance
         dogsTable.setFont(defaultFont);
         dogsTable.getTableHeader().setFont(headerFont);
-        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition//set fixed row height to move columns
+        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
         dogsTable.setRowHeight(25);
         
         tableScrollPane = new JScrollPane(dogsTable);
-        
-        dogsTable.setOpaque(false);
-        dogsTable.setBackground(new Color(255, 255, 255, 200)); 
-        dogsTable.setForeground(Color.BLACK);
-        dogsTable.setFont(defaultFont);
-        
-        dogsTable.setSelectionBackground(new Color(100, 150, 255, 150));
-        dogsTable.setSelectionForeground(Color.BLACK);
-        
-        tableScrollPane.setOpaque(false);
-        tableScrollPane.getViewport().setOpaque(false);
-        
-        dogsTable.getTableHeader().setOpaque(false);
-        dogsTable.getTableHeader().setBackground(new Color(240, 240, 240, 200));
-
     }
     
-    private void initButtonsPanel()
+    /**
+     * Initializes the search panel with text field and search button
+     * Provides functionality for filtering table data based on user input
+     */
+    private void initSearchPanel() 
     {
-        buttonsPanel = new JPanel();//init buttons panel
-        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));//set 1 row, 8 cols, 10 width, 10 heigth
-        
-        buttons = new JButton[9];//init buttons array
-        for(int i = 0; i < 9; i++) 
-        {		    
-            ImageIcon imageForButton = new ImageIcon(imagePaths[i]);//init image for icon 
-            Image scaledImage = imageForButton.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-            ImageIcon buttonIcon = new ImageIcon(scaledImage);//init icon for button
-            final int buttonIndex = i; // need final for lambda function
-            
-            buttons[i] = new JButton(buttonIcon);//set icon 
-            buttons[i].setToolTipText(tooltips[i]);//set button tooltips
-            buttons[i].setBorderPainted(false);//remove the frame
-            buttons[i].setContentAreaFilled(false);//set transparent background
-            buttons[i].setFocusPainted(false);//Remove backlight when focusing
-            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));//add click handler calls lambda that calls click logic
-            buttonsPanel.add(buttons[i]);//add button into buttonsPane      
-        }
+    	inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init text panel for search
+    	searchTextField = new JTextField(12);
+        searchTextField.setFont(defaultFont);
+        buttons[8].addActionListener(e -> handleButtonClick(8));
+        inputPanel.add(searchTextField);
+        inputPanel.add(buttons[8]); 
+    }
+    
+    /**
+     * Assembles all GUI components into the main application frame
+     * Arranges buttons panel, table, and search panel in appropriate layout positions
+     */
+    private void assembleMainFrame()
+    {
+        mainFrame.add(buttonsPanel, BorderLayout.EAST);          
+        mainFrame.add(tableScrollPane, BorderLayout.CENTER);   
+        mainFrame.add(inputPanel, BorderLayout.NORTH);
+        mainFrame.add(sentimentPanel, BorderLayout.SOUTH);
     }
     
     private void setBackgroundImage() {
-
         ImageIcon backgroundIcon = new ImageIcon("src/picts/background.png");
+        
+        // Проверяем, что изображение загружено
+        if (backgroundIcon.getImageLoadStatus() != MediaTracker.COMPLETE) {
+            System.out.println("Background image not found: src/picts/background.png");
+            return;
+        }
+        
         final Image backgroundImage = backgroundIcon.getImage();
         
         JPanel backgroundPanel = new JPanel(new BorderLayout()) {
@@ -205,22 +282,35 @@ public class DogWindow
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (backgroundImage != null) {
+                    // Растягиваем изображение на всю панель
                     g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 }
             }
         };
         
+        // Делаем компоненты прозрачными
         buttonsPanel.setOpaque(false);
         tableScrollPane.setOpaque(false);
         tableScrollPane.getViewport().setOpaque(false);
         dogsTable.setOpaque(false);
+        dogsTable.setBackground(new Color(255, 255, 255, 200)); // Полупрозрачный белый для таблицы
+        inputPanel.setOpaque(false);
+        sentimentPanel.setOpaque(false);
         
-        backgroundPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        // Устанавливаем прозрачность для заголовка таблицы
+        dogsTable.getTableHeader().setOpaque(false);
+        dogsTable.getTableHeader().setBackground(new Color(240, 240, 240, 200));
+        
+        // Добавляем компоненты на фоновую панель
+        backgroundPanel.add(buttonsPanel, BorderLayout.EAST);
         backgroundPanel.add(tableScrollPane, BorderLayout.CENTER);
+        backgroundPanel.add(inputPanel, BorderLayout.NORTH);
+        backgroundPanel.add(sentimentPanel, BorderLayout.SOUTH);
         
+        // Устанавливаем фоновую панель как основную
         mainFrame.setContentPane(backgroundPanel);
     }
-   
+    
     private static void handleButtonClick(int buttonIndex)
     {
         if (buttonIndex < tooltips.length) 
