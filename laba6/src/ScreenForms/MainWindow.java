@@ -41,7 +41,7 @@ public class MainWindow
     private static Font defaultFont;
     private static Font headerFont;
     
-    private static final String DOGS_FILE_PATH = "src/data/dogs3.csv";
+    private static final String DOGS_FILE_PATH = "src/data/dogs.xml";
     
     /** Array of tooltips for application buttons */
     private static final String[] tooltips = {
@@ -119,14 +119,14 @@ public class MainWindow
     }
     
     /**
-     * Initializes application data by loading dog information from CSV file
+     * Initializes application data by loading dog information from XML file
      * Creates FileManager and List objects to store and manage dog data
-     * @throws InputException if CSV file cannot be read or contains invalid data
+     * @throws InputException if XML file cannot be read or contains invalid data
      */
     private void initData() throws InputException
     {
         try {
-            dogs = fileMngr.inputFromCSV(DOGS_FILE_PATH); //writes data from dogs3.csv
+            dogs = fileMngr.inputFromXML(DOGS_FILE_PATH); //writes data from dogs3.XML
         } catch (Exception e) {
             throw new InputException("Error initializing data: " + e.getMessage(), 
                                    InputException.ErrorType.INVALID_FORMAT);
@@ -276,7 +276,7 @@ public class MainWindow
                 	case 0:
 						try 
 						{
-							fileMngr.outputToCSV(DOGS_FILE_PATH, dogs);
+							fileMngr.outputToXML(DOGS_FILE_PATH, dogs);
 							JLabel message = new JLabel("Data saved successfully!");
 							message.setFont(new Font("Arial", Font.PLAIN, 16));
 							message.setHorizontalAlignment(SwingConstants.CENTER);
@@ -295,7 +295,7 @@ public class MainWindow
                 	case 2:
 						try 
 						{
-							dogs = fileMngr.inputFromCSV(DOGS_FILE_PATH);
+							dogs = fileMngr.inputFromXML(DOGS_FILE_PATH);
 							updateTableWithDataDogs(dogs);
 							JLabel message = new JLabel("Date restored successfully!");
 							message.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -381,7 +381,7 @@ public class MainWindow
         if (result == JOptionPane.YES_OPTION)
         {
         	try {
-				fileMngr.outputToCSV(DOGS_FILE_PATH, dogs);
+				fileMngr.outputToXML(DOGS_FILE_PATH, dogs);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
