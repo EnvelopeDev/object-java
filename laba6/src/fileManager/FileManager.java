@@ -85,6 +85,7 @@ public class FileManager implements interfaceFM
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(Files.newInputStream(Paths.get(filePath)));
+			
 			doc.getDocumentElement().normalize();
 			
 			NodeList dogNodes = doc.getElementsByTagName("dog");
@@ -152,6 +153,4 @@ public class FileManager implements interfaceFM
             throw new IOException("XML writing error: " + e.getMessage(), e);
         }
 	}
-	
-    
 }
