@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="DogReportHTML" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+    
+    <!-- Параметры ДО полей -->
+    <parameter name="REPORT_TITLE" class="java.lang.String"/>
+    <parameter name="TOTAL_DOGS" class="java.lang.Integer"/>
+    <parameter name="AWARDS_COUNT" class="java.lang.Integer"/>
+    <parameter name="AWARDS_PERCENTAGE" class="java.lang.Double"/>
+    <parameter name="GENERATION_DATE" class="java.util.Date"/>
+    
+    <!-- Поля ПОСЛЕ параметров -->
+    <field name="id" class="java.lang.Integer"/>
+    <field name="name" class="java.lang.String"/>
+    <field name="breed" class="java.lang.String"/>
+    <field name="awardsText" class="java.lang.String"/>
+    <field name="status" class="java.lang.String"/>
+    
+    <title>
+        <band height="100">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="50"/>
+                <textElement markup="html">
+                    <font size="28" isBold="true"/>
+                </textElement>
+                <text><![CDATA[<h1 style="color: #667eea; text-align: center; margin: 0;">Dog Festival Report</h1>]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="50" width="555" height="25"/>
+                <textElement markup="html">
+                    <font size="14"/>
+                </textElement>
+                <text><![CDATA[<p style="color: #666; margin: 0; text-align: center;">Laboratory Work #7 - Table Format</p>]]></text>
+            </staticText>
+        </band>
+    </title>
+    
+    <pageHeader>
+        <band height="40">
+            <staticText>
+                <reportElement x="0" y="0" width="300" height="30"/>
+                <textElement markup="html">
+                    <font size="10"/>
+                </textElement>
+                <text><![CDATA[<span style="color: #666;">Generated: ]]></text>
+            </staticText>
+            <textField pattern="dd.MM.yyyy HH:mm">
+                <reportElement x="70" y="0" width="150" height="30"/>
+                <textElement markup="html">
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{GENERATION_DATE}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="0" width="100" height="30"/>
+                <textElement markup="html">
+                    <font size="10"/>
+                </textElement>
+                <text><![CDATA[<span style="color: #666; text-align: right;">Total: ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="450" y="0" width="50" height="30"/>
+                <textElement markup="html">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{TOTAL_DOGS}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+    
+    <columnHeader>
+        <band height="40">
+            <!-- Table Header -->
+            <staticText>
+                <reportElement x="0" y="0" width="50" height="40" backcolor="#667eea"/>
+                <textElement markup="html">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">ID</div>]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="50" y="0" width="150" height="40" backcolor="#667eea"/>
+                <textElement markup="html">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Dog Name</div>]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="0" width="150" height="40" backcolor="#667eea"/>
+                <textElement markup="html">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Breed</div>]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="0" width="100" height="40" backcolor="#667eea"/>
+                <textElement markup="html">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Awards</div>]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="450" y="0" width="105" height="40" backcolor="#667eea"/>
+                <textElement markup="html">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Status</div>]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    
+    <detail>
+        <band height="35">
+            <!-- Table Content -->
+            <!-- ID Column -->
+            <textField>
+                <reportElement x="0" y="0" width="50" height="35"/>
+                <textElement>
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+            
+            <!-- Name Column -->
+            <textField>
+                <reportElement x="50" y="0" width="150" height="35"/>
+                <textElement markup="html">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+            </textField>
+            
+            <!-- Breed Column -->
+            <textField>
+                <reportElement x="200" y="0" width="150" height="35"/>
+                <textElement>
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{breed}]]></textFieldExpression>
+            </textField>
+            
+            <!-- Awards Column -->
+            <textField>
+                <reportElement x="350" y="0" width="100" height="35"/>
+                <textElement markup="html">
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[
+                    $F{awardsText}.equals("YES") ? 
+                    "<div style='color: green; font-weight: bold; text-align: center;'>✅ YES</div>" : 
+                    "<div style='color: #666; text-align: center;'>❌ NO</div>"
+                ]]></textFieldExpression>
+            </textField>
+            
+            <!-- Status Column -->
+            <textField>
+                <reportElement x="450" y="0" width="105" height="35"/>
+                <textElement markup="html">
+                    <font size="11"/>
+                </textElement>
+                <textFieldExpression><![CDATA[
+                    $F{awardsText}.equals("YES") ? 
+                    "<div style='background-color: #c6f6d5; color: #22543d; padding: 4px 10px; border-radius: 12px; text-align: center;'>AWARDED</div>" : 
+                    "<div style='background-color: #fed7d7; color: #742a2a; padding: 4px 10px; border-radius: 12px; text-align: center;'>NO AWARDS</div>"
+                ]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    
+    <summary>
+        <band height="120">
+            <!-- Summary Section -->
+            <staticText>
+                <reportElement x="0" y="20" width="555" height="30" backcolor="#667eea"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Festival Statistics]]></text>
+            </staticText>
+            
+            <textField>
+                <reportElement x="0" y="60" width="555" height="25"/>
+                <textElement markup="html">
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[
+                    "<div style='text-align: center; margin: 10px 0;'>" +
+                    "Total dogs: <strong>" + $P{TOTAL_DOGS} + "</strong> | " +
+                    "With awards: <strong>" + $P{AWARDS_COUNT} + "</strong> | " +
+                    "Award rate: <strong>" + new java.text.DecimalFormat("#0.0").format($P{AWARDS_PERCENTAGE}) + "%</strong>" +
+                    "</div>"
+                ]]></textFieldExpression>
+            </textField>
+            
+            <!-- Simple percentage indicator -->
+            <rectangle>
+                <reportElement x="100" y="95" width="355" height="20" backcolor="#E9ECEF"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="100" y="95" width="355" height="20" forecolor="#48BB78">
+                    <printWhenExpression><![CDATA[$P{AWARDS_PERCENTAGE}.doubleValue() > 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="100" y="95" width="355" height="20"/>
+                <textElement>
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[
+                    new java.text.DecimalFormat("#0.0").format($P{AWARDS_PERCENTAGE}) + "% Awarded"
+                ]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>

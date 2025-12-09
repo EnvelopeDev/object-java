@@ -7,14 +7,10 @@ import java.io.File;
 /**
  * Window for generating reports in PDF and HTML formats
  * Allows user to select report type and generate reports from XML data
- * @author Ваше Имя
- * @version 1.0
  */
 public class AddReportWindow extends InputOutputWindow
 {
     private static final String XML_FILE_PATH = "src/data/dogs.xml";
-    private static final String PDF_TEMPLATE = "dog_report_1.jrxml";
-    private static final String HTML_TEMPLATE = "dog_report_2.jrxml";
     
     private JRadioButton pdfRadio;
     private JRadioButton htmlRadio;
@@ -108,13 +104,7 @@ public class AddReportWindow extends InputOutputWindow
      * Updates the library status label
      */
     private void updateLibraryStatus() {
-        try {
-            // Используем рефлексию для проверки библиотек
-            Class.forName("net.sf.jasperreports.engine.JasperCompileManager");
-            statusLabel.setText("<html><font color='green'>✅ JasperReports libraries available</font></html>");
-        } catch (ClassNotFoundException e) {
-            statusLabel.setText("<html><font color='red'>❌ JasperReports libraries not found in libs/</font></html>");
-        }
+        statusLabel.setText("<html><font color='green'>✅ Ready to generate reports</font></html>");
     }
     
     /**
@@ -140,54 +130,32 @@ public class AddReportWindow extends InputOutputWindow
                 String reportType = reportOptions[0];
                 boolean openAfter = reportOptions.length > 1 && reportOptions[1].equals("true");
                 
-                // Проверяем библиотеки перед генерацией
-                if (!report.ReportGenerator.checkJasperLibraries()) {
-                    showError("JasperReports libraries not found!\n" +
-                             "Please add JAR files to libs/ folder.");
-                    return;
-                }
-                
                 boolean success = false;
+                String generatedFile = null;
                 
                 switch(reportType) {
                     case "pdf":
-                        success = report.ReportGenerator.generateReport(
-                            XML_FILE_PATH, PDF_TEMPLATE, "dogs_report.pdf", "pdf");
-                        if (success) {
-                            showSuccess("PDF report generated: dogs_report.pdf", 
-                                      openAfter, "dogs_report.pdf");
-                        } else {
-                            showError("Failed to generate PDF report");
-                        }
+                        success = generateReport("pdf");
+                        generatedFile = "dog_report_jasper.pdf";
                         break;
                         
                     case "html":
-                        success = report.ReportGenerator.generateReport(
-                            XML_FILE_PATH, HTML_TEMPLATE, "dogs_report.html", "html");
-                        if (success) {
-                            showSuccess("HTML report generated: dogs_report.html", 
-                                      openAfter, "dogs_report.html");
-                        } else {
-                            showError("Failed to generate HTML report");
-                        }
+                        success = generateReport("html");
+                        generatedFile = "dog_report_jasper.html";
                         break;
                         
                     case "both":
-                        boolean pdfSuccess = report.ReportGenerator.generateReport(
-                            XML_FILE_PATH, PDF_TEMPLATE, "dogs_report.pdf", "pdf");
-                        boolean htmlSuccess = report.ReportGenerator.generateReport(
-                            XML_FILE_PATH, HTML_TEMPLATE, "dogs_report.html", "html");
-                        
-                        if (pdfSuccess && htmlSuccess) {
-                            showSuccess("Both reports generated successfully!", 
-                                      openAfter, null);
-                        } else if (pdfSuccess || htmlSuccess) {
-                            showSuccess("One report generated (check errors above)", 
-                                      openAfter, pdfSuccess ? "dogs_report.pdf" : "dogs_report.html");
-                        } else {
-                            showError("Failed to generate both reports");
-                        }
+                        boolean pdfSuccess = generateReport("pdf");
+                        boolean htmlSuccess = generateReport("html");
+                        success = pdfSuccess && htmlSuccess;
+                        generatedFile = "both";
                         break;
+                }
+                
+                if (success) {
+                    showSuccess("Report generated successfully!", openAfter, generatedFile);
+                } else {
+                    showError("Failed to generate report");
                 }
                 
             } catch (Exception e) {
@@ -197,6 +165,34 @@ public class AddReportWindow extends InputOutputWindow
         } else {
             // User cancelled or closed the window
             System.out.println("Report generation cancelled by user");
+        }
+    }
+    
+    /**
+     * Генерирует отчет в указанном формате
+     */
+    private boolean generateReport(String format) {
+        try {
+            // Используем рефлексию для вызова методов ReportGenerator
+            Class<?> reportGeneratorClass = Class.forName("report.ReportGenerator");
+            
+            if ("pdf".equals(format)) {
+                java.lang.reflect.Method method = reportGeneratorClass.getMethod(
+                    "generatePDFReport", String.class, String.class
+                );
+                return (boolean) method.invoke(null, XML_FILE_PATH, "dog_report_jasper.pdf");
+            } else if ("html".equals(format)) {
+                java.lang.reflect.Method method = reportGeneratorClass.getMethod(
+                    "generateHTMLReport", String.class, String.class
+                );
+                return (boolean) method.invoke(null, XML_FILE_PATH, "dog_report_jasper.html");
+            }
+            
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error generating report: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     
@@ -257,7 +253,7 @@ public class AddReportWindow extends InputOutputWindow
         );
         
         // Open the report if requested
-        if (openAfter && fileToOpen != null) {
+        if (openAfter && !"both".equals(fileToOpen) && fileToOpen != null) {
             openGeneratedReport(fileToOpen);
         }
     }

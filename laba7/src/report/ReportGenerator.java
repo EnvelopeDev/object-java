@@ -1,247 +1,326 @@
 package report;
 
-import fileManager.FileManager;
-import list.List;
-import object.dog.Dog;
+import java.util.*;
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 public class ReportGenerator {
     
+    // Пути к шаблонам
+    private static final String PDF_TEMPLATE = "src/report/pdf_report.jrxml";
+    private static final String HTML_TEMPLATE = "src/report/html_report.jrxml";
+    
+    // Класс для данных (вместо вашего Dog)
+    public static class DogData {
+        private int id;
+        private String name;
+        private String breed;
+        private boolean awards;
+        
+        public DogData(int id, String name, String breed, boolean awards) {
+            this.id = id;
+            this.name = name;
+            this.breed = breed;
+            this.awards = awards;
+        }
+        
+        public int getId() { return id; }
+        public String getName() { return name; }
+        public String getBreed() { return breed; }
+        public boolean getAwards() { return awards; }
+        public String getAwardsText() { return awards ? "YES" : "NO"; }
+        public String getStatus() { return awards ? "AWARDED" : "NO AWARDS"; }
+    }
+    
+    // Загрузка данных из XML (без FileManager)
+    private static List<DogData> loadDogsFromXML(String xmlPath) throws Exception {
+        List<DogData> dogs = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new FileReader(xmlPath));
+        String line;
+        int id = 1;
+        
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().startsWith("<dog>")) {
+                String name = "", breed = "";
+                boolean awards = false;
+                
+                while ((line = reader.readLine()) != null && !line.trim().contains("</dog>")) {
+                    line = line.trim();
+                    if (line.startsWith("<name>")) {
+                        name = line.replace("<name>", "").replace("</name>", "").trim();
+                    } else if (line.startsWith("<breed>")) {
+                        breed = line.replace("<breed>", "").replace("</breed>", "").trim();
+                    } else if (line.startsWith("<awards>")) {
+                        String awardStr = line.replace("<awards>", "").replace("</awards>", "").trim();
+                        awards = awardStr.equalsIgnoreCase("true");
+                    }
+                }
+                
+                if (!name.isEmpty() && !breed.isEmpty()) {
+                    dogs.add(new DogData(id++, name, breed, awards));
+                }
+            }
+        }
+        
+        reader.close();
+        return dogs;
+    }
+    
     public static boolean generateReport(String xmlPath, String template, String output, String format) {
         try {
-            FileManager fm = new FileManager();
-            List<Dog> dogs = fm.inputFromXML(xmlPath);
+            System.out.println("🎯 Starting report generation...");
             
+            // Проверка файлов
+            File templateFile = new File(template);
+            if (!templateFile.exists()) {
+                System.err.println("❌ Template not found: " + template);
+                return false;
+            }
+            
+            File xmlFile = new File(xmlPath);
+            if (!xmlFile.exists()) {
+                System.err.println("❌ XML not found: " + xmlPath);
+                return false;
+            }
+            
+            // Загрузка данных
+            List<DogData> dogs = loadDogsFromXML(xmlPath);
+            System.out.println("🐕 Loaded " + dogs.size() + " dogs from XML");
+            
+            if (dogs.isEmpty()) {
+                System.err.println("⚠️ No dogs found in XML");
+                return false;
+            }
+            
+            // Подсчет статистики
+            int awardsCount = 0;
+            for (DogData dog : dogs) {
+                if (dog.getAwards()) awardsCount++;
+            }
+            double percentage = dogs.size() > 0 ? (awardsCount * 100.0 / dogs.size()) : 0;
+            
+            // Создание datasource
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dogs);
+            
+            // Параметры отчета
+            Map<String, Object> params = new HashMap<>();
+            params.put("REPORT_TITLE", "Dog Festival Report");
+            params.put("LAB_NUMBER", "Laboratory Work #7");
+            params.put("GENERATION_DATE", new Date());
+            params.put("SOURCE_FILE", xmlPath);
+            params.put("TOTAL_DOGS", dogs.size());
+            params.put("AWARDS_COUNT", awardsCount);
+            params.put("AWARDS_PERCENTAGE", percentage);
+            
+            // Компиляция и заполнение
+            System.out.println("⚙️ Compiling template...");
+            JasperReport report = JasperCompileManager.compileReport(template);
+            
+            System.out.println("🎨 Filling report with data...");
+            JasperPrint print = JasperFillManager.fillReport(report, params, dataSource);
+            
+            // Экспорт
             if ("pdf".equalsIgnoreCase(format)) {
-                return createPDF(output, dogs, xmlPath);
+                JasperExportManager.exportReportToPdfFile(print, output);
+                System.out.println("✅ PDF created: " + output);
+                System.out.println("   📄 Type: Formal document (simple layout)");
+                return true;
             } else if ("html".equalsIgnoreCase(format)) {
-                return createHTML(output, dogs, xmlPath);
+                JasperExportManager.exportReportToHtmlFile(print, output);
+                System.out.println("✅ HTML created: " + output);
+                System.out.println("   🎨 Type: Modern webpage (colorful design)");
+                return true;
             }
+            
             return false;
+            
         } catch (Exception e) {
+            System.err.println("💥 Error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
     
-    private static boolean createPDF(String filename, List<Dog> dogs, String source) {
-        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(filename))) {
-            // PDF header
-            out.writeBytes("%PDF-1.4\n");
-            out.writeBytes("%\n");
-            
-            // Catalog object
-            out.writeBytes("1 0 obj\n");
-            out.writeBytes("<< /Type /Catalog /Pages 2 0 R >>\n");
-            out.writeBytes("endobj\n\n");
-            
-            // Pages object
-            out.writeBytes("2 0 obj\n");
-            out.writeBytes("<< /Type /Pages /Kids [3 0 R] /Count 1 >>\n");
-            out.writeBytes("endobj\n\n");
-            
-            // Page object
-            out.writeBytes("3 0 obj\n");
-            out.writeBytes("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] ");
-            out.writeBytes("/Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\n");
-            out.writeBytes("endobj\n\n");
-            
-            // Page content
-            StringBuilder content = new StringBuilder();
-            content.append("BT\n");
-            content.append("/F1 16 Tf\n");
-            content.append("72 720 Td\n");
-            content.append("(DOG FESTIVAL REPORT) Tj\n");
-            content.append("ET\n");
-            
-            content.append("BT\n");
-            content.append("/F1 12 Tf\n");
-            content.append("72 690 Td\n");
-            content.append("(Laboratory Work #7) Tj\n");
-            content.append("ET\n");
-            
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-            content.append("BT\n");
-            content.append("/F1 10 Tf\n");
-            content.append("72 660 Td\n");
-            content.append("(Generated: ").append(sdf.format(new Date())).append(") Tj\n");
-            content.append("ET\n");
-            
-            content.append("BT\n");
-            content.append("/F1 10 Tf\n");
-            content.append("72 640 Td\n");
-            content.append("(Source: ").append(source).append(") Tj\n");
-            content.append("ET\n");
-            
-            // Statistics
-            int awardsCount = 0;
-            for (int i = 0; i < dogs.getSize(); i++) {
-                if (dogs.at(i).hasAward()) awardsCount++;
-            }
-            
-            content.append("BT\n");
-            content.append("/F1 10 Tf\n");
-            content.append("72 620 Td\n");
-            content.append("(Total dogs: ").append(dogs.getSize()).append(") Tj\n");
-            content.append("ET\n");
-            
-            content.append("BT\n");
-            content.append("/F1 10 Tf\n");
-            content.append("72 600 Td\n");
-            content.append("(Dogs with awards: ").append(awardsCount).append(") Tj\n");
-            content.append("ET\n");
-            
-            content.append("BT\n");
-            content.append("/F1 10 Tf\n");
-            content.append("72 580 Td\n");
-            content.append("(Dogs without awards: ").append(dogs.getSize() - awardsCount).append(") Tj\n");
-            content.append("ET\n");
-            
-            // Dog list
-            content.append("BT\n");
-            content.append("/F1 12 Tf\n");
-            content.append("72 550 Td\n");
-            content.append("(DOG LIST) Tj\n");
-            content.append("ET\n");
-            
-            int y = 530;
-            for (int i = 0; i < dogs.getSize(); i++) {
-                Dog dog = dogs.at(i);
-                content.append("BT\n");
-                content.append("/F1 10 Tf\n");
-                content.append("72 ").append(y).append(" Td\n");
-                content.append("(").append(i+1).append(". ").append(dog.getName())
-                       .append(" - ").append(dog.getBreed())
-                       .append(" [").append(dog.hasAward() ? "AWARDS" : "NO AWARDS").append("]) Tj\n");
-                content.append("ET\n");
-                y -= 20;
-            }
-            
-            out.writeBytes("4 0 obj\n");
-            out.writeBytes("<< /Length " + content.length() + " >>\n");
-            out.writeBytes("stream\n");
-            out.writeBytes(content.toString());
-            out.writeBytes("\nendstream\n");
-            out.writeBytes("endobj\n\n");
-            
-            // Font object
-            out.writeBytes("5 0 obj\n");
-            out.writeBytes("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\n");
-            out.writeBytes("endobj\n\n");
-            
-            // Xref table
-            out.writeBytes("xref\n");
-            out.writeBytes("0 6\n");
-            out.writeBytes("0000000000 65535 f\n");
-            out.writeBytes("0000000009 00000 n\n");
-            out.writeBytes("0000000058 00000 n\n");
-            out.writeBytes("0000000117 00000 n\n");
-            out.writeBytes("0000000200 00000 n\n");
-            out.writeBytes("0000000400 00000 n\n");
-            
-            // Trailer
-            out.writeBytes("trailer\n");
-            out.writeBytes("<< /Size 6 /Root 1 0 R >>\n");
-            out.writeBytes("startxref\n");
-            out.writeBytes("500\n");
-            out.writeBytes("%%EOF\n");
-            
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    // Методы для удобства
+    public static boolean generatePDFReport(String xmlPath, String outputPath) {
+        return generateReport(xmlPath, PDF_TEMPLATE, outputPath, "pdf");
     }
     
-    private static boolean createHTML(String filename, List<Dog> dogs, String source) {
-        try (PrintWriter out = new PrintWriter(filename, "UTF-8")) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-            String timestamp = sdf.format(new Date());
-            
-            int awardsCount = 0;
-            for (int i = 0; i < dogs.getSize(); i++) {
-                if (dogs.at(i).hasAward()) awardsCount++;
-            }
-            double percentage = dogs.getSize() > 0 ? (awardsCount * 100.0 / dogs.getSize()) : 0;
-            
-            out.println("<!DOCTYPE html>");
-            out.println("<html><head><meta charset='UTF-8'>");
-            out.println("<title>Lab #7 - Dog Report</title>");
-            out.println("<style>");
-            out.println("body { font-family: Arial; margin: 40px; }");
-            out.println("h1 { color: #4B0082; }");
-            out.println("table { border-collapse: collapse; width: 100%; margin: 20px 0; }");
-            out.println("th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }");
-            out.println("th { background: #4B0082; color: white; }");
-            out.println(".yes { color: green; font-weight: bold; }");
-            out.println(".no { color: #666; }");
-            out.println(".info { background: #f5f5f5; padding: 15px; border-radius: 5px; }");
-            out.println("</style>");
-            out.println("</head><body>");
-            
-            out.println("<h1>Dog Festival Report</h1>");
-            out.println("<h3>Laboratory Work #7 - Report Generation</h3>");
-            
-            out.println("<div class='info'>");
-            out.println("<p><strong>Generated:</strong> " + timestamp + "</p>");
-            out.println("<p><strong>Source:</strong> " + source + "</p>");
-            out.println("<p><strong>Statistics:</strong> " + dogs.getSize() + " dogs, " + 
-                       awardsCount + " with awards (" + String.format("%.1f", percentage) + "%)</p>");
-            out.println("</div>");
-            
-            out.println("<h3>Dog List</h3>");
-            out.println("<table>");
-            out.println("<tr><th>#</th><th>Name</th><th>Breed</th><th>Awards</th></tr>");
-            
-            for (int i = 0; i < dogs.getSize(); i++) {
-                Dog dog = dogs.at(i);
-                out.println("<tr>");
-                out.println("<td>" + (i + 1) + "</td>");
-                out.println("<td>" + dog.getName() + "</td>");
-                out.println("<td>" + dog.getBreed() + "</td>");
-                if (dog.hasAward()) {
-                    out.println("<td class='yes'>YES</td>");
-                } else {
-                    out.println("<td class='no'>NO</td>");
-                }
-                out.println("</tr>");
-            }
-            
-            out.println("</table>");
-            
-            out.println("<div class='info'>");
-            out.println("<p><strong>Laboratory Work #7 completed successfully!</strong></p>");
-            out.println("<p>✓ Created 2 report templates (PDF and HTML)</p>");
-            out.println("<p>✓ Implemented report generation from XML data</p>");
-            out.println("<p>✓ Reports saved in different formats</p>");
-            out.println("</div>");
-            
-            out.println("</body></html>");
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public static boolean generateHTMLReport(String xmlPath, String outputPath) {
+        return generateReport(xmlPath, HTML_TEMPLATE, outputPath, "html");
     }
     
+    public static boolean generateBothReports(String xmlPath) {
+        System.out.println("\n📊 Generating both report formats...");
+        System.out.println("==================================");
+        
+        boolean pdfOk = generatePDFReport(xmlPath, "dog_festival_formal.pdf");
+        
+        System.out.println("\n----------------------------------");
+        
+        boolean htmlOk = generateHTMLReport(xmlPath, "dog_festival_colorful.html");
+        
+        System.out.println("\n==================================");
+        System.out.println("📋 Generation Results:");
+        System.out.println("  PDF (Formal): " + (pdfOk ? "✅ Success" : "❌ Failed"));
+        System.out.println("  HTML (Colorful): " + (htmlOk ? "✅ Success" : "❌ Failed"));
+        
+        return pdfOk && htmlOk;
+    }
+    
+    // Проверка библиотек
     public static boolean checkJasperLibraries() {
-        return true;
+        try {
+            Class.forName("net.sf.jasperreports.engine.JasperReport");
+            System.out.println("✅ JasperReports library found");
+            return true;
+        } catch (ClassNotFoundException e) {
+            System.err.println("❌ JasperReports not found");
+            return false;
+        }
     }
     
-    public static void main(String[] args) throws Exception {
-        FileManager fm = new FileManager();
-        List<Dog> dogs = fm.inputFromXML("src/data/dogs.xml");
-        
-        boolean pdfOk = createPDF("lab7_report.pdf", dogs, "src/data/dogs.xml");
-        boolean htmlOk = createHTML("lab7_report.html", dogs, "src/data/dogs.xml");
-        
-        System.out.println("PDF created: " + pdfOk);
-        System.out.println("HTML created: " + htmlOk);
-        
-        if (pdfOk && htmlOk) {
-            System.out.println("Reports: lab7_report.pdf, lab7_report.html");
+    // Главный метод
+    public static void main(String[] args) {
+        try {
+            System.out.println("🐾 ==================================");
+            System.out.println("🐾 Dog Festival Report Generator v2.0");
+            System.out.println("🐾 ==================================\n");
+            
+            if (!checkJasperLibraries()) {
+                System.err.println("Cannot generate reports. Missing libraries.");
+                System.exit(1);
+            }
+            
+            // Создание шаблонов если их нет
+            createTemplatesIfNeeded();
+            
+            // Генерация отчетов
+            boolean success = generateBothReports("src/data/dogs.xml");
+            
+            if (success) {
+                System.out.println("\n🎊 All reports generated successfully!");
+                System.out.println("   📄 dog_festival_formal.pdf - Formal PDF document");
+                System.out.println("   🌐 dog_festival_colorful.html - Colorful HTML webpage");
+            } else {
+                System.out.println("\n⚠️ Some reports failed to generate");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("💥 Error in main: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+    
+    // Создание шаблонов если их нет
+    private static void createTemplatesIfNeeded() {
+        try {
+            // Создаем простые шаблоны если их нет
+            if (!new File(PDF_TEMPLATE).exists()) {
+                createSimplePDFTemplate();
+            }
+            if (!new File(HTML_TEMPLATE).exists()) {
+                createSimpleHTMLTemplate();
+            }
+        } catch (Exception e) {
+            System.err.println("Error creating templates: " + e.getMessage());
+        }
+    }
+    
+    private static void createSimplePDFTemplate() throws Exception {
+        java.io.PrintWriter out = new java.io.PrintWriter(PDF_TEMPLATE, "UTF-8");
+        out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        out.println("<jasperReport name=\"DogReportPDF\" pageWidth=\"595\" pageHeight=\"842\">");
+        out.println("  <parameter name=\"REPORT_TITLE\" class=\"java.lang.String\"/>");
+        out.println("  <parameter name=\"TOTAL_DOGS\" class=\"java.lang.Integer\"/>");
+        out.println("  <field name=\"id\" class=\"java.lang.Integer\"/>");
+        out.println("  <field name=\"name\" class=\"java.lang.String\"/>");
+        out.println("  <field name=\"breed\" class=\"java.lang.String\"/>");
+        out.println("  <field name=\"awardsText\" class=\"java.lang.String\"/>");
+        out.println("  <title>");
+        out.println("    <band height=\"50\">");
+        out.println("      <staticText>");
+        out.println("        <reportElement x=\"0\" y=\"0\" width=\"555\" height=\"30\"/>");
+        out.println("        <textElement>");
+        out.println("          <font size=\"20\" isBold=\"true\"/>");
+        out.println("        </textElement>");
+        out.println("        <text>Dog Festival Report</text>");
+        out.println("      </staticText>");
+        out.println("    </band>");
+        out.println("  </title>");
+        out.println("  <detail>");
+        out.println("    <band height=\"20\">");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"0\" y=\"0\" width=\"50\" height=\"20\"/>");
+        out.println("        <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"50\" y=\"0\" width=\"150\" height=\"20\"/>");
+        out.println("        <textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"200\" y=\"0\" width=\"150\" height=\"20\"/>");
+        out.println("        <textFieldExpression><![CDATA[$F{breed}]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"350\" y=\"0\" width=\"100\" height=\"20\"/>");
+        out.println("        <textFieldExpression><![CDATA[$F{awardsText}]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("    </band>");
+        out.println("  </detail>");
+        out.println("</jasperReport>");
+        out.close();
+        System.out.println("📄 Created PDF template");
+    }
+    
+    private static void createSimpleHTMLTemplate() throws Exception {
+        java.io.PrintWriter out = new java.io.PrintWriter(HTML_TEMPLATE, "UTF-8");
+        out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        out.println("<jasperReport name=\"DogReportHTML\" pageWidth=\"595\" pageHeight=\"842\">");
+        out.println("  <field name=\"id\" class=\"java.lang.Integer\"/>");
+        out.println("  <field name=\"name\" class=\"java.lang.String\"/>");
+        out.println("  <field name=\"breed\" class=\"java.lang.String\"/>");
+        out.println("  <field name=\"awardsText\" class=\"java.lang.String\"/>");
+        out.println("  <title>");
+        out.println("    <band height=\"80\">");
+        out.println("      <staticText>");
+        out.println("        <reportElement x=\"0\" y=\"0\" width=\"555\" height=\"40\"/>");
+        out.println("        <textElement markup=\"html\">");
+        out.println("          <font size=\"24\" isBold=\"true\"/>");
+        out.println("        </textElement>");
+        out.println("        <text><![CDATA[<h1 style='color: #667eea; text-align: center;'>Dog Festival Report</h1>]]></text>");
+        out.println("      </staticText>");
+        out.println("    </band>");
+        out.println("  </title>");
+        out.println("  <detail>");
+        out.println("    <band height=\"30\">");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"0\" y=\"0\" width=\"50\" height=\"30\"/>");
+        out.println("        <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"50\" y=\"0\" width=\"150\" height=\"30\"/>");
+        out.println("        <textFieldExpression><![CDATA[\"<strong>\" + $F{name} + \"</strong>\"]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"200\" y=\"0\" width=\"150\" height=\"30\"/>");
+        out.println("        <textFieldExpression><![CDATA[$F{breed}]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("      <textField>");
+        out.println("        <reportElement x=\"350\" y=\"0\" width=\"100\" height=\"30\"/>");
+        out.println("        <textFieldExpression><![CDATA[");
+        out.println("          $F{awardsText}.equals(\"YES\") ? ");
+        out.println("          \"<span style='color: green; font-weight: bold;'>✅ \" + $F{awardsText} + \"</span>\" : ");
+        out.println("          \"<span style='color: #666;'>❌ \" + $F{awardsText} + \"</span>\"");
+        out.println("        ]]></textFieldExpression>");
+        out.println("      </textField>");
+        out.println("    </band>");
+        out.println("  </detail>");
+        out.println("</jasperReport>");
+        out.close();
+        System.out.println("🌐 Created HTML template");
     }
 }
