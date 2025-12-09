@@ -17,7 +17,7 @@
     <field name="awardsText" class="java.lang.String"/>
     
     <title>
-        <band height="80">
+        <band height="60">
             <staticText>
                 <reportElement x="0" y="0" width="555" height="30"/>
                 <textElement>
@@ -27,36 +27,36 @@
             </staticText>
             
             <staticText>
-                <reportElement x="0" y="35" width="555" height="20"/>
+                <reportElement x="0" y="30" width="555" height="20"/>
                 <textElement>
                     <font size="14"/>
                 </textElement>
-                <text>Laboratory Work #7 - Formal Report</text>
+                <text>Laboratory Work #7 | Ustinov Vadim</text>
             </staticText>
-            
-            <line>
-                <reportElement x="0" y="65" width="555" height="1"/>
-            </line>
         </band>
     </title>
     
     <pageHeader>
-        <band height="40">
+        <band height="30">
             <textField pattern="dd.MM.yyyy HH:mm:ss">
-                <reportElement x="0" y="0" width="200" height="20"/>
+                <reportElement x="0" y="0" width="300" height="15"/>
                 <textElement>
-                    <font size="10"/>
+                    <font size="9"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Date: " + $P{GENERATION_DATE}]]></textFieldExpression>
             </textField>
             
             <textField>
-                <reportElement x="0" y="20" width="555" height="20"/>
+                <reportElement x="0" y="15" width="555" height="15"/>
                 <textElement>
-                    <font size="10"/>
+                    <font size="9"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Source: " + $P{SOURCE_FILE}]]></textFieldExpression>
             </textField>
+            
+            <line>
+                <reportElement x="0" y="29" width="555" height="1"/>
+            </line>
         </band>
     </pageHeader>
     

@@ -16,205 +16,278 @@
     <field name="name" class="java.lang.String"/>
     <field name="breed" class="java.lang.String"/>
     <field name="awardsText" class="java.lang.String"/>
-    <field name="status" class="java.lang.String"/>
     
     <title>
         <band height="100">
+            <!-- Заголовок отчета -->
             <staticText>
-                <reportElement x="0" y="0" width="555" height="50"/>
-                <textElement markup="html">
+                <reportElement x="0" y="20" width="555" height="40"/>
+                <textElement>
                     <font size="28" isBold="true"/>
                 </textElement>
-                <text><![CDATA[<h1 style="color: #667eea; text-align: center; margin: 0;">Dog Festival Report</h1>]]></text>
+                <text><![CDATA[Dog Festival Report]]></text>
             </staticText>
             <staticText>
-                <reportElement x="0" y="50" width="555" height="25"/>
-                <textElement markup="html">
+                <reportElement x="0" y="60" width="555" height="20"/>
+                <textElement>
                     <font size="14"/>
                 </textElement>
-                <text><![CDATA[<p style="color: #666; margin: 0; text-align: center;">Laboratory Work #7 - Table Format</p>]]></text>
+                <text><![CDATA[Laboratory Work #7 | Ustinov Vadim]]></text>
             </staticText>
         </band>
     </title>
     
     <pageHeader>
-        <band height="40">
+        <band height="50">
+            <!-- Информация о генерации отчета -->
+            <rectangle radius="3">
+                <reportElement x="0" y="0" width="555" height="40" backcolor="#f8f9fa"/>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e0e0e0"/>
+                </graphicElement>
+            </rectangle>
             <staticText>
-                <reportElement x="0" y="0" width="300" height="30"/>
-                <textElement markup="html">
-                    <font size="10"/>
+                <reportElement x="10" y="10" width="200" height="20"/>
+                <textElement>
+                    <font size="9"/>
                 </textElement>
-                <text><![CDATA[<span style="color: #666;">Generated: ]]></text>
+                <text><![CDATA[Generated:]]></text>
             </staticText>
             <textField pattern="dd.MM.yyyy HH:mm">
-                <reportElement x="70" y="0" width="150" height="30"/>
-                <textElement markup="html">
-                    <font size="10"/>
+                <reportElement x="70" y="10" width="150" height="20"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$P{GENERATION_DATE}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="0" width="100" height="30"/>
-                <textElement markup="html">
-                    <font size="10"/>
+                <reportElement x="250" y="10" width="80" height="20"/>
+                <textElement>
+                    <font size="9"/>
                 </textElement>
-                <text><![CDATA[<span style="color: #666; text-align: right;">Total: ]]></text>
+                <text><![CDATA[Total:]]></text>
             </staticText>
             <textField>
-                <reportElement x="450" y="0" width="50" height="30"/>
-                <textElement markup="html">
-                    <font size="10" isBold="true"/>
+                <reportElement x="290" y="10" width="40" height="20"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$P{TOTAL_DOGS}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="10" width="90" height="20"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[Awards:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="400" y="10" width="40" height="20"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{AWARDS_COUNT}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="450" y="10" width="60" height="20"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[Rate:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="480" y="10" width="65" height="20"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new java.text.DecimalFormat("#0.0").format($P{AWARDS_PERCENTAGE}) + "%"]]></textFieldExpression>
             </textField>
         </band>
     </pageHeader>
     
     <columnHeader>
         <band height="40">
-            <!-- Table Header -->
-            <staticText>
-                <reportElement x="0" y="0" width="50" height="40" backcolor="#667eea"/>
-                <textElement markup="html">
+            <!-- Заголовки таблицы фиолетового цвета -->
+            
+            <!-- ID Column Header -->
+            <rectangle>
+                <reportElement x="0" y="0" width="50" height="40" backcolor="#8A2BE2"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="0" y="10" width="50" height="20"/>
+                <textElement>
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">ID</div>]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="50" y="0" width="150" height="40" backcolor="#667eea"/>
-                <textElement markup="html">
+                <textFieldExpression><![CDATA["ID"]]></textFieldExpression>
+            </textField>
+            
+            <!-- Name Column Header -->
+            <rectangle>
+                <reportElement x="50" y="0" width="200" height="40" backcolor="#8A2BE2"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="50" y="10" width="200" height="20"/>
+                <textElement>
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Dog Name</div>]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="200" y="0" width="150" height="40" backcolor="#667eea"/>
-                <textElement markup="html">
+                <textFieldExpression><![CDATA["Dog Name"]]></textFieldExpression>
+            </textField>
+            
+            <!-- Breed Column Header -->
+            <rectangle>
+                <reportElement x="250" y="0" width="200" height="40" backcolor="#8A2BE2"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="250" y="10" width="200" height="20"/>
+                <textElement>
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Breed</div>]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="350" y="0" width="100" height="40" backcolor="#667eea"/>
-                <textElement markup="html">
+                <textFieldExpression><![CDATA["Breed"]]></textFieldExpression>
+            </textField>
+            
+            <!-- Awards Column Header -->
+            <rectangle>
+                <reportElement x="450" y="0" width="105" height="40" backcolor="#8A2BE2"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="450" y="10" width="105" height="20"/>
+                <textElement>
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Awards</div>]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="450" y="0" width="105" height="40" backcolor="#667eea"/>
-                <textElement markup="html">
-                    <font size="12" isBold="true"/>
-                </textElement>
-                <text><![CDATA[<div style="color: white; text-align: center; padding: 10px;">Status</div>]]></text>
-            </staticText>
+                <textFieldExpression><![CDATA["Awards"]]></textFieldExpression>
+            </textField>
+            
+            <!-- Border line below header -->
+            <line>
+                <reportElement x="0" y="39" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#8A2BE2"/>
+                </graphicElement>
+            </line>
         </band>
     </columnHeader>
     
     <detail>
         <band height="35">
-            <!-- Table Content -->
+            <!-- Строки таблицы с чередованием цветов -->
+            <!-- Фон для четных строк -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="35">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e9ecef"/>
+                </graphicElement>
+            </rectangle>
+            
+            <!-- Фон для нечетных строк -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="35" backcolor="#f8f9fa">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 != 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e9ecef"/>
+                </graphicElement>
+            </rectangle>
+            
+            <!-- Вертикальные границы -->
+            <line>
+                <reportElement x="49" y="0" width="1" height="35"/>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e0e0e0"/>
+                </graphicElement>
+            </line>
+            <line>
+                <reportElement x="249" y="0" width="1" height="35"/>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e0e0e0"/>
+                </graphicElement>
+            </line>
+            <line>
+                <reportElement x="449" y="0" width="1" height="35"/>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e0e0e0"/>
+                </graphicElement>
+            </line>
+            
             <!-- ID Column -->
             <textField>
-                <reportElement x="0" y="0" width="50" height="35"/>
+                <reportElement x="0" y="8" width="50" height="20"/>
                 <textElement>
-                    <font size="12"/>
+                    <font size="11" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
             </textField>
             
             <!-- Name Column -->
             <textField>
-                <reportElement x="50" y="0" width="150" height="35"/>
-                <textElement markup="html">
-                    <font size="12" isBold="true"/>
+                <reportElement x="50" y="8" width="200" height="20"/>
+                <textElement>
+                    <font size="11" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
             </textField>
             
             <!-- Breed Column -->
             <textField>
-                <reportElement x="200" y="0" width="150" height="35"/>
+                <reportElement x="250" y="8" width="200" height="20"/>
                 <textElement>
-                    <font size="12"/>
+                    <font size="11"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{breed}]]></textFieldExpression>
             </textField>
             
             <!-- Awards Column -->
             <textField>
-                <reportElement x="350" y="0" width="100" height="35"/>
-                <textElement markup="html">
-                    <font size="12"/>
-                </textElement>
-                <textFieldExpression><![CDATA[
-                    $F{awardsText}.equals("YES") ? 
-                    "<div style='color: green; font-weight: bold; text-align: center;'>✅ YES</div>" : 
-                    "<div style='color: #666; text-align: center;'>❌ NO</div>"
-                ]]></textFieldExpression>
-            </textField>
-            
-            <!-- Status Column -->
-            <textField>
-                <reportElement x="450" y="0" width="105" height="35"/>
+                <reportElement x="450" y="8" width="105" height="20"/>
                 <textElement markup="html">
                     <font size="11"/>
                 </textElement>
                 <textFieldExpression><![CDATA[
                     $F{awardsText}.equals("YES") ? 
-                    "<div style='background-color: #c6f6d5; color: #22543d; padding: 4px 10px; border-radius: 12px; text-align: center;'>AWARDED</div>" : 
-                    "<div style='background-color: #fed7d7; color: #742a2a; padding: 4px 10px; border-radius: 12px; text-align: center;'>NO AWARDS</div>"
+                    "<div style='color: #38a169; font-weight: bold;'>✅ YES</div>" : 
+                    "<div style='color: #e53e3e;'>❌ NO</div>"
                 ]]></textFieldExpression>
             </textField>
+            
+            <!-- Нижняя граница строки -->
+            <line>
+                <reportElement x="0" y="34" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1" lineColor="#e0e0e0"/>
+                </graphicElement>
+            </line>
         </band>
     </detail>
     
     <summary>
-        <band height="120">
-            <!-- Summary Section -->
-            <staticText>
-                <reportElement x="0" y="20" width="555" height="30" backcolor="#667eea"/>
-                <textElement>
-                    <font size="14" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Festival Statistics]]></text>
-            </staticText>
-            
-            <textField>
-                <reportElement x="0" y="60" width="555" height="25"/>
-                <textElement markup="html">
-                    <font size="12"/>
-                </textElement>
-                <textFieldExpression><![CDATA[
-                    "<div style='text-align: center; margin: 10px 0;'>" +
-                    "Total dogs: <strong>" + $P{TOTAL_DOGS} + "</strong> | " +
-                    "With awards: <strong>" + $P{AWARDS_COUNT} + "</strong> | " +
-                    "Award rate: <strong>" + new java.text.DecimalFormat("#0.0").format($P{AWARDS_PERCENTAGE}) + "%</strong>" +
-                    "</div>"
-                ]]></textFieldExpression>
-            </textField>
-            
-            <!-- Simple percentage indicator -->
+        <band height="30">
+            <!-- Простой футер -->
             <rectangle>
-                <reportElement x="100" y="95" width="355" height="20" backcolor="#E9ECEF"/>
-            </rectangle>
-            <rectangle>
-                <reportElement x="100" y="95" width="355" height="20" forecolor="#48BB78">
-                    <printWhenExpression><![CDATA[$P{AWARDS_PERCENTAGE}.doubleValue() > 0]]></printWhenExpression>
-                </reportElement>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#f8f9fa"/>
                 <graphicElement>
-                    <pen lineWidth="0"/>
+                    <pen lineWidth="1" lineColor="#e0e0e0"/>
                 </graphicElement>
             </rectangle>
-            <textField>
-                <reportElement x="100" y="95" width="355" height="20"/>
+            <staticText>
+                <reportElement x="10" y="5" width="535" height="15"/>
                 <textElement>
-                    <font size="10" isBold="true"/>
+                    <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[
-                    new java.text.DecimalFormat("#0.0").format($P{AWARDS_PERCENTAGE}) + "% Awarded"
-                ]]></textFieldExpression>
-            </textField>
+                <text><![CDATA[Dog Festival System Report | Laboratory Work #7 | Ustinov Vadim]]></text>
+            </staticText>
         </band>
     </summary>
 </jasperReport>
