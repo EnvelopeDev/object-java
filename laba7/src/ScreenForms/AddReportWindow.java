@@ -6,7 +6,6 @@ import java.io.File;
 
 /**
  * Window for generating reports in PDF and HTML formats
- * Allows user to select report type and generate reports from XML data
  */
 public class AddReportWindow extends InputOutputWindow
 {
@@ -16,7 +15,6 @@ public class AddReportWindow extends InputOutputWindow
     private JRadioButton htmlRadio;
     private JRadioButton bothRadio;
     private JCheckBox openAfterCheck;
-    private JLabel statusLabel;
     
     /**
      * Creates window for report generation
@@ -25,103 +23,112 @@ public class AddReportWindow extends InputOutputWindow
     {
         super("Select report type and options", "Generate Report", 0, 0);
         
-        // Make dialog resizable
-        IODialog.setResizable(true);
-        IODialog.setSize(450, 350);
+        // Сделать диалог изменяемым по размеру
+        super.IODialog.setResizable(true);
+        super.IODialog.setPreferredSize(new Dimension(500, 300));
         
-        // Remove default text fields since we'll use custom components
-        fieldsPanel.removeAll();
+        // Убрать стандартные поля
+        super.fieldsPanel.removeAll();
         
-        // Create custom panel for report options
+        // Создать панель для опций с отступами
         JPanel reportOptionsPanel = new JPanel();
         reportOptionsPanel.setLayout(new BoxLayout(reportOptionsPanel, BoxLayout.Y_AXIS));
-        reportOptionsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        reportOptionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         
-        // Title label
-        JLabel titleLabel = new JLabel("<html><b>🐶 Generate Dog Festival Report</b><br>" +
-                                      "<font size='-1'>Select report format and options</font></html>");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        // Заголовок
+        JLabel titleLabel = new JLabel("Generate Dog Festival Report");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setForeground(new Color(75, 0, 130));
         
-        // Radio buttons for report type
-        JPanel radioPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-        radioPanel.setBorder(BorderFactory.createTitledBorder("Report Type"));
+        // Радиокнопки для типа отчета
+        JPanel radioPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        radioPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1), 
+            "Report Type"
+        ));
+        radioPanel.setMaximumSize(new Dimension(400, 120));
         
         ButtonGroup reportTypeGroup = new ButtonGroup();
-        pdfRadio = new JRadioButton("📄 PDF Report - Formal table format");
-        htmlRadio = new JRadioButton("🌐 HTML Report - Cards view");
-        bothRadio = new JRadioButton("📊 Both Formats - Generate PDF and HTML");
+        pdfRadio = new JRadioButton("PDF Report");
+        htmlRadio = new JRadioButton("HTML Report");
+        bothRadio = new JRadioButton("Both Formats");
         
         pdfRadio.setSelected(true);
         reportTypeGroup.add(pdfRadio);
         reportTypeGroup.add(htmlRadio);
         reportTypeGroup.add(bothRadio);
         
-        pdfRadio.setFont(ioDefaultFont);
-        htmlRadio.setFont(ioDefaultFont);
-        bothRadio.setFont(ioDefaultFont);
+        Font radioFont = new Font("Arial", Font.PLAIN, 14);
+        pdfRadio.setFont(radioFont);
+        htmlRadio.setFont(radioFont);
+        bothRadio.setFont(radioFont);
         
         radioPanel.add(pdfRadio);
         radioPanel.add(htmlRadio);
         radioPanel.add(bothRadio);
         
-        // Options panel
+        // Панель опций
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+        optionsPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1), 
+            "Options"
+        ));
+        optionsPanel.setMaximumSize(new Dimension(400, 80));
         
         openAfterCheck = new JCheckBox("Open report after generation");
-        openAfterCheck.setFont(ioDefaultFont);
+        openAfterCheck.setFont(new Font("Arial", Font.PLAIN, 14));
         openAfterCheck.setSelected(true);
-        optionsPanel.add(openAfterCheck);
         
-        // Status label
-        statusLabel = new JLabel("");
-        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        statusLabel.setForeground(Color.GRAY);
-        statusLabel.setFont(new Font("Arial", Font.ITALIC, 10));
+        // Информационная панель
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        infoPanel.setMaximumSize(new Dimension(400, 80));
         
-        // Add components to main panel
+        JLabel infoLabel = new JLabel("<html><center>XML source: " + XML_FILE_PATH + 
+                                     "<br>Reports will be saved in project folder</center></html>");
+        infoLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        infoLabel.setForeground(Color.DARK_GRAY);
+        infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        // Добавить компоненты на главную панель
         reportOptionsPanel.add(titleLabel);
-        reportOptionsPanel.add(Box.createVerticalStrut(15));
+        reportOptionsPanel.add(Box.createVerticalStrut(20));
         reportOptionsPanel.add(radioPanel);
-        reportOptionsPanel.add(Box.createVerticalStrut(10));
+        reportOptionsPanel.add(Box.createVerticalStrut(15));
         reportOptionsPanel.add(optionsPanel);
-        reportOptionsPanel.add(Box.createVerticalStrut(10));
-        reportOptionsPanel.add(statusLabel);
+        optionsPanel.add(openAfterCheck);
+        reportOptionsPanel.add(Box.createVerticalStrut(15));
+        reportOptionsPanel.add(infoPanel);
+        infoPanel.add(infoLabel);
         
-        fieldsPanel.add(reportOptionsPanel);
+        super.fieldsPanel.add(reportOptionsPanel);
         
-        // Remove the old label since we have a new one
-        IOPanel.remove(IOLabel);
-        IOPanel.add(reportOptionsPanel, BorderLayout.CENTER);
+        // Убрать старую метку
+        super.IOPanel.remove(super.IOLabel);
+        super.IOPanel.add(reportOptionsPanel, BorderLayout.CENTER);
         
-        // Update status
-        updateLibraryStatus();
-    }
-    
-    /**
-     * Updates the library status label
-     */
-    private void updateLibraryStatus() {
-        statusLabel.setText("<html><font color='green'>✅ Ready to generate reports</font></html>");
+        // Установить минимальный размер окна
+        super.IODialog.setMinimumSize(new Dimension(450, 350));
+        
+        // Центрировать окно
+        super.IODialog.setLocationRelativeTo(null);
+        
+        // Пересобрать окно для правильного отображения
+        super.IODialog.pack();
     }
     
     /**
      * Shows the report generation window
+     * @throws InputException if there's an error
      */
     @Override
     public void show() throws InputException
     {
-        showReportDialog();
-    }
-    
-    /**
-     * Displays the report dialog and handles generation
-     */
-    private void showReportDialog() throws InputException
-    {
-        IODialog.setVisible(true);
+        // Центрировать окно при каждом показе
+        super.IODialog.setLocationRelativeTo(null);
+        super.IODialog.setVisible(true);
+        
         String[] reportOptions = getData();
         
         if (reportOptions != null && reportOptions[0] != null)
@@ -133,85 +140,76 @@ public class AddReportWindow extends InputOutputWindow
                 boolean success = false;
                 String generatedFile = null;
                 
+                // Реальная генерация отчетов
                 switch(reportType) {
                     case "pdf":
-                        success = generateReport("pdf");
-                        generatedFile = "dog_report_jasper.pdf";
+                        success = report.ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
+                        generatedFile = "dog_report.pdf";
                         break;
                         
                     case "html":
-                        success = generateReport("html");
-                        generatedFile = "dog_report_jasper.html";
+                        success = report.ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
+                        generatedFile = "dog_report.html";
                         break;
                         
                     case "both":
-                        boolean pdfSuccess = generateReport("pdf");
-                        boolean htmlSuccess = generateReport("html");
+                        boolean pdfSuccess = report.ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
+                        boolean htmlSuccess = report.ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
                         success = pdfSuccess && htmlSuccess;
                         generatedFile = "both";
                         break;
                 }
                 
                 if (success) {
-                    showSuccess("Report generated successfully!", openAfter, generatedFile);
+                    showSuccessMessage(generatedFile, openAfter);
                 } else {
-                    showError("Failed to generate report");
+                    // Если генерация не удалась
+                    JOptionPane.showMessageDialog(
+                        super.IODialog,
+                        "Failed to generate report.\n" +
+                        "Possible reasons:\n" +
+                        "1. XML file not found\n" +
+                        "2. Required libraries missing\n" +
+                        "3. Write permissions issue",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
                 
             } catch (Exception e) {
-                throw new InputException("Report generation failed: " + e.getMessage(), 
-                    InputException.ErrorType.INVALID_FORMAT);
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(
+                    super.IODialog,
+                    "Report generation failed: " + e.getMessage() +
+                    "\n\nMake sure:\n" +
+                    "1. XML file exists: " + XML_FILE_PATH + 
+                    "\n2. ReportGenerator class is available",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
-        } else {
-            // User cancelled or closed the window
-            System.out.println("Report generation cancelled by user");
         }
     }
     
     /**
-     * Генерирует отчет в указанном формате
-     */
-    private boolean generateReport(String format) {
-        try {
-            // Используем рефлексию для вызова методов ReportGenerator
-            Class<?> reportGeneratorClass = Class.forName("report.ReportGenerator");
-            
-            if ("pdf".equals(format)) {
-                java.lang.reflect.Method method = reportGeneratorClass.getMethod(
-                    "generatePDFReport", String.class, String.class
-                );
-                return (boolean) method.invoke(null, XML_FILE_PATH, "dog_report_jasper.pdf");
-            } else if ("html".equals(format)) {
-                java.lang.reflect.Method method = reportGeneratorClass.getMethod(
-                    "generateHTMLReport", String.class, String.class
-                );
-                return (boolean) method.invoke(null, XML_FILE_PATH, "dog_report_jasper.html");
-            }
-            
-            return false;
-        } catch (Exception e) {
-            System.err.println("Error generating report: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    /**
-     * Gets the selected report options
+     * Gets selected report options
+     * @return array with selected options
      */
     @Override
     public String[] getData()
     {
-        Object value = IOPane.getValue();
+        if (super.IOPane.getValue() == null) {
+            return null;
+        }
         
-        if (value != null && value instanceof Integer) {
-            int option = ((Integer) value).intValue();
+        if (super.IOPane.getValue() instanceof Integer) {
+            int option = ((Integer) super.IOPane.getValue()).intValue();
             
             if (option == JOptionPane.YES_OPTION || option == JOptionPane.OK_OPTION) 
             {
                 String[] results = new String[2];
                 
-                // Determine selected report type
+                // Определить выбранный тип отчета
                 if (pdfRadio.isSelected()) {
                     results[0] = "pdf";
                 } else if (htmlRadio.isSelected()) {
@@ -222,74 +220,67 @@ public class AddReportWindow extends InputOutputWindow
                     results[0] = null;
                 }
                 
-                // Check if open after generation is selected
+                // Проверить, выбрано ли открытие после генерации
                 results[1] = openAfterCheck.isSelected() ? "true" : "false";
                 
                 return results;
             }
         }
         
-        // User cancelled or closed the window
         return null;
     }
     
     /**
-     * Shows a success message
+     * Shows success message
+     * @param generatedFile name of generated file
+     * @param openAfter whether to open file after generation
      */
-    private void showSuccess(String message, boolean openAfter, String fileToOpen) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        JLabel label = new JLabel("<html><center><b>✅ Success!</b><br><br>" + 
-                                 message + "</center></html>", JLabel.CENTER);
-        label.setFont(new Font("Arial", Font.PLAIN, 12));
-        panel.add(label, BorderLayout.CENTER);
+    private void showSuccessMessage(String generatedFile, boolean openAfter) {
+        String message;
+        if (generatedFile.equals("both")) {
+            message = "Reports generated successfully!\n" +
+                     "• PDF: dog_report.pdf\n" +
+                     "• HTML: dog_report.html\n\n" +
+                     "Files saved in project folder.";
+        } else {
+            message = "Report generated successfully: " + generatedFile + 
+                     "\n\nFile saved in project folder.";
+        }
         
         JOptionPane.showMessageDialog(
-            IODialog,
-            panel,
-            "Report Generated",
+            super.IODialog,
+            message,
+            "Success",
             JOptionPane.INFORMATION_MESSAGE
         );
         
-        // Open the report if requested
-        if (openAfter && !"both".equals(fileToOpen) && fileToOpen != null) {
-            openGeneratedReport(fileToOpen);
+        // Открыть отчет если запрошено
+        if (openAfter && !generatedFile.equals("both")) {
+            openGeneratedReport(generatedFile);
         }
     }
     
     /**
-     * Opens the generated report in default application
+     * Opens generated report
+     * @param filePath path to the report file
      */
-    private void openGeneratedReport(String filePath)
-    {
+    private void openGeneratedReport(String filePath) {
         try {
             File file = new File(filePath);
             if (file.exists()) {
                 if (java.awt.Desktop.isDesktopSupported()) {
-                    java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-                    if (desktop.isSupported(java.awt.Desktop.Action.OPEN)) {
-                        desktop.open(file);
-                    }
+                    java.awt.Desktop.getDesktop().open(file);
                 }
             } else {
-                showError("Report file not found: " + filePath);
+                JOptionPane.showMessageDialog(
+                    super.IODialog,
+                    "Report file not found: " + filePath,
+                    "File Not Found",
+                    JOptionPane.WARNING_MESSAGE
+                );
             }
         } catch (Exception e) {
-            showError("Cannot open report: " + e.getMessage());
+            System.err.println("Cannot open report: " + e.getMessage());
         }
-    }
-    
-    /**
-     * Shows an error message
-     */
-    private void showError(String errorMessage)
-    {
-        JOptionPane.showMessageDialog(
-            IODialog,
-            errorMessage,
-            "Report Error",
-            JOptionPane.ERROR_MESSAGE
-        );
     }
 }

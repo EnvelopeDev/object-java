@@ -1,19 +1,22 @@
 package ScreenForms;
 
-import fileManager.FileManager;
-import list.List;
-import object.dog.Dog;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.DefaultTableCellRenderer;
+
 import java.awt.Image;
-import java.io.IOException;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
+
+import java.io.IOException;
+
+import fileManager.FileManager;          
+import list.List;                       
+import object.dog.Dog;    
 
 /**
  * Main window class for the Dog Festival application
