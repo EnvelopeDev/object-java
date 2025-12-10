@@ -328,7 +328,7 @@ public class MainWindow
                         EditElementWindow editWindow = new EditElementWindow(dogsTable, dogs);
                         editWindow.show();	       
                         break;
-                    case 6:  // Changed from PrinterWindow to AddReportWindow
+                    case 6: 
                         AddReportWindow reportWindow = new AddReportWindow();
                         reportWindow.show();
                         break;

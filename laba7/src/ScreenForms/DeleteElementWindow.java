@@ -86,7 +86,7 @@ public class DeleteElementWindow extends InputOutputWindow
             
             updateRowNumbers();
 
-            successOperationWindow("Row deleted");
+            super.successOperationWindow("Row deleted");
         }
     }
     

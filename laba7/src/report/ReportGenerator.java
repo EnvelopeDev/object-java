@@ -1,167 +1,202 @@
 package report;
 
 import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import fileManager.FileManager;
 import list.List;
 import object.dog.Dog;
 import java.util.*;
 
 /**
- * Инструмент для генерации отчетов - использует существующий FileManager
+ * Report generation tool
+ * Generates reports in PDF and HTML formats from XML data
  */
 public class ReportGenerator {
     
-    // Пути к JRXML шаблонам
+    // Paths to JRXML templates
     private static final String PDF_TEMPLATE = "src/report/pdf_report.jrxml";
     private static final String HTML_TEMPLATE = "src/report/html_report.jrxml";
     
     /**
-     * Класс данных для JasperReports
-     */
-    public static class DogData {
-        private int id;
-        private String name;
-        private String breed;
-        private boolean awards;
-        
-        public DogData(int id, String name, String breed, boolean awards) {
-            this.id = id;
-            this.name = name;
-            this.breed = breed;
-            this.awards = awards;
-        }
-        
-        // Геттеры для JasperReports
-        public int getId() { return id; }
-        public String getName() { return name; }
-        public String getBreed() { return breed; }
-        public boolean getAwards() { return awards; }
-        public String getAwardsText() { return awards ? "YES" : "NO"; }
-    }
-    
-    /**
-     * Генерирует PDF отчет
+     * Generates PDF report from XML data
+     * @param xmlPath Path to source XML file with dog data
+     * @param outputPath Path where PDF file will be saved
+     * @return true if generation successful, false otherwise
      */
     public static boolean generatePDFReport(String xmlPath, String outputPath) {
         try {
-            // Используем FileManager для загрузки данных
+            //Load data from XML file
             FileManager fileManager = new FileManager();
             List<Dog> dogs = fileManager.inputFromXML(xmlPath);
             
-            if (dogs.getSize() == 0) return false;
+            if (dogs.getSize() == 0) {
+                return false;
+            }
             
-            // Конвертируем в формат для JasperReports
-            java.util.List<DogData> dogDataList = convertToJasperData(dogs);
+            //Convert data to Map format for JasperReports
+            java.util.List<java.util.Map<String, Object>> dataList = convertToMapList(dogs);
             
-            // Подсчет статистики
-            int awardsCount = countAwards(dogDataList);
-            double percentage = calculatePercentage(awardsCount, dogDataList.size());
+            //Calculate statistics for report
+            int awardsCount = countAwards(dogs);
+            double percentage = calculatePercentage(awardsCount, dogs.getSize());
             
-            // Параметры для отчета
-            Map<String, Object> params = createParams(xmlPath, dogDataList.size(), awardsCount, percentage);
+            //Create report parameters (metadata and statistics)
+            java.util.Map<String, Object> params = createParams(xmlPath, dogs.getSize(), 
+                                                              awardsCount, percentage);
             
-            // Генерация отчета
+            //Check if template file exists
+            java.io.File templateFile = new java.io.File(PDF_TEMPLATE);
+            if (!templateFile.exists()) {
+                return false;
+            }
+            
+            ///Generate PDF report using JasperReports
+            //Compile JRXML template
             JasperReport report = JasperCompileManager.compileReport(PDF_TEMPLATE);
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dogDataList);
+            
+            //Create data source from converted data
+            JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource((java.util.Collection) dataList);
+            
+            //Fill report with data and parameters
             JasperPrint print = JasperFillManager.fillReport(report, params, dataSource);
             
+            //Export filled report to PDF file
             JasperExportManager.exportReportToPdfFile(print, outputPath);
+            
             return true;
             
         } catch (Exception e) {
-            System.err.println("PDF generation error: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
     
     /**
-     * Генерирует HTML отчет
+     * Generates HTML report from XML data
+     * @param xmlPath Path to source XML file with dog data
+     * @param outputPath Path where HTML file will be saved
+     * @return true if generation successful, false otherwise
      */
     public static boolean generateHTMLReport(String xmlPath, String outputPath) {
         try {
-            // Используем FileManager для загрузки данных
+            //Load data from XML file
             FileManager fileManager = new FileManager();
             List<Dog> dogs = fileManager.inputFromXML(xmlPath);
             
-            if (dogs.getSize() == 0) return false;
+            if (dogs.getSize() == 0) {
+                return false;
+            }
             
-            // Конвертируем в формат для JasperReports
-            java.util.List<DogData> dogDataList = convertToJasperData(dogs);
+            //Convert data to Map format for JasperReports
+            java.util.List<java.util.Map<String, Object>> dataList = convertToMapList(dogs);
             
-            // Подсчет статистики
-            int awardsCount = countAwards(dogDataList);
-            double percentage = calculatePercentage(awardsCount, dogDataList.size());
+            //Calculate statistics for report
+            int awardsCount = countAwards(dogs);
+            double percentage = calculatePercentage(awardsCount, dogs.getSize());
             
-            // Параметры для отчета
-            Map<String, Object> params = createParams(xmlPath, dogDataList.size(), awardsCount, percentage);
+            //Create report parameters (metadata and statistics)
+            java.util.Map<String, Object> params = createParams(xmlPath, dogs.getSize(), 
+                                                              awardsCount, percentage);
             
-            // Генерация отчета
+            //Check if template file exists
+            java.io.File templateFile = new java.io.File(HTML_TEMPLATE);
+            if (!templateFile.exists()) {
+                return false;
+            }
+            
+            ///Generate HTML report using JasperReports
+            //Compile JRXML template
             JasperReport report = JasperCompileManager.compileReport(HTML_TEMPLATE);
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dogDataList);
+            
+            //Create data source from converted data
+            JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource((java.util.Collection) dataList);
+            
+            //Fill report with data and parameters
             JasperPrint print = JasperFillManager.fillReport(report, params, dataSource);
             
+            //Export filled report to HTML file
             JasperExportManager.exportReportToHtmlFile(print, outputPath);
+            
             return true;
             
         } catch (Exception e) {
-            System.err.println("HTML generation error: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
     
+
     /**
-     * Конвертирует List<Dog> в List<DogData> для JasperReports
+     * Counts how many dogs have awards
+     * @param dogs List of Dog objects to analyze
+     * @return Number of dogs with awards
      */
-    private static java.util.List<DogData> convertToJasperData(List<Dog> dogs) {
-        java.util.List<DogData> dogDataList = new ArrayList<>();
-        
-        for (int i = 0; i < dogs.getSize(); i++) {
-            Dog dog = dogs.at(i);
-            dogDataList.add(new DogData(
-                i + 1,               // ID
-                dog.getName(),       // Name
-                dog.getBreed(),      // Breed
-                dog.hasAward()       // Awards
-            ));
-        }
-        
-        return dogDataList;
-    }
-    
-    /**
-     * Подсчитывает количество собак с наградами
-     */
-    private static int countAwards(java.util.List<DogData> dogs) {
+    private static int countAwards(List<Dog> dogs) {
         int count = 0;
-        for (DogData dog : dogs) {
-            if (dog.getAwards()) count++;
+        for (int i = 0; i < dogs.getSize(); i++) {
+            if (dogs.at(i).hasAward()) count++;
         }
         return count;
     }
     
     /**
-     * Вычисляет процент собак с наградами
+     * Calculates percentage of dogs with awards
+     * @param awardsCount Number of dogs with awards
+     * @param total Total number of dogs
+     * @return Percentage value (0.0 to 100.0)
      */
     private static double calculatePercentage(int awardsCount, int total) {
         return total > 0 ? (awardsCount * 100.0 / total) : 0;
     }
     
     /**
-     * Создает параметры для отчета
+     * Converts List<Dog> to List<Map> format for JasperReports
+     * Each Map represents one row in the report with field names matching JRXML template
+     * @param dogs List of Dog objects to convert
+     * @return List of Maps with report data
      */
-    private static Map<String, Object> createParams(String xmlPath, int totalDogs, 
-                                                   int awardsCount, double percentage) {
-        Map<String, Object> params = new HashMap<>();
+    private static java.util.List<java.util.Map<String, Object>> convertToMapList(List<Dog> dogs) {
+        java.util.List<java.util.Map<String, Object>> dataList = new java.util.ArrayList<>();
+        
+        for (int i = 0; i < dogs.getSize(); i++) {
+            Dog dog = dogs.at(i);
+            java.util.Map<String, Object> row = new java.util.HashMap<>();
+            
+            // Map keys must match field names in JRXML templates
+            row.put("id", i + 1);                    
+            row.put("name", dog.getName());        
+            row.put("breed", dog.getBreed());       
+            row.put("awardsText", dog.hasAward() ? "YES" : "NO");
+            row.put("awards", dog.hasAward());    
+            
+            dataList.add(row);
+        }
+        
+        return dataList;
+    }
+    
+    /**
+     * Creates parameters for JasperReports templates
+     * These parameters are used in report headers, footers, and summary sections
+     * @param xmlPath Source XML file path
+     * @param totalDogs Total number of dogs
+     * @param awardsCount Number of dogs with awards
+     * @param percentage Percentage of dogs with awards
+     * @return Map of report parameters
+     */
+    private static java.util.Map<String, Object> createParams(String xmlPath, int totalDogs, 
+                                                              int awardsCount, double percentage) {
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        
+        // Report metadata
         params.put("REPORT_TITLE", "Dog Festival Report");
         params.put("LAB_NUMBER", "Laboratory Work #7");
-        params.put("GENERATION_DATE", new Date());
-        params.put("SOURCE_FILE", xmlPath);
-        params.put("TOTAL_DOGS", totalDogs);
-        params.put("AWARDS_COUNT", awardsCount);
-        params.put("AWARDS_PERCENTAGE", percentage);
+        params.put("GENERATION_DATE", new Date()); 
+        params.put("SOURCE_FILE", xmlPath);         
+        
+        // Report statistics
+        params.put("TOTAL_DOGS", totalDogs);       
+        params.put("AWARDS_COUNT", awardsCount);    
+        params.put("AWARDS_PERCENTAGE", percentage); 
+        
         return params;
     }
 }
