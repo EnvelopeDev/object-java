@@ -50,17 +50,17 @@ public class MainWindow
     		"Search"
     };
     private static final String[] imagePaths = {
-            "src/picts/save.png",
-            "src/picts/folder_documents.png",
-            "src/picts/cloud.png",
-            "src/picts/plus.png", 
-            "src/picts/minus.png",
-            "src/picts/edit.png",
-            "src/picts/print.png",
-            "src/picts/exit.png",
-            "src/picts/search.png",
-            "src/picts/dogIcon.png",
-            "src/picts/exit.jpg"
+            "picts/save.png",
+            "picts/folder_documents.png",
+            "picts/cloud.png",
+            "picts/plus.png", 
+            "picts/minus.png",
+            "picts/edit.png",
+            "picts/print.png",
+            "picts/exit.png",
+            "picts/search.png",
+            "picts/dogIcon.png",
+            "picts/exit.jpg"
             
     };
     private static final String[] columnNames = {
@@ -94,7 +94,7 @@ public class MainWindow
     {
     	fileMngr = new FileManager();//init FileManager object
         dogs = new List<>();//init List fot dogs data
-        dogs = fileMngr.inputFromCSV("src/data/dogs3.csv"); //writes data from dogs3.csv
+        dogs = fileMngr.inputFromCSV("data/dogs3.csv"); //writes data from dogs3.csv
     }
     
     private void initFonts() 
