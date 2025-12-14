@@ -2,18 +2,26 @@ package ScreenForms;
 
 import javax.swing.*;
 import java.awt.*;
+import report.ReportGenerator;
 
 /**
  * Window for generating reports in PDF and HTML formats
  */
 public class AddReportWindow extends InputOutputWindow
 {  
+    /** Main panel containing report options */
     private JPanel mainPanel;
+    /** Button group for radio buttons */
     private ButtonGroup RadioButtonsGroup;
+    /** Panel containing radio buttons */
     private JPanel radioButtonsPanel;
+    /** Radio button for PDF report */
     private JRadioButton pdfRadio;
+    /** Radio button for HTML report */
     private JRadioButton htmlRadio;
+    /** Radio button for both report formats */
     private JRadioButton bothRadio;
+    /** Path to the XML file containing dog data */
     private static final String XML_FILE_PATH = "src/data/dogs.xml";
     
     /**
@@ -32,7 +40,7 @@ public class AddReportWindow extends InputOutputWindow
         radioButtonsPanel = new JPanel(new GridLayout(3, 1, 10, 10));
         radioButtonsPanel.setMaximumSize(new Dimension(400, 100));
         
-        RadioButtonsGroup= new ButtonGroup();
+        RadioButtonsGroup = new ButtonGroup();
         pdfRadio = new JRadioButton("PDF Report");
         htmlRadio = new JRadioButton("HTML Report");
         bothRadio = new JRadioButton("Both Formats");
@@ -65,7 +73,7 @@ public class AddReportWindow extends InputOutputWindow
  
     /**
      * Shows the report generation window
-     * @throws InputException if there's an error
+     * @throws InputException if there's an error during report generation
      */
     @Override
     public void show() throws InputException
@@ -77,6 +85,9 @@ public class AddReportWindow extends InputOutputWindow
         
         if (reportOptions != null && reportOptions[0] != null)
         {
+            // Close selection dialog
+            super.IODialog.dispose();
+            
             boolean success = generateReport(reportOptions[0]);
             
             if (success) {
@@ -84,13 +95,17 @@ public class AddReportWindow extends InputOutputWindow
                 if (reportOptions[0].equals("both")) {
                     successMessage = "Reports (PDF and HTML)";
                 }
-                successMessage += " generated";
+                successMessage += " generated successfully!";
                 
-                super.successOperationWindow(successMessage);
-                super.SCSDialog.setVisible(true);
+                JOptionPane.showMessageDialog(
+                    null,
+                    successMessage,
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
             } else {
                 JOptionPane.showMessageDialog(
-                    super.IODialog,
+                    null,
                     "Failed to generate report=(",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
@@ -111,16 +126,16 @@ public class AddReportWindow extends InputOutputWindow
         try {
             switch(reportType) {
                 case "pdf":
-                    success = report.ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
+                    success = ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
                     break;
                     
                 case "html":
-                    success = report.ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
+                    success = ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
                     break;
                     
                 case "both":
-                    boolean pdfSuccess = report.ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
-                    boolean htmlSuccess = report.ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
+                    boolean pdfSuccess = ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
+                    boolean htmlSuccess = ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
                     success = pdfSuccess && htmlSuccess;
                     break;
                     

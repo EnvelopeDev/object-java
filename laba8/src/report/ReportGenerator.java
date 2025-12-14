@@ -6,83 +6,36 @@ import fileManager.FileManager;
 import list.List;
 import object.dog.Dog;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 /**
- * Report generation tool
+ * Report generation tool with multithreading support
  * Generates reports in PDF and HTML formats from XML data
  */
 public class ReportGenerator {
     
-    // Paths to JRXML templates
+    /** Path to PDF report template file */
     private static final String PDF_TEMPLATE = "src/report/pdf_report.jrxml";
+    /** Path to HTML report template file */
     private static final String HTML_TEMPLATE = "src/report/html_report.jrxml";
     
     /**
-     * Generates PDF report from XML data
-     * @param xmlPath Path to source XML file with dog data
-     * @param outputPath Path where PDF file will be saved
-     * @return true if generation successful, false otherwise
-     */
-    public static boolean generatePDFReport(String xmlPath, String outputPath) {
-        try {
-            //Load data from XML file
-            FileManager fileManager = new FileManager();
-            List<Dog> dogs = fileManager.inputFromXML(xmlPath);
-            
-            if (dogs.getSize() == 0) {
-                return false;
-            }
-            
-            //Convert data to Map format for JasperReports
-            java.util.List<java.util.Map<String, Object>> dataList = convertToMapList(dogs);
-            
-            //Calculate statistics for report
-            int awardsCount = countAwards(dogs);
-            double percentage = calculatePercentage(awardsCount, dogs.getSize());
-            
-            //Create report parameters (metadata and statistics)
-            java.util.Map<String, Object> params = createParams(xmlPath, dogs.getSize(), 
-                                                              awardsCount, percentage);
-            
-            //Check if template file exists
-            java.io.File templateFile = new java.io.File(PDF_TEMPLATE);
-            if (!templateFile.exists()) {
-                return false;
-            }
-            
-            ///Generate PDF report using JasperReports
-            //Compile JRXML template
-            JasperReport report = JasperCompileManager.compileReport(PDF_TEMPLATE);
-            
-            //Create data source from converted data
-            JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource((java.util.Collection) dataList);
-            
-            //Fill report with data and parameters
-            JasperPrint print = JasperFillManager.fillReport(report, params, dataSource);
-            
-            //Export filled report to PDF file
-            JasperExportManager.exportReportToPdfFile(print, outputPath);
-            
-            return true;
-            
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Generates HTML report from XML data
+     * Generates HTML report from XML data (multithreaded version)
+     * Now returns boolean directly without CountDownLatch
      * @param xmlPath Path to source XML file with dog data
      * @param outputPath Path where HTML file will be saved
      * @return true if generation successful, false otherwise
      */
     public static boolean generateHTMLReport(String xmlPath, String outputPath) {
         try {
+            System.out.println("[ReportGenerator] Starting HTML report generation from: " + xmlPath);
+            
             //Load data from XML file
             FileManager fileManager = new FileManager();
             List<Dog> dogs = fileManager.inputFromXML(xmlPath);
             
             if (dogs.getSize() == 0) {
+                System.err.println("[ReportGenerator] No data loaded from XML");
                 return false;
             }
             
@@ -100,10 +53,11 @@ public class ReportGenerator {
             //Check if template file exists
             java.io.File templateFile = new java.io.File(HTML_TEMPLATE);
             if (!templateFile.exists()) {
+                System.err.println("[ReportGenerator] Template file not found: " + HTML_TEMPLATE);
                 return false;
             }
             
-            ///Generate HTML report using JasperReports
+            //Generate HTML report using JasperReports
             //Compile JRXML template
             JasperReport report = JasperCompileManager.compileReport(HTML_TEMPLATE);
             
@@ -116,14 +70,77 @@ public class ReportGenerator {
             //Export filled report to HTML file
             JasperExportManager.exportReportToHtmlFile(print, outputPath);
             
+            System.out.println("[ReportGenerator] HTML report generated successfully: " + outputPath);
             return true;
             
         } catch (Exception e) {
+            System.err.println("[ReportGenerator] HTML generation error: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
     
-
+    /**
+     * Generates PDF report from XML data (multithreaded version)
+     * Now returns boolean directly
+     * @param xmlPath Path to source XML file with dog data
+     * @param outputPath Path where PDF file will be saved
+     * @return true if generation successful, false otherwise
+     */
+    public static boolean generatePDFReport(String xmlPath, String outputPath) {
+        try {
+            System.out.println("[ReportGenerator] Starting PDF report generation from: " + xmlPath);
+            
+            //Load data from XML file
+            FileManager fileManager = new FileManager();
+            List<Dog> dogs = fileManager.inputFromXML(xmlPath);
+            
+            if (dogs.getSize() == 0) {
+                System.err.println("[ReportGenerator] No data loaded from XML");
+                return false;
+            }
+            
+            //Convert data to Map format for JasperReports
+            java.util.List<java.util.Map<String, Object>> dataList = convertToMapList(dogs);
+            
+            //Calculate statistics for report
+            int awardsCount = countAwards(dogs);
+            double percentage = calculatePercentage(awardsCount, dogs.getSize());
+            
+            //Create report parameters (metadata and statistics)
+            java.util.Map<String, Object> params = createParams(xmlPath, dogs.getSize(), 
+                                                              awardsCount, percentage);
+            
+            //Check if template file exists
+            java.io.File templateFile = new java.io.File(PDF_TEMPLATE);
+            if (!templateFile.exists()) {
+                System.err.println("[ReportGenerator] Template file not found: " + PDF_TEMPLATE);
+                return false;
+            }
+            
+            //Generate PDF report using JasperReports
+            //Compile JRXML template
+            JasperReport report = JasperCompileManager.compileReport(PDF_TEMPLATE);
+            
+            //Create data source from converted data
+            JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource((java.util.Collection) dataList);
+            
+            //Fill report with data and parameters
+            JasperPrint print = JasperFillManager.fillReport(report, params, dataSource);
+            
+            //Export filled report to PDF file
+            JasperExportManager.exportReportToPdfFile(print, outputPath);
+            
+            System.out.println("[ReportGenerator] PDF report generated successfully: " + outputPath);
+            return true;
+            
+        } catch (Exception e) {
+            System.err.println("[ReportGenerator] PDF generation error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     /**
      * Counts how many dogs have awards
      * @param dogs List of Dog objects to analyze
@@ -164,7 +181,7 @@ public class ReportGenerator {
             row.put("id", i + 1);                    
             row.put("name", dog.getName());        
             row.put("breed", dog.getBreed());       
-            row.put("awardsText", dog.hasAward() ? "YES" : "NO");
+            row.put("awardsText", dog.hasAward() ? "✅ YES" : "❌ NO");
             row.put("awards", dog.hasAward());    
             
             dataList.add(row);

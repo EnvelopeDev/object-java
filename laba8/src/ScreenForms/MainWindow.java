@@ -13,78 +13,92 @@ import java.awt.GridLayout;
 import java.awt.FlowLayout;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import fileManager.FileManager;          
 import list.List;                       
-import object.dog.Dog;    
+import object.dog.Dog;
+import report.ReportGenerator;
 
 /**
  * Main window class for the Dog Festival application
- * Handles GUI creation, user interface components, and application workflow
- * Provides functionality for displaying dog data, adding, editing, deleting records,
- * searching, and other table operations
  * @author Vadim Ustinov
- * @version 2.0
+ * @version 2.0 (with integrated multithreading)
  */
 public class MainWindow
 {
-	private static List<Dog> dogs;
-	private static FileManager fileMngr;
-	private ImageIcon icon; 
+    /** List of dogs stored in the application */
+    private static List<Dog> dogs;
+    /** File manager for handling file operations */
+    private static FileManager fileMngr;
+    /** Icon for the application window */
+    private ImageIcon icon; 
+    /** Data for the table display */
     private String[][] tableData;
+    /** Panel containing control buttons */
     private JPanel buttonsPanel;
+    /** Panel containing search input field */
     private JPanel inputPanel;
+    /** Array of application control buttons */
     private JButton[] buttons;
+    /** Scroll pane for the dogs table */
     private JScrollPane tableScrollPane;
+    /** Main application frame */
     private static JFrame mainFrame;
+    /** Text field for searching dogs */
     private static JTextField searchTextField;
+    /** Original table data before any filtering */
     private static String[][] originalTableData;
+    /** Table model for managing table data */
     private static DefaultTableModel tableModel;
+    /** Table displaying dog information */
     private static JTable dogsTable;
+    /** Default font used throughout the application */
     private static Font defaultFont;
+    /** Font used for table headers */
     private static Font headerFont;
     
+    /** Path to the XML file containing dog data */
     private static final String DOGS_FILE_PATH = "src/data/dogs.xml";
     
     /** Array of tooltips for application buttons */
     private static final String[] tooltips = {
-    		"Save",
-    		"Open",
-    		"Backup",
-    		"Add",
-    		"Remove",
-    		"Edit",
-    		"Print",
-    		"Dropout",
-    		"Search"
+        "Save",
+        "Open",
+        "Backup",
+        "Add",
+        "Remove",
+        "Edit",
+        "Print",
+        "Dropout",
+        "Search"
     };
     
     /** Array of image paths for button icons and application images */
     private static final String[] imagePaths = {
-            "src/picts/save.png",
-            "src/picts/folder_documents.png",
-            "src/picts/cloud.png",
-            "src/picts/plus.png", 
-            "src/picts/minus.png",
-            "src/picts/edit.png",
-            "src/picts/print.png",
-            "src/picts/exit.png",
-            "src/picts/search.png",
-            "src/picts/dogIcon.png",
-            "src/picts/exit.jpg"
+        "src/picts/save.png",
+        "src/picts/folder_documents.png",
+        "src/picts/cloud.png",
+        "src/picts/plus.png", 
+        "src/picts/minus.png",
+        "src/picts/edit.png",
+        "src/picts/print.png",
+        "src/picts/exit.png",
+        "src/picts/search.png",
+        "src/picts/dogIcon.png",
+        "src/picts/exit.jpg"
     };
     
     /** Array of column names for the data table */
     private static final String[] columnNames = {
-            "№",
-            "Name",
-            "Breed",
-            "Awards"
-     };
+        "№",
+        "Name",
+        "Breed",
+        "Awards"
+    };
     
     /**
      * Makes the main application window visible
-     * Displays the initialized GUI components to the user
      */
     public void show()
     {
@@ -92,148 +106,156 @@ public class MainWindow
     }
     
     /**
-     * Constructs the main application window and initializes all components
-     * Loads data from file, creates GUI elements, and sets up event handlers
-     * @throws InputException if there's an error reading data files or initializing components
+     * Constructs the main application window
+     * @throws InputException if there is an error initializing data
      */
     public MainWindow() throws InputException
     {
-    	fileMngr = new FileManager();//init FileManager object
-        dogs = new List<>();//init List for dogs data
+        fileMngr = new FileManager();
+        dogs = new List<>();
 
-    	//DATA INIT SECTION
-    	initData();
-    	
-    	//STYLE SECTION
+        // DATA INIT SECTION
+        initData();
+        
+        // STYLE SECTION
         initMainFrame();
         initFonts();
         
-        //BUTTON SECTION
+        // BUTTON SECTION
         initButtonsPanel();
         
-        //TABLE SECTION
+        // TABLE SECTION
         initTable();
         
-        //SEARCH SECTION
+        // SEARCH SECTION
         initSearchPanel();
         
-        //ASSEMBLE MAINFRAME SECTION
+        // ASSEMBLE MAINFRAME SECTION
         assembleMainFrame();
     }
     
     /**
-     * Initializes application data by loading dog information from XML file
-     * Creates FileManager and List objects to store and manage dog data
-     * @throws InputException if XML file cannot be read or contains invalid data
+     * Initializes application data using multithreaded loading
+     * @throws InputException if there is an error loading data
      */
     private void initData() throws InputException
     {
+        CountDownLatch latch = new CountDownLatch(1);
+        final Exception[] loadException = new Exception[1];
+        
+        fileMngr.loadFromXML(DOGS_FILE_PATH, new FileManager.FileOperationCallback<List<Dog>>() {
+            @Override
+            public void onSuccess(List<Dog> result) {
+                dogs = result;
+                latch.countDown();
+            }
+            
+            @Override
+            public void onError(Exception e) {
+                loadException[0] = e;
+                latch.countDown();
+            }
+        });
+        
         try {
-            dogs = fileMngr.inputFromXML(DOGS_FILE_PATH); //writes data from dogs3.XML
-        } catch (Exception e) {
-            throw new InputException("Error initializing data: " + e.getMessage(), 
-                                   InputException.ErrorType.INVALID_FORMAT);
+            latch.await();
+            if (loadException[0] != null) {
+                throw new InputException("Error loading data: " + loadException[0].getMessage(), 
+                                       InputException.ErrorType.INVALID_FORMAT);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InputException("Loading interrupted", InputException.ErrorType.INVALID_FORMAT);
         }
     }
     
     /**
      * Initializes font settings for the application
-     * Sets default font for regular text and header font for table headers
      */
     private void initFonts() 
     {
-    	defaultFont = new Font("Arial", Font.PLAIN, 14);
+        defaultFont = new Font("Arial", Font.PLAIN, 14);
         headerFont = new Font("Arial", Font.BOLD, 16);
     }
     
     /**
      * Initializes the main application frame
-     * Sets window title, icon, size, and default close operation
      */
     private void initMainFrame()
     {
-    	icon = new ImageIcon(imagePaths[9]);//init window icon
-        mainFrame = new JFrame("Dog Festival");//init mainframe and init window title
+        icon = new ImageIcon(imagePaths[9]);
+        mainFrame = new JFrame("Dog Festival");
         mainFrame.setIconImage(icon.getImage());
-    	mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(900, 500);
         mainFrame.setLocationRelativeTo(null);
     }
     
     /**
-     * Initializes the buttons panel with application control buttons
-     * Creates buttons with icons, tooltips, and event handlers
-     * Buttons include Save, Open, Backup, Add, Remove, Edit, Print, Dropout, and Search
+     * Initializes the buttons panel with control buttons
      */
     private void initButtonsPanel()
     {
-    	buttonsPanel = new JPanel();//init buttons panel
-        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));//set 1 row, 8 cols, 10 width, 10 height
+        buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new GridLayout(1, 8, 10, 10));
         
-        buttons = new JButton[9];//init buttons array
+        buttons = new JButton[9];
         for(int i = 0; i < 9; i++) 
         {		    
-            ImageIcon imageForButton = new ImageIcon(imagePaths[i]);//init image for icon 
-            Image scaledImage = imageForButton.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);//scale without loss of quality and fixed size of 32 by 32 px
-            ImageIcon buttonIcon = new ImageIcon(scaledImage);//init icon for button
-            final int buttonIndex = i; // need final for lambda function
+            ImageIcon imageForButton = new ImageIcon(imagePaths[i]);
+            Image scaledImage = imageForButton.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            ImageIcon buttonIcon = new ImageIcon(scaledImage);
+            final int buttonIndex = i;
             
-            buttons[i] = new JButton(buttonIcon);//set icon 
-            buttons[i].setToolTipText(tooltips[i]);//set button tooltips
-            buttons[i].setBorderPainted(false);//remove the frame
-            buttons[i].setContentAreaFilled(false);//set transparent background
-            buttons[i].setFocusPainted(false);//Remove backlight when focusing
-            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));//add click handler calls lambda that calls click logic
+            buttons[i] = new JButton(buttonIcon);
+            buttons[i].setToolTipText(tooltips[i]);
+            buttons[i].setBorderPainted(false);
+            buttons[i].setContentAreaFilled(false);
+            buttons[i].setFocusPainted(false);
+            buttons[i].addActionListener(e -> handleButtonClick(buttonIndex));
             if (i < 8) {
-            	buttonsPanel.add(buttons[i]);//add button into buttonsPanel
+                buttonsPanel.add(buttons[i]);
             }          
         }
     }
     
     /**
      * Initializes the data table with dog information
-     * Converts dog data from List to table format, sets up table model,
-     * configures column properties and table appearance
      */
     private void initTable() 
     {
-    	tableData = new String[dogs.getSize()][4];//init table data
-        String[] strListDogs = dogs.convToStr();//get dogs data
+        tableData = new String[dogs.getSize()][4];
+        String[] strListDogs = dogs.convToStr();
         
-        // Process each dog's data for display
         for(int i = 0; i < dogs.getSize(); i++) 
         {
-        	String[] RowData = strListDogs[i].split(";");//split separator ;
-        	tableData[i][0] = String.valueOf(i + 1); // Row number
-            tableData[i][1] = RowData[0]; // Dog name
-            tableData[i][2] = RowData[1]; // Dog breed
-            tableData[i][3] = RowData[2]; // Dog awards
+            String[] RowData = strListDogs[i].split(";");
+            tableData[i][0] = String.valueOf(i + 1);
+            tableData[i][1] = RowData[0];
+            tableData[i][2] = RowData[1];
+            tableData[i][3] = RowData[2];
         }
         
-        originalTableData = new String[tableData.length][4];//init reserve copy table data
+        originalTableData = new String[tableData.length][4];
         for (int i = 0; i < tableData.length; i++) {
-            System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);//copy array (source_arr, start_i, target_arr, start_i, length_of_elements)
+            System.arraycopy(tableData[i], 0, originalTableData[i], 0, 4);
         }
         
-        // Create table model
-        tableModel = new DefaultTableModel(tableData, columnNames);//init table model
-        dogsTable = new JTable(tableModel);//creating a data visualization 
-        dogsTable.setDefaultEditor(Object.class, null);//prohibits editing of table cells
+        tableModel = new DefaultTableModel(tableData, columnNames);
+        dogsTable = new JTable(tableModel);
+        dogsTable.setDefaultEditor(Object.class, null);
         
-        // Configure first column
         TableColumnModel columnModel = dogsTable.getColumnModel();
         TableColumn numberColumn = columnModel.getColumn(0);
-        numberColumn.setMaxWidth(35); 
+        numberColumn.setMaxWidth(35);
         
-        // Center align row numbers
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer(); //creating a render for column
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER); //Adjusting the text alignment of the render
-        numberColumn.setCellRenderer(centerRenderer); //Applying a renderer to a column
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        numberColumn.setCellRenderer(centerRenderer);
         
-        // Configure table appearance
         dogsTable.setFont(defaultFont);
         dogsTable.getTableHeader().setFont(headerFont);
-        dogsTable.getTableHeader().setReorderingAllowed(false); //prohibition to move columns
+        dogsTable.getTableHeader().setReorderingAllowed(false);
         dogsTable.setRowHeight(25);
         
         tableScrollPane = new JScrollPane(dogsTable);
@@ -241,21 +263,19 @@ public class MainWindow
     
     /**
      * Initializes the search panel with text field and search button
-     * Provides functionality for filtering table data based on user input
      */
     private void initSearchPanel()
     {
-    	inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));//init text panel for search
-    	searchTextField = new JTextField(12);
+        inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        searchTextField = new JTextField(12);
         searchTextField.setFont(defaultFont);
         buttons[8].addActionListener(e -> handleButtonClick(8));
         inputPanel.add(searchTextField);
-        inputPanel.add(buttons[8]); 
+        inputPanel.add(buttons[8]);
     }
     
     /**
-     * Assembles all GUI components into the main application frame
-     * Arranges buttons panel, table, and search panel in appropriate layout positions
+     * Assembles all GUI components into the main frame
      */
     private void assembleMainFrame()
     {
@@ -266,8 +286,7 @@ public class MainWindow
     
     /**
      * Handles all button clicks in the application
-     * Routes button events to appropriate functionality based on button index
-     * @param buttonIndex the index of the clicked button (0-8)
+     * @param buttonIndex index of the clicked button
      */
     private static void handleButtonClick(int buttonIndex)
     {
@@ -276,66 +295,34 @@ public class MainWindow
             try {
                 switch(buttonIndex)
                 {
-                    case 0:
-                        try 
-                        {
-                            fileMngr.outputToXML(DOGS_FILE_PATH, dogs);
-                            JLabel message = new JLabel("Data saved successfully!");
-                            message.setFont(new Font("Arial", Font.PLAIN, 16));
-                            message.setHorizontalAlignment(SwingConstants.CENTER);
-                            JOptionPane.showMessageDialog(
-                                    mainFrame,
-                                    message,
-                                    "Save",
-                                    JOptionPane.PLAIN_MESSAGE
-                                );
-                        } 
-                        catch (IOException e) 
-                        {
-                            //e.printStackTrace();
-                        }
+                    case 0: // Save - three sequential threads
+                        saveData();
                         break;
-                    case 2:
-                        try 
-                        {
-                            dogs = fileMngr.inputFromXML(DOGS_FILE_PATH);
-                            updateTableWithDataDogs(dogs);
-                            JLabel message = new JLabel("Date restored successfully!");
-                            message.setFont(new Font("Arial", Font.PLAIN, 16));
-                            message.setHorizontalAlignment(SwingConstants.CENTER);
-                            JOptionPane.showMessageDialog(
-                                    mainFrame,
-                                    message,
-                                    "Backup",
-                                    JOptionPane.PLAIN_MESSAGE
-                                );
-
-                        } 
-                        catch (IOException e) 
-                        {
-                            //e.printStackTrace();
-                        }
-                        break;
-                    case 3:
+                    case 3: // Add
                         AddElementWindow addElem = new AddElementWindow(dogsTable, dogs);
                         addElem.show();
                         break;
-                    case 4: 
+                        
+                    case 4: // Remove
                         DeleteElementWindow deleteWindow = new DeleteElementWindow(dogsTable, dogs);    
                         deleteWindow.show();
                         break;
-                    case 5: 
+                        
+                    case 5: // Edit
                         EditElementWindow editWindow = new EditElementWindow(dogsTable, dogs);
                         editWindow.show();	       
                         break;
-                    case 6: 
-                        AddReportWindow reportWindow = new AddReportWindow();
+                        
+                    case 6: // Print/Generate Report
+                    	AddReportWindow reportWindow = new AddReportWindow();
                         reportWindow.show();
                         break;
-                    case 7: 
+                        
+                    case 7: // Dropout/Exit
                         exitApplication();
                         break;
-                    case 8:
+                        
+                    case 8: // Search
                         String text = searchTextField.getText(); 
                         searchElement(text);
                         break;
@@ -352,9 +339,81 @@ public class MainWindow
     }
     
     /**
-     * Displays a confirmation dialog box with exit image and confirmation text
-     * Prompts user to confirm application exit before terminating the program
-     * @throws IOException 
+     * Saves data using three parallel threads
+     */
+    private static void saveData() {
+        final CountDownLatch saveCompleteLatch = new CountDownLatch(1);
+        
+        Thread thread1 = new Thread(() -> {
+            fileMngr.saveToXML(DOGS_FILE_PATH, dogs, new FileManager.FileOperationCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    saveCompleteLatch.countDown();
+                }
+                @Override
+                public void onError(Exception e) {
+                    saveCompleteLatch.countDown();
+                }
+            });
+        });
+        
+        Thread thread2 = new Thread(() -> {
+            try {
+                saveCompleteLatch.await();
+                ReportGenerator.generateHTMLReport(DOGS_FILE_PATH,"dog_report.html");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        
+        Thread thread3 = new Thread(() -> {
+            try {
+                saveCompleteLatch.await();
+                ReportGenerator.generatePDFReport(DOGS_FILE_PATH,"dog_report.pdf");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        
+        // === START ALL THREADS ===
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        threadsControl(thread1,thread2,thread3).start();
+    }
+    
+    /**
+     * Controls and monitors the execution of save threads
+     * @param thread1 first thread for saving data
+     * @param thread2 second thread for HTML report generation
+     * @param thread3 third thread for PDF report generation
+     * @return thread that controls the other threads
+     */
+    private static Thread threadsControl(Thread thread1, Thread thread2, Thread thread3)
+    {
+    	return new Thread(() -> {
+            try {
+                thread1.join();
+                thread2.join();
+                thread3.join();
+                
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(mainFrame,
+                        "Thread 1: Saving data to main file ✓\n" +
+                        "Thread 2: Generating HTML report from main file ✓\n" +
+                        "Thread 3: Generating PDF report from main file ✓\n\n",
+                        "Threads control",
+                        JOptionPane.DEFAULT_OPTION);
+                });
+                
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+    }
+    
+    /**
+     * Displays exit confirmation dialog and exits application if confirmed
      */
     private static void exitApplication() 
     {
@@ -374,116 +433,84 @@ public class MainWindow
         UIManager.put("OptionPane.buttonFont", defaultFont);
 
         int result = JOptionPane.showConfirmDialog(
-            mainFrame, //parent window
-            exitPanel,  //message
-            "Confirm Exit", //window title
-            JOptionPane.YES_NO_OPTION, //type of buttons
-            JOptionPane.PLAIN_MESSAGE //type of message
+            mainFrame,
+            exitPanel,
+            "Confirm Exit",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.PLAIN_MESSAGE
         );
 
         if (result == JOptionPane.YES_OPTION)
         {
-        	try {
-				fileMngr.outputToXML(DOGS_FILE_PATH, dogs);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+            try {
+                fileMngr.outputToXML(DOGS_FILE_PATH, dogs);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.exit(0);
         }
     }
     
     /**
      * Searches the table and shows only the matching rows
-     * Filters table data based on search text, showing rows where any cell starts with the search text
-     * @param searchText the text to search for in table cells
+     * @param searchText text to search for in the table
      */
     private static void searchElement(String searchText)
     {
-        // If no search text, show all data again
-        if (searchText == null)
+        if (searchText == null || searchText.trim().isEmpty())
         {
             restoreData();
             return;
         }
-        // Make search text lowercase and remove extra spaces
+        
         searchText = searchText.toLowerCase().trim();
-
-        // Create a list to store matching rows
         List<String[]> findedData = new List<>();
         
-        // Look through every row in the table
         for (int i = 0; i < originalTableData.length; i++)
         {
-        	String[] row = originalTableData[i];
-        		boolean found = false;
-        		// Check every cell in this row
-        		for(String cell : row)
-        		{
-	                // If cell starts with search text, we found a match
-	                if (cell.toLowerCase().startsWith(searchText))
-	                {
-	                    found = true;
-	                    break; // Stop checking this row
-	                }
-        		}
-        		// If we found matching text, save this row
-        		if(found)
-        		{
-        			findedData.push_back(row);
-        		}
+            String[] row = originalTableData[i];
+            boolean found = false;
+            
+            for(String cell : row)
+            {
+                if (cell.toLowerCase().contains(searchText))
+                {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if(found)
+            {
+                findedData.push_back(row);
+            }
         } 
         updateTableWithData(findedData);
     }
     
     /**
-     * Shows all the data again after searching
-     * Restores the original full table data, clearing any search filters
+     * Shows all the data again after searching (restores original data)
      */
     private static void restoreData()
     {
-    	// Clear the table
-    	tableModel.setRowCount(0);
-        // Add back all the original rows
+        tableModel.setRowCount(0);
         for (String[] row : originalTableData)
         {
-        	tableModel.addRow(row);
+            tableModel.addRow(row);
         }
     }
     
     /**
      * Updates the table to show only certain rows
-     * Replaces current table data with the provided filtered data set
-     * @param data the rows to display in the table after filtering
+     * @param data list of rows to display
      */
     private static void updateTableWithData(List<String[]> data)
     {
-        // Clear the table
         tableModel.setRowCount(0);
-        // Add each row from the search results
         for (int i = 0; i < data.getSize(); i++)
         {
             String[] row = data.at(i);
             tableModel.addRow(row);
         }
     }
-    
-    private static void updateTableWithDataDogs(List<Dog> data)
-    {
-        // Clear the table
-        tableModel.setRowCount(0);
-        String[] dogData = new String[3];
-        String[] row = new String[4];
-        // Add each row from the search results
-        for (int i = 0; i < data.getSize(); i++)
-        {
-        	dogData = data.at(i).toString().split(";");
-        	row[0] = Integer.toString(i+1);
-            for(int j=0;j<3;j++) 
-            {	
-            	row[1+j] = dogData[j];
-            }
-            tableModel.addRow(row);
-        }
-    }
-
 }
