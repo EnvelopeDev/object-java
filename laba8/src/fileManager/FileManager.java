@@ -13,16 +13,14 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 /**
- * Класс для управления файловыми операциями с поддержкой многопоточности
- * Class for managing file operations with multithreading support
+ * Manages file operations with multithreading support.
  */
 public class FileManager {
     
     /**
-     * Загружает данные из XML файла с колбэком (многопоточный)
-     * Loads data from XML file with callback (multithreaded)
-     * @param filePath path to the XML file
-     * @param callback callback for handling operation result
+     * Loads data from XML file asynchronously.
+     * @param filePath Path to the XML file
+     * @param callback Callback for handling the result
      */
     public void loadFromXML(String filePath, FileOperationCallback<List<Dog>> callback) {
         Thread loadThread = new Thread(() -> {
@@ -38,11 +36,10 @@ public class FileManager {
     }
     
     /**
-     * Сохраняет данные в XML файл с колбэком (многопоточный)
-     * Saves data to XML file with callback (multithreaded)
-     * @param filePath path to the XML file
-     * @param dogs list of dogs to save
-     * @param callback callback for handling operation result
+     * Saves data to XML file asynchronously.
+     * @param filePath Path to the XML file
+     * @param dogs List of dogs to save
+     * @param callback Callback for handling the result
      */
     public void saveToXML(String filePath, List<Dog> dogs, FileOperationCallback<Void> callback) {
         Thread saveThread = new Thread(() -> {
@@ -58,22 +55,17 @@ public class FileManager {
     }
     
     /**
-     * Сохраняет МОДИФИЦИРОВАННЫЕ данные в XML файл для отчета (многопоточный)
-     * Saves MODIFIED data to XML file for reports (multithreaded)
-     * @param filePath path to the XML file
-     * @param dogs list of dogs to save
-     * @param callback callback for handling operation result
+     * Saves modified dog data to XML for reporting purposes.
+     * @param filePath Path to the XML file
+     * @param dogs List of dogs to process
+     * @param callback Callback for handling the result
      */
     public void saveModifiedForReport(String filePath, List<Dog> dogs, FileOperationCallback<Void> callback) {
         Thread saveThread = new Thread(() -> {
             try {
-                // Создаем модифицированные данные для отчета
-                // Create modified data for reports
                 List<Dog> reportDogs = new List<>();
                 for (int i = 0; i < dogs.getSize(); i++) {
                     Dog original = dogs.at(i);
-                    // Модифицируем: добавляем префикс для отчета
-                    // Modify: add prefix for reports
                     Dog modifiedDog = new Dog(
                         "[Report] " + original.getName(),
                         original.getBreed(),
@@ -93,29 +85,28 @@ public class FileManager {
     }
     
     /**
-     * Интерфейс для колбэков файловых операций
-     * Interface for file operation callbacks
-     * @param <T> type of operation result
+     * Callback interface for asynchronous file operations.
+     * @param <T> Type of operation result
      */
     public interface FileOperationCallback<T> {
         /**
-         * Called when operation succeeds
-         * @param result operation result
+         * Called when operation completes successfully.
+         * @param result Operation result
          */
         void onSuccess(T result);
         
         /**
-         * Called when operation fails
-         * @param e exception that occurred
+         * Called when operation fails.
+         * @param e Exception that occurred
          */
         void onError(Exception e);
     }
     
     /**
-     * Reads dog data from XML file
-     * @param filePath path to the XML file
-     * @return list of dogs read from file
-     * @throws IOException if there is an I/O error
+     * Reads dog data from XML file.
+     * @param filePath Path to the XML file
+     * @return List of dogs read from file
+     * @throws IOException If an I/O error occurs
      */
     public List<Dog> inputFromXML(String filePath) throws IOException {
         List<Dog> dogList = new List<>();
@@ -142,10 +133,10 @@ public class FileManager {
     }
     
     /**
-     * Writes dog data to XML file
-     * @param filePath path to the XML file
-     * @param dogs list of dogs to write
-     * @throws IOException if there is an I/O error
+     * Writes dog data to XML file.
+     * @param filePath Path to the XML file
+     * @param dogs List of dogs to write
+     * @throws IOException If an I/O error occurs
      */
     public void outputToXML(String filePath, List<Dog> dogs) throws IOException {
         try {
@@ -185,10 +176,10 @@ public class FileManager {
     }
     
     /**
-     * Reads dog data from CSV file
-     * @param filePath path to the CSV file
-     * @return list of dogs read from file
-     * @throws IOException if there is an I/O error
+     * Reads dog data from CSV file.
+     * @param filePath Path to the CSV file
+     * @return List of dogs read from file
+     * @throws IOException If an I/O error occurs
      */
     public List<Dog> inputFromCSV(String filePath) throws IOException {
         List<Dog> dogList = new List<>();
@@ -203,10 +194,10 @@ public class FileManager {
     }
 
     /**
-     * Writes dog data to CSV file
-     * @param filePath path to the CSV file
-     * @param dogs list of dogs to write
-     * @throws IOException if there is an I/O error
+     * Writes dog data to CSV file.
+     * @param filePath Path to the CSV file
+     * @param dogs List of dogs to write
+     * @throws IOException If an I/O error occurs
      */
     public void outputToCSV(String filePath, List<Dog> dogs) throws IOException {
         String[] listString = dogs.convToStr();
