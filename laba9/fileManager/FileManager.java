@@ -13,7 +13,7 @@ import java.util.Arrays;
  * @author Vadim Ustinov
  * @version 1.0
  */
-public class FileManager  // УБРАЛИ "implements interfaceFM"
+public class FileManager  
 {
     /**
      * Default Constructor

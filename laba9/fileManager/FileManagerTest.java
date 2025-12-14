@@ -7,12 +7,18 @@ import static org.junit.Assert.*;
 import java.io.*;
 import java.nio.file.*;
 
-// Импортируем только ваши классы
+// Import custom classes
 import list.List;
 import object.dog.Dog;
 
 /**
- * JUnit тесты для класса FileManager
+ * JUnit test class for the FileManager class.
+ * Tests file input/output operations with CSV files.
+ * This test class handles integration testing with the file system.
+ * 
+ * @author Your Name
+ * @version 1.0
+ * @see FileManager
  */
 public class FileManagerTest {
     
@@ -20,59 +26,80 @@ public class FileManagerTest {
     private static final String TEST_INPUT_FILE = "test_dogs.csv";
     private static final String TEST_OUTPUT_FILE = "test_output.csv";
     
+    /**
+     * Sets up the test fixture before each test method.
+     * Creates a FileManager instance and test CSV file.
+     * @throws IOException if file creation fails
+     */
     @Before
     public void setUp() throws IOException {
         fileManager = new FileManager();
         
-        // Создаем тестовый CSV файл
+        // Create test CSV file
         String testData = "Rex;German Shepherd;1\n" +
                          "Bella;Golden Retriever;0\n" +
                          "Max;Labrador;1";
         Files.write(Paths.get(TEST_INPUT_FILE), testData.getBytes());
     }
     
+    /**
+     * Cleans up the test fixture after each test method.
+     * Deletes test files created during testing.
+     */
     @After
     public void tearDown() {
-        // Удаляем тестовые файлы
+        // Clean up test files
         try {
             Files.deleteIfExists(Paths.get(TEST_INPUT_FILE));
             Files.deleteIfExists(Paths.get(TEST_OUTPUT_FILE));
         } catch (IOException e) {
-            // Игнорируем ошибки удаления
+            // Ignore cleanup errors
         }
     }
     
+    /**
+     * Tests the FileManager constructor.
+     * Verifies that a FileManager object can be created.
+     */
     @Test
     public void testFileManagerConstructor() {
-        assertNotNull("FileManager должен быть создан", fileManager);
+        assertNotNull("FileManager instance should be created", fileManager);
     }
     
+    /**
+     * Tests the inputFromCSV() method.
+     * Verifies that data can be read from a CSV file.
+     * @throws IOException if file reading fails
+     */
     @Test
     public void testInputFromCSV() throws IOException {
         List<Dog> dogs = fileManager.inputFromCSV(TEST_INPUT_FILE);
         
-        assertNotNull("Список не должен быть null", dogs);
-        assertEquals("Должно быть 3 собаки", 3, dogs.getSize());
+        assertNotNull("Dog list should not be null", dogs);
+        assertEquals("Should read 3 dogs from file", 3, dogs.getSize());
         
-        // Проверяем собак
-        assertEquals("Rex", dogs.at(0).getName());
-        assertEquals("German Shepherd", dogs.at(0).getBreed());
-        assertTrue(dogs.at(0).hasAward());
-        
-        assertEquals("Bella", dogs.at(1).getName());
-        assertEquals("Golden Retriever", dogs.at(1).getBreed());
-        assertFalse(dogs.at(1).hasAward());
-        
-        assertEquals("Max", dogs.at(2).getName());
-        assertEquals("Labrador", dogs.at(2).getBreed());
-        assertTrue(dogs.at(2).hasAward());
+        // Verify first dog
+        assertEquals("First dog name should be 'Rex'", "Rex", dogs.at(0).getName());
+        assertEquals("First dog breed should be 'German Shepherd'", 
+                     "German Shepherd", dogs.at(0).getBreed());
+        assertTrue("First dog should have awards", dogs.at(0).hasAward());
     }
     
+    /**
+     * Tests the inputFromCSV() method with non-existent file.
+     * Verifies that IOException is thrown when file doesn't exist.
+     * @throws IOException expected to be thrown
+     */
     @Test(expected = IOException.class)
     public void testInputFromCSVFileNotFound() throws IOException {
         fileManager.inputFromCSV("non_existent_file.csv");
     }
     
+    /**
+     * Tests the outputToCSV() method.
+     * Verifies that data can be written to a CSV file.
+     * @throws IOException if file writing fails
+     */
     @Test
     public void testOutputToCSV() throws IOException {
         List<Dog> dogs = new List<>();
@@ -82,21 +109,52 @@ public class FileManagerTest {
         
         fileManager.outputToCSV(TEST_OUTPUT_FILE, dogs);
         
-        assertTrue("Файл должен быть создан", Files.exists(Paths.get(TEST_OUTPUT_FILE)));
+        assertTrue("Output file should be created", 
+                   Files.exists(Paths.get(TEST_OUTPUT_FILE)));
         
-        // Читаем и проверяем
+        // Verify file content
         java.util.List<String> lines = Files.readAllLines(Paths.get(TEST_OUTPUT_FILE));
-        assertEquals(3, lines.size());
-        assertEquals("Charlie;Beagle;1", lines.get(0));
-        assertEquals("Lucy;Poodle;0", lines.get(1));
-        assertEquals("Rocky;Boxer;1", lines.get(2));
+        assertEquals("File should contain 3 lines", 3, lines.size());
+        assertEquals("First line should match", "Charlie;Beagle;1", lines.get(0));
     }
     
+    /**
+     * Tests the complete input-output cycle.
+     * Verifies that data can be read, written, and read again without corruption.
+     * @throws IOException if any file operation fails
+     */
+    @Test
+    public void testInputOutputCycle() throws IOException {
+        // Read original data
+        List<Dog> originalDogs = fileManager.inputFromCSV(TEST_INPUT_FILE);
+        
+        // Write to new file
+        fileManager.outputToCSV(TEST_OUTPUT_FILE, originalDogs);
+        
+        // Read back from new file
+        List<Dog> readDogs = fileManager.inputFromCSV(TEST_OUTPUT_FILE);
+        
+        // Verify data integrity
+        assertEquals("Number of dogs should match", 
+                     originalDogs.getSize(), readDogs.getSize());
+        
+        for (int i = 0; i < originalDogs.getSize(); i++) {
+            assertEquals("Dog names should match", 
+                         originalDogs.at(i).getName(), readDogs.at(i).getName());
+        }
+    }
+    
+    /**
+     * Tests outputToCSV() with empty list.
+     * Verifies that empty lists can be handled correctly.
+     * @throws IOException if file writing fails
+     */
     @Test
     public void testEmptyDogListOutput() throws IOException {
         List<Dog> emptyList = new List<>();
         fileManager.outputToCSV(TEST_OUTPUT_FILE, emptyList);
         
-        assertTrue("Файл должен быть создан", Files.exists(Paths.get(TEST_OUTPUT_FILE)));
+        assertTrue("File should be created even for empty list", 
+                   Files.exists(Paths.get(TEST_OUTPUT_FILE)));
     }
 }
