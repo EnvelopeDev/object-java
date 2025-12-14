@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dogs>
+  <dog>
+    <name>Dobf</name>
+    <breed>German Shepherd</breed>
+    <awards>false</awards>
+  </dog>
+  <dog>
+    <name>Bella</name>
+    <breed>Golden Retriever</breed>
+    <awards>true</awards>
+  </dog>
+  <dog>
+    <name>Charlie</name>
+    <breed>Bulldog</breed>
+    <awards>false</awards>
+  </dog>
+  <dog>
+    <name>Lucy</name>
+    <breed>Poodle</breed>
+    <awards>true</awards>
+  </dog>
+  <dog>
+    <name>Cooper</name>
+    <breed>Beagle</breed>
+    <awards>false</awards>
+  </dog>
+  <dog>
+    <name>Daisy</name>
+    <breed>Boxer</breed>
+    <awards>true</awards>
+  </dog>
+  <dog>
+    <name>Rocky</name>
+    <breed>Dachshund</breed>
+    <awards>false</awards>
+  </dog>
+  <dog>
+    <name>Molly</name>
+    <breed>Shih Tzu</breed>
+    <awards>true</awards>
+  </dog>
+  <dog>
+    <name>Buddy</name>
+    <breed>Great Dane</breed>
+    <awards>false</awards>
+  </dog>
+  <dog>
+    <name>sjbaka</name>
+    <breed>sobaka</breed>
+    <awards>true</awards>
+  </dog>
+</dogs>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              name="DogReportPDF" pageWidth="595" pageHeight="842">
+    
+    <parameter name="REPORT_TITLE" class="java.lang.String"/>
+    <parameter name="LAB_NUMBER" class="java.lang.String"/>
+    <parameter name="GENERATION_DATE" class="java.util.Date"/>
+    <parameter name="SOURCE_FILE" class="java.lang.String"/>
+    <parameter name="TOTAL_DOGS" class="java.lang.Integer"/>
+    <parameter name="AWARDS_COUNT" class="java.lang.Integer"/>
+    <parameter name="AWARDS_PERCENTAGE" class="java.lang.Double"/>
+    
+    <field name="id" class="java.lang.Integer"/>
+    <field name="name" class="java.lang.String"/>
+    <field name="breed" class="java.lang.String"/>
+    <field name="awards" class="java.lang.Boolean"/>
+    <field name="awardsText" class="java.lang.String"/>
+    
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement>
+                    <font size="20" isBold="true"/>
+                </textElement>
+                <text>Dog Festival Report</text>
+            </staticText>
+            
+            <staticText>
+                <reportElement x="0" y="30" width="555" height="20"/>
+                <textElement>
+                    <font size="14"/>
+                </textElement>
+                <text>Laboratory Work #7 | Ustinov Vadim</text>
+            </staticText>
+        </band>
+    </title>
+    
+    <pageHeader>
+        <band height="30">
+            <textField pattern="dd.MM.yyyy HH:mm:ss">
+                <reportElement x="0" y="0" width="300" height="15"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Date: " + $P{GENERATION_DATE}]]></textFieldExpression>
+            </textField>
+            
+            <textField>
+                <reportElement x="0" y="15" width="555" height="15"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Source: " + $P{SOURCE_FILE}]]></textFieldExpression>
+            </textField>
+            
+            <line>
+                <reportElement x="0" y="29" width="555" height="1"/>
+            </line>
+        </band>
+    </pageHeader>
+    
+    <columnHeader>
+        <band height="25">
+            <staticText>
+                <reportElement x="0" y="0" width="40" height="25"/>
+                <textElement>
+                    <font size="11" isBold="true"/>
+                </textElement>
+                <text>No.</text>
+            </staticText>
+            
+            <staticText>
+                <reportElement x="40" y="0" width="150" height="25"/>
+                <textElement>
+                    <font size="11" isBold="true"/>
+                </textElement>
+                <text>Dog Name</text>
+            </staticText>
+            
+            <staticText>
+                <reportElement x="190" y="0" width="150" height="25"/>
+                <textElement>
+                    <font size="11" isBold="true"/>
+                </textElement>
+                <text>Breed</text>
+            </staticText>
+            
+            <staticText>
+                <reportElement x="340" y="0" width="100" height="25"/>
+                <textElement>
+                    <font size="11" isBold="true"/>
+                </textElement>
+                <text>Awards</text>
+            </staticText>
+        </band>
+    </columnHeader>
+    
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="40" height="20"/>
+                <textElement>
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+            
+            <textField>
+                <reportElement x="40" y="0" width="150" height="20"/>
+                <textElement>
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+            </textField>
+            
+            <textField>
+                <reportElement x="190" y="0" width="150" height="20"/>
+                <textElement>
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{breed}]]></textFieldExpression>
+            </textField>
+            
+            <textField>
+                <reportElement x="340" y="0" width="100" height="20"/>
+                <textElement>
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{awardsText}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    
+    <summary>
+        <band height="60">
+            <line>
+                <reportElement x="0" y="0" width="555" height="1"/>
+            </line>
+            
+            <textField>
+                <reportElement x="0" y="10" width="555" height="20"/>
+                <textElement>
+                    <font size="11"/>
+                </textElement>
+                <textFieldExpression><![CDATA[
+                    "Report Summary: " + $P{TOTAL_DOGS} + " dogs processed. " + 
+                    $P{AWARDS_COUNT} + " with awards (" + 
+                    new java.text.DecimalFormat("#0.0").format($P{AWARDS_PERCENTAGE}) + "%)."
+                ]]></textFieldExpression>
+            </textField>
+            
+            <staticText>
+                <reportElement x="0" y="35" width="555" height="15"/>
+                <textElement>
+                    <font size="9" isItalic="true"/>
+                </textElement>
+                <text>Dog Festival System - Formal Report Document</text>
+            </staticText>
+        </band>
+    </summary>
+</jasperReport>
