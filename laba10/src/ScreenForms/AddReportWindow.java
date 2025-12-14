@@ -1,7 +1,6 @@
 package ScreenForms;
 
 import org.apache.log4j.Logger;
-
 import javax.swing.*;
 import java.awt.*;
 import report.ReportGenerator;
@@ -35,7 +34,6 @@ public class AddReportWindow extends InputOutputWindow
     public AddReportWindow()
     {
         super("Select report type", "Generate Report", 0, 0);
-        log.debug("Initializing report generation window");
         
         //Create panel for options with padding
         mainPanel = new JPanel();
@@ -75,8 +73,6 @@ public class AddReportWindow extends InputOutputWindow
         super.IODialog.setLocationRelativeTo(null);
         //Repack window for proper display
         super.IODialog.pack();
-        
-        log.debug("Report window initialization completed");
     }
  
     /**
@@ -86,7 +82,6 @@ public class AddReportWindow extends InputOutputWindow
     @Override
     public void show() throws InputException
     {
-        log.info("Showing report generation window");
         super.IODialog.setLocationRelativeTo(null);
         super.IODialog.setVisible(true);
 
@@ -98,7 +93,6 @@ public class AddReportWindow extends InputOutputWindow
             super.IODialog.dispose();
             
             String reportType = reportOptions[0];
-            log.info("User selected report type: " + reportType);
             boolean success = generateReport(reportType);
             
             if (success) {
@@ -108,7 +102,6 @@ public class AddReportWindow extends InputOutputWindow
                 }
                 successMessage += " generated successfully!";
                 
-                log.info("Report generation successful: " + successMessage);
                 JOptionPane.showMessageDialog(
                     null,
                     successMessage,
@@ -124,8 +117,6 @@ public class AddReportWindow extends InputOutputWindow
                     JOptionPane.ERROR_MESSAGE
                 );
             }  
-        } else {
-            log.debug("User cancelled report generation");
         }
     }
     
@@ -141,17 +132,14 @@ public class AddReportWindow extends InputOutputWindow
         try {
             switch(reportType) {
                 case "pdf":
-                    log.info("Generating PDF report");
                     success = ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
                     break;
                     
                 case "html":
-                    log.info("Generating HTML report");
                     success = ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
                     break;
                     
                 case "both":
-                    log.info("Generating both PDF and HTML reports");
                     boolean pdfSuccess = ReportGenerator.generatePDFReport(XML_FILE_PATH, "dog_report.pdf");
                     boolean htmlSuccess = ReportGenerator.generateHTMLReport(XML_FILE_PATH, "dog_report.html");
                     success = pdfSuccess && htmlSuccess;

@@ -454,7 +454,6 @@ public class MainWindow
         thread1.start();
         thread2.start();
         thread3.start();
-        log.debug("All 3 save threads started");
         threadsControl(thread1,thread2,thread3).start();
     }
     
